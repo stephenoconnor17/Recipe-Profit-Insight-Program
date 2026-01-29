@@ -1,0 +1,54 @@
+# Eclipse workspace files
+.metadata/
+.recommenders/
+.settings/
+.project
+.classpath
+.factorypath
+.buildpath
+
+# Java build output
+bin/
+target/
+out/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+
+# Gradle
+.gradle/
+build/
+
+# Eclipse launch configs
+*.launch
+
+# External tool builders
+.externalToolBuilders/
+
+# Annotation processing
+.apt_generated/
+.apt_generated_tests/
+
+# Code style / formatter
+.checkstyle
+
+# JDT
+.cache/
