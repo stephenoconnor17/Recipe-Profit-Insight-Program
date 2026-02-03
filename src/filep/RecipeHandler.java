@@ -9,6 +9,7 @@ public class RecipeHandler {
 	public static Map<Integer, Ingredient> ingredientIDMap = new HashMap<>();
 	
 	public static ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+	public static Map<String, Recipe> recipeByName = new HashMap<>();
 	
 	
 }

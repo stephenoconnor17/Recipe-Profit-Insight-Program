@@ -48,7 +48,7 @@ public class FileHandler {
 	}
 	
 	//load recipes from file.
-	//they should be in the format of name, sellpoint,
+	//they should be in the format of name, sellpoint, ids
 	public void loadRecipes() {
 		File myFile = new File(recipeFileName);
 		try(Scanner scanner = new Scanner(myFile)){
@@ -69,6 +69,7 @@ public class FileHandler {
 					temp.addIngredient(RecipeHandler.ingredientIDMap.get(ids.get(i)), (RecipeHandler.ingredientIDMap.get(ids.get(i)).getCostPer1g() * RecipeHandler.ingredientIDMap.get(ids.get(i)).getGrams()));
 				}
 				RecipeHandler.recipes.add(temp);
+				RecipeHandler.recipeByName.put(temp.getName(),temp);
 			}
 			
 		}catch(FileNotFoundException e){

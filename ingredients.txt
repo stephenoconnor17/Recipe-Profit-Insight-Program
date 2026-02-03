@@ -1,0 +1,2 @@
+eggs eggco 10 1000 10
+smegma smegco 40 200 11

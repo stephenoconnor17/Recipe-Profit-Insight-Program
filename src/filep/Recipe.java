@@ -12,6 +12,7 @@ public class Recipe {
 	
 	private ArrayList<Ingredient> recipeIngredients;
 	private Map<Ingredient, Float> ingredientUnitCost;
+	private Map<Ingredient, Float> ingredientGramsUsed;
 	
 	private Object[] displayArr = new Object[4];
 	
@@ -47,6 +48,7 @@ public class Recipe {
 	public void addIngredient(Ingredient ingredient, float unitsInGrams) {
 		this.recipeIngredients.add(ingredient);
 		this.ingredientUnitCost.put(ingredient, (ingredient.getCostPer1g() * unitsInGrams));
+		this.ingredientGramsUsed.put(ingredient, unitsInGrams);
 		this.costToMake += (ingredient.getCostPer1g() * unitsInGrams);
 		
 		updateSaleDiff();
@@ -75,6 +77,7 @@ public class Recipe {
 		this.recipeIngredients.remove(ingredient);
 		this.costToMake -= this.ingredientUnitCost.get(ingredient);
 		this.ingredientUnitCost.remove(ingredient);
+		this.ingredientGramsUsed.remove(ingredient);
 		
 		if(this.costToMake < 0) {
 			this.costToMake = 0;
@@ -109,4 +112,15 @@ public class Recipe {
 		return this.sellPoint;
 	}
 	
+	public ArrayList<Ingredient> getIngredients(){
+		return this.recipeIngredients;
+	}
+	
+	public float getCostOfIngredientInRecipe(Ingredient i) {
+		return ingredientUnitCost.get(i);
+	}
+	
+	public float getGramsUsedOfIngredient(Ingredient i) {
+		return ingredientGramsUsed.get(i);
+	}
 }

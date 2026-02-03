@@ -72,4 +72,11 @@ public class Ingredient {
 		return this.id;
 	}
 	
+	/*
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "Name: " + getName() + ", "
+	}
+	*/
 }
