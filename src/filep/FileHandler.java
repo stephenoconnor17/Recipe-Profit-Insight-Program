@@ -91,7 +91,8 @@ public class FileHandler {
 			
 			myfw.write(current.getName() + " " + current.getSellPoint());
 			for(int j = 0; j < current.returnIngredientListSize(); j++) {
-				myfw.write(" " + current.getIngredientFromList(j).getID());
+				Ingredient myI = current.getIngredientFromList(j);
+				myfw.write(" " + myI.getID() + "/" + current.getGramsUsedOfIngredient(myI));
 			}
 			myfw.write("\n");
 			

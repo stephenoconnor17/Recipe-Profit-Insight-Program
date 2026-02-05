@@ -2,6 +2,7 @@ package myGUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -16,11 +17,13 @@ import javax.swing.ListSelectionModel;
 import filep.Ingredient;
 import filep.Recipe;
 import filep.RecipeHandler;
+import filep.FileHandler;
 
 public class RecipeFrame extends JFrame{
 	
 	JComboBox<String> recipeSelect;
 	JPanel mp;
+	FileHandler fh;
 	
 	//text tags over input fields
 	JLabel nameLabel;
@@ -44,11 +47,13 @@ public class RecipeFrame extends JFrame{
 	JButton removeIngredientButton;
 	JButton removeButton;
 	
-	public RecipeFrame() {
+	public RecipeFrame(FileHandler fh) {
 		this.setSize(600,600);
 		this.setTitle("Recipe Editor");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setResizable(false);
+		
+		this.fh = fh;
 		
 		setUpPanel();
 		//setups
@@ -182,7 +187,10 @@ public class RecipeFrame extends JFrame{
 			String toAdd = "ID: " + t.getID() + ", Name: " + t.getName() + ", Supplier: " + t.getSupplierName() +", Grams: " + r.getGramsUsedOfIngredient(t) + ", Cost In Recipe: " + (r.getCostOfIngredientInRecipe(t));
 			
 			
-			model.addElement(toAdd);
+			model.addElement(toAdd); //each elements display in the Model is the element's toString();
+			//there was certain values which I couldnt get from passing through an Ingredient object and making my own toString();
+			//because the ingredient object stores its name, cost, supplier, amount BOUGHT IN, never amount used in each recipe
+			//that information belongs to the recipe itself.
 			
 			i++;
 		}
@@ -222,7 +230,12 @@ public class RecipeFrame extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				saveRecipesAction();
+				try {
+					saveRecipesAction();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 		}});	
 	}
 	
@@ -232,8 +245,8 @@ public class RecipeFrame extends JFrame{
 	}
 	
 	//save all recipes
-	public void saveRecipesAction() {
-		
+	public void saveRecipesAction() throws IOException {
+		fh.writeRecipes();
 	}
 	
 	//add ingredient to recipe via popup list of all available ingredients
