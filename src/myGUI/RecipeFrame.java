@@ -1,12 +1,17 @@
 package myGUI;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 
 import filep.Ingredient;
 import filep.Recipe;
@@ -17,18 +22,27 @@ public class RecipeFrame extends JFrame{
 	JComboBox<String> recipeSelect;
 	JPanel mp;
 	
+	//text tags over input fields
 	JLabel nameLabel;
 	JLabel costToMakeLabel;
 	JLabel sellPointLabel;
 	
+	//ingredient display
 	JLabel ingredientLabel;
 	JList<String> ingredientList;
 	DefaultListModel<String> model;
 	
+	//text fields for user input.
 	JTextField nameField;
 	JTextField costToMakeField;
 	JTextField sellPointField;
 	//JTextField nameField;
+	
+	//Buttons for save, remove and add ingredient.
+	JButton saveButton;
+	JButton getIngredientsButton;
+	JButton removeIngredientButton;
+	JButton removeButton;
 	
 	public RecipeFrame() {
 		this.setSize(600,600);
@@ -39,8 +53,10 @@ public class RecipeFrame extends JFrame{
 		setUpPanel();
 		//setups
 		setUpField();
-		setUpComboBox();
 		setUpIngredientList();
+		setUpComboBox();
+		setUpButtons();
+	
 		//setUpField();
 		//
 		
@@ -58,6 +74,11 @@ public class RecipeFrame extends JFrame{
 		
 		mp.add(ingredientLabel);
 		mp.add(ingredientList);
+		
+		mp.add(saveButton);
+		mp.add(removeButton);
+		mp.add(removeIngredientButton);
+		mp.add(getIngredientsButton);
 		
 		this.add(mp);
 		this.setVisible(true);
@@ -100,6 +121,8 @@ public class RecipeFrame extends JFrame{
 			nameField.setText("Default");
 			costToMakeField.setText("Default");
 			sellPointField.setText("Default");
+			
+			model.clear();
 		}else {
 			nameField.setText(tempR.getName());
 			costToMakeField.setText(String.valueOf(tempR.getCostToMake()));
@@ -132,6 +155,7 @@ public class RecipeFrame extends JFrame{
 		
 		costToMakeLabel.setBounds(10,110,300,20);
 		costToMakeField.setBounds(10,130,300,35);
+		costToMakeField.setEditable(false);
 		
 		sellPointLabel.setBounds(10,165,300,20);
 		sellPointField.setBounds(10,185,300,35);
@@ -146,7 +170,7 @@ public class RecipeFrame extends JFrame{
 		ingredientList = new JList<String>(model);
 		
 		ingredientList.setBounds(10,240,550,280);
-		
+		ingredientList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 	
 	public void loadIngredientsIntoModel(Recipe r) {
@@ -155,7 +179,7 @@ public class RecipeFrame extends JFrame{
 		int i = 0;
 		for(Ingredient t : r.getIngredients()) {
 			
-			String toAdd = "Name: " + t.getName() + ", Supplier: " + t.getSupplierName() +", Grams: " + r.getGramsUsedOfIngredient(t) + ", Cost In Recipe: " + (r.getCostOfIngredientInRecipe(t));
+			String toAdd = "ID: " + t.getID() + ", Name: " + t.getName() + ", Supplier: " + t.getSupplierName() +", Grams: " + r.getGramsUsedOfIngredient(t) + ", Cost In Recipe: " + (r.getCostOfIngredientInRecipe(t));
 			
 			
 			model.addElement(toAdd);
@@ -165,7 +189,74 @@ public class RecipeFrame extends JFrame{
 	}
 	
 	public void setUpButtons() {
+		saveButton = new JButton("Save Recipes");
+		getIngredientsButton = new JButton("Add Ingredient");
+		removeIngredientButton = new JButton("Remove Ingredient");
+		removeButton = new JButton("Delete Recipe");
 		
+		saveButton.setBounds(320,10,160,50);
+		getIngredientsButton.setBounds(320,130,160,50);
+		removeIngredientButton.setBounds(320,190,160,50);
+		removeButton.setBounds(320,70,160,50);
+		
+		removeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				removeRecipeAction();
+		}});
+		
+		getIngredientsButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				addIngredientAction();
+		}});	
+		removeIngredientButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				removeIngredientAction();
+		}});	
+		saveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				saveRecipesAction();
+		}});	
+	}
+	
+	//remove selected recipe
+	public void removeRecipeAction() {
+		
+	}
+	
+	//save all recipes
+	public void saveRecipesAction() {
+		
+	}
+	
+	//add ingredient to recipe via popup list of all available ingredients
+	public void addIngredientAction() {
+		
+	}
+	
+	//remove ingredient from recipe based on JList GUI selection.
+	public void removeIngredientAction() {
+		String ingEntry = ingredientList.getSelectedValue();
+		if(ingEntry != null) {
+		String[] seperated = ingEntry.split(",");
+		String idPart = seperated[0].replace("ID:","").trim();
+		Integer ingEntryId = Integer.valueOf(idPart);
+		//System.out.println(mr);
+		Recipe selectedRecipe = grabRecipe();
+		Ingredient selectedIngredient = selectedRecipe.getIngredient(RecipeHandler.ingredientIDMap.get(ingEntryId));
+		
+		selectedRecipe.removeIngredient(selectedIngredient);
+		loadIngredientsIntoModel(selectedRecipe);
+		grabRecipeAndFill();
+		//selectedRecipe.getIngredientFromList()
+		}
 	}
 	
 }

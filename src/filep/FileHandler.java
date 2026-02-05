@@ -59,15 +59,22 @@ public class FileHandler {
 				String name = parts[0];
 				float cost = Float.parseFloat(parts[1]);
 				ArrayList<Integer> ids = new ArrayList<Integer>();
-				for(int i = 2; i < parts.length; i++) {
-					ids.add(Integer.parseInt(parts[i]));
-				}
-				
 				Recipe temp = new Recipe(name,cost);
 				
-				for(int i = 0; i < ids.size(); i++) {
-					temp.addIngredient(RecipeHandler.ingredientIDMap.get(ids.get(i)), (RecipeHandler.ingredientIDMap.get(ids.get(i)).getCostPer1g() * RecipeHandler.ingredientIDMap.get(ids.get(i)).getGrams()));
+				for (int i = 2; i < parts.length; i++) {
+				    String[] ingredientParts = parts[i].split("/");
+
+				    int ingredientId = Integer.parseInt(ingredientParts[0]);
+				    float grams = Float.parseFloat(ingredientParts[1]);
+
+				    Ingredient ing = RecipeHandler.ingredientIDMap.get(ingredientId);
+
+				    if (ing != null) {
+				        temp.addIngredient(ing, grams);
+				    }
 				}
+
+				
 				RecipeHandler.recipes.add(temp);
 				RecipeHandler.recipeByName.put(temp.getName(),temp);
 			}

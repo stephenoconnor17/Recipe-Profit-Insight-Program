@@ -25,6 +25,7 @@ public class Recipe {
 		updateDisplayArr();
 		
 		this.recipeIngredients = new ArrayList<Ingredient>();
+		this.ingredientGramsUsed = new HashMap<>();
 		this.ingredientUnitCost = new HashMap<>();
 		
 	}
@@ -114,6 +115,11 @@ public class Recipe {
 	
 	public ArrayList<Ingredient> getIngredients(){
 		return this.recipeIngredients;
+	}
+	
+	public Ingredient getIngredient(Ingredient temp) {
+		int i = this.recipeIngredients.indexOf(temp);
+		return getIngredientFromList(i);
 	}
 	
 	public float getCostOfIngredientInRecipe(Ingredient i) {
