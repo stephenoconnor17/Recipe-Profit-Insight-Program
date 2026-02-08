@@ -91,7 +91,9 @@ public class Recipe {
 	
 	//getter/setter
 	public void setName(String name) {
+		RecipeHandler.recipeByName.remove(this.name);
 		this.name = name;
+		RecipeHandler.recipeByName.put(this.name, this);
 		updateDisplayArr();
 	}
 	

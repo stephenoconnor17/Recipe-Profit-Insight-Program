@@ -39,9 +39,10 @@ public class MyPanel extends JPanel{
 		//recipe table and filehandler init
 		fh = new FileHandler();
 		
-		setUpDMandTable();
+		//setUpDMandTable();
 		fh.loadIngredients();
 		fh.loadRecipes();
+		setUpDMandTable();
 		
 		jsp = new JScrollPane(jt);
 		
@@ -71,7 +72,7 @@ public class MyPanel extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				 new RecipeFrame(fh);
+				 new RecipeFrame(fh, mp);
 			}
 		});
 		
@@ -101,13 +102,14 @@ public class MyPanel extends JPanel{
 		    }
 
 		};
+		fillDataModel();
 		/*
 		Recipe testr = new Recipe("name", 67f);
 		testr.addIngredient(new Ingredient("butter", "butterco", 4, 100, 18), 100);
 		testr.addIngredient(new Ingredient("ham", "butterco", 8, 100, 18), 100);
 		
 		//ADD ROWS OF INFO
-		dtm.addRow(testr.getDisplayArr());
+		
 		*/
 		jt = new JTable(dtm);
 		
@@ -150,5 +152,14 @@ public class MyPanel extends JPanel{
 			
 		});
 		//---END OF COLOR
+	}
+	
+	public void fillDataModel() {
+		dtm.setRowCount(0);
+		//dtm.setRowCount(RecipeHandler.recipes.size());
+		
+		for(int i = 0; i < RecipeHandler.recipes.size(); i++) {
+			dtm.addRow(RecipeHandler.recipes.get(i).getDisplayArr());
+		}	
 	}
 }

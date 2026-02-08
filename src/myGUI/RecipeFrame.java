@@ -2,6 +2,8 @@ package myGUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 
 import javax.swing.DefaultListModel;
@@ -10,9 +12,12 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import filep.Ingredient;
 import filep.Recipe;
@@ -47,7 +52,10 @@ public class RecipeFrame extends JFrame{
 	JButton removeIngredientButton;
 	JButton removeButton;
 	
-	public RecipeFrame(FileHandler fh) {
+	MyPanel parent;
+	
+	public RecipeFrame(FileHandler fh, MyPanel parent) {
+		this.parent = parent;
 		this.setSize(600,600);
 		this.setTitle("Recipe Editor");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -59,6 +67,7 @@ public class RecipeFrame extends JFrame{
 		//setups
 		setUpField();
 		setUpIngredientList();
+		comboBoxInit();
 		setUpComboBox();
 		setUpButtons();
 	
@@ -98,29 +107,36 @@ public class RecipeFrame extends JFrame{
 		this.setVisible(true);
 	}
 	
+	boolean isUpdating = false;
+	
+	public void comboBoxInit() {
+		recipeSelect = new JComboBox<String>();
+		recipeSelect.setBounds(10,10,300,35);
+		recipeSelect.setEditable(false);
+		recipeSelect.addActionListener(e -> {
+			if(!isUpdating) {
+				grabRecipeAndFill();
+			}
+		});
+		
+	}
 	
 	
 	public void setUpComboBox() {
-		recipeSelect = new JComboBox<String>();
-		
+		//Load options for recipe select.
+		recipeSelect.removeAllItems();
 		recipeSelect.addItem("New recipe");
 		
-		//Load options for recipe select.
 		for(int i = 0; i < RecipeHandler.recipes.size(); i++) {
 			recipeSelect.addItem(RecipeHandler.recipes.get(i).getName());
 		}
-		
-		recipeSelect.setBounds(10,10,300,35);
-		
-		recipeSelect.addActionListener(e -> {
-			grabRecipeAndFill();
-		});
-		
 		grabRecipeAndFill();
 	}
 	
 	public void grabRecipeAndFill() {
 		Recipe tempR = grabRecipe();
+		
+		isUpdating = true;
 		//Recipe r = RecipeHandler.recipes.
 		if(tempR == null) {
 			nameField.setText("Default");
@@ -135,6 +151,8 @@ public class RecipeFrame extends JFrame{
 			
 			loadIngredientsIntoModel(tempR);
 		}
+		
+		isUpdating = false;
 	}
 	
 	public Recipe grabRecipe() {
@@ -241,12 +259,38 @@ public class RecipeFrame extends JFrame{
 	
 	//remove selected recipe
 	public void removeRecipeAction() {
+		Recipe toRemove = grabRecipe();
 		
+		int result = JOptionPane.showConfirmDialog(
+                this,                       // parent component
+                "Do you want to delete this recipe?",  // message
+                "Confirmation",              // title
+                JOptionPane.YES_NO_CANCEL_OPTION
+        );
+		
+		if(result == JOptionPane.YES_OPTION) {
+			RecipeHandler.recipes.remove(toRemove);
+			RecipeHandler.recipeByName.remove(toRemove.getName());
+			setUpComboBox();
+		}else if(result ==JOptionPane.NO_OPTION) {
+			
+		}else{
+			
+		}
 	}
 	
 	//save all recipes
 	public void saveRecipesAction() throws IOException {
+		Recipe saveName = grabRecipe();
+		if(saveName != null) {
+			saveName.setName(nameField.getText());
+			saveName.setSellPoint(Float.valueOf(sellPointField.getText()));
+		}
 		fh.writeRecipes();
+		
+		setUpComboBox();
+		
+		parent.fillDataModel();
 	}
 	
 	//add ingredient to recipe via popup list of all available ingredients

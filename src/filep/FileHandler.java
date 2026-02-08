@@ -18,7 +18,7 @@ public class FileHandler {
 		try(Scanner scanner = new Scanner(myFile)){
 			while(scanner.hasNextLine()) {
 				String line = scanner.nextLine();
-				String[] parts = line.split(" ");
+				String[] parts = line.split("'");
 				
 				String name = parts[0];
 				String supplier = parts[1];
@@ -42,7 +42,7 @@ public class FileHandler {
 		for(int i = 0; i < RecipeHandler.ingredients.size(); i++) {
 			Ingredient current = RecipeHandler.ingredients.get(i);
 			
-			myfw.write(current.getName() + " " + current.getSupplierName() + " " + (current.getCostPer1g() * current.getGrams()) + " " + current.getGrams() + " " + current.getID() + "\n");
+			myfw.write(current.getName() + "'" + current.getSupplierName() + "'" + (current.getCostPer1g() * current.getGrams()) + "'" + current.getGrams() + "'" + current.getID() + "\n");
 		}
 		myfw.close();
 	}
@@ -54,7 +54,7 @@ public class FileHandler {
 		try(Scanner scanner = new Scanner(myFile)){
 			while(scanner.hasNextLine()) {
 				String line = scanner.nextLine();
-				String[] parts = line.split(" ");
+				String[] parts = line.split("'");
 				
 				String name = parts[0];
 				float cost = Float.parseFloat(parts[1]);
@@ -89,10 +89,10 @@ public class FileHandler {
 		for(int i = 0; i < RecipeHandler.recipes.size(); i++) {
 			Recipe current = RecipeHandler.recipes.get(i);
 			
-			myfw.write(current.getName() + " " + current.getSellPoint());
+			myfw.write(current.getName() + "'" + current.getSellPoint());
 			for(int j = 0; j < current.returnIngredientListSize(); j++) {
 				Ingredient myI = current.getIngredientFromList(j);
-				myfw.write(" " + myI.getID() + "/" + current.getGramsUsedOfIngredient(myI));
+				myfw.write("'" + myI.getID() + "/" + current.getGramsUsedOfIngredient(myI));
 			}
 			myfw.write("\n");
 			
