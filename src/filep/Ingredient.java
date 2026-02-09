@@ -72,11 +72,11 @@ public class Ingredient {
 		return this.id;
 	}
 	
-	/*
+	
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "Name: " + getName() + ", "
+		return "NAME: " + getName() + "| SUPPLIER: " + getSupplierName() + "| GRAMS PER UNIT: €" + getGrams() + "| COST PER UNIT: €" + (getGrams() * getCostPer1g()) + "| COST PER 1G/100G/1000G: €" + getCostPer1g() + "/ €"+ getCostPer100g() + "/ €" + getCostPer1kg() + "\n";
 	}
-	*/
+	
 }

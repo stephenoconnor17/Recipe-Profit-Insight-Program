@@ -1,2 +1,10 @@
-eggs'eggco'5'800'10
-smegma'smegco'5'500'11
+Butter'DairyCo'4.50'250'1
+Flour'GrainCorp'2.00'1000'2
+Sugar'SweetLtd'1.80'1000'3
+Milk'DairyCo'1.50'1000'4
+Eggs'FarmFresh'3.00'600'5
+Salt'KitchenBasics'0.80'500'6
+Baking Powder'BakeWell'1.20'200'7
+Olive Oil'MedFoods'6.00'500'8
+Cheese'CheeseMakers'5.50'400'9
+Tomato Sauce'Italiano'2.75'700'10

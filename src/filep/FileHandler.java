@@ -74,7 +74,6 @@ public class FileHandler {
 				    }
 				}
 
-				
 				RecipeHandler.recipes.add(temp);
 				RecipeHandler.recipeByName.put(temp.getName(),temp);
 			}

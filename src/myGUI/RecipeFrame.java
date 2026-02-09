@@ -260,6 +260,9 @@ public class RecipeFrame extends JFrame{
 	//remove selected recipe
 	public void removeRecipeAction() {
 		Recipe toRemove = grabRecipe();
+		if(toRemove == null) {
+			return;
+		}
 		
 		int result = JOptionPane.showConfirmDialog(
                 this,                       // parent component
@@ -273,9 +276,9 @@ public class RecipeFrame extends JFrame{
 			RecipeHandler.recipeByName.remove(toRemove.getName());
 			setUpComboBox();
 		}else if(result ==JOptionPane.NO_OPTION) {
-			
+			return;
 		}else{
-			
+			return;
 		}
 	}
 	
@@ -295,7 +298,14 @@ public class RecipeFrame extends JFrame{
 	
 	//add ingredient to recipe via popup list of all available ingredients
 	public void addIngredientAction() {
+		Recipe recipe = grabRecipe();
+		if(recipe == null) {
+			return;
+		}
+		new AddIngredientDialog(this, recipe);
 		
+		loadIngredientsIntoModel(recipe);
+		grabRecipeAndFill();
 	}
 	
 	//remove ingredient from recipe based on JList GUI selection.
