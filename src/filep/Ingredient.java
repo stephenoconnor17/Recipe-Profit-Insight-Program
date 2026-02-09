@@ -7,6 +7,8 @@ public class Ingredient {
 	private float grams;
 	private int id;
 	
+	public static int newID = 0;
+	
 	//PASS THROUGH THE COST AND GRAMS.
 	public Ingredient(String name, String supplier, float cost, float grams,int id){
 		this.name = name;
@@ -15,9 +17,17 @@ public class Ingredient {
 		if(grams > 0) {
 			this.costPer100g = (cost / grams) * 100;
 		}else {
-			this.costPer100g = 12345f;
+			this.costPer100g = 0f;
 		}
-		this.id = id;
+		
+		if(id == Ingredient.newID) {
+			this.id = RecipeHandler.ingredients.size();
+			while(RecipeHandler.ingredientIDMap.get(id) != null) {
+				this.id++;
+			}
+		}else {
+			this.id = id;
+		}
 	}
 	
 	public void setSupplierName(String name) {
@@ -72,11 +82,29 @@ public class Ingredient {
 		return this.id;
 	}
 	
+	public void setCost(float cost) {
+		this.costPer100g = (cost / grams) * 100;
+	}
+	
 	
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "NAME: " + getName() + "| SUPPLIER: " + getSupplierName() + "| GRAMS PER UNIT: €" + getGrams() + "| COST PER UNIT: €" + (getGrams() * getCostPer1g()) + "| COST PER 1G/100G/1000G: €" + getCostPer1g() + "/ €"+ getCostPer100g() + "/ €" + getCostPer1kg() + "\n";
+		return "NAME: " + getName() + "| SUPPLIER: " + getSupplierName() + "| GRAMS PER UNIT: " + getGrams() + "| COST PER UNIT: €" + (getGrams() * getCostPer1g()) + "| COST PER 1G/100G/1000G: €" + getCostPer1g() + "/ €"+ getCostPer100g() + "/ €" + getCostPer1kg() + "\n";
+	}
+	
+	public boolean compareToIngredient(Ingredient i) {
+		boolean toReturn = false;
+		
+		if(i.getID() == this.getID()) {
+			toReturn = true;
+		}
+		
+		if(i.getName() == this.getName() && this.getSupplierName() == i.getSupplierName()) {
+			toReturn = true;
+		}
+		
+		return toReturn;
 	}
 	
 }

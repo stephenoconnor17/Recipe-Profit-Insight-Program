@@ -29,6 +29,7 @@ public class FileHandler {
 				Ingredient temp = new Ingredient(name,supplier,cost,grams,id);
 				RecipeHandler.ingredients.add(temp);
 				RecipeHandler.ingredientIDMap.put(id, temp);
+				RecipeHandler.ingredientByName.put(temp.getName(), temp);
 			}
 			
 		}catch(FileNotFoundException e){

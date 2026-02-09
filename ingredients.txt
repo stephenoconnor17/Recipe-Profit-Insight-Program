@@ -1,10 +1,22 @@
-Butter'DairyCo'4.50'250'1
-Flour'GrainCorp'2.00'1000'2
-Sugar'SweetLtd'1.80'1000'3
-Milk'DairyCo'1.50'1000'4
-Eggs'FarmFresh'3.00'600'5
-Salt'KitchenBasics'0.80'500'6
-Baking Powder'BakeWell'1.20'200'7
-Olive Oil'MedFoods'6.00'500'8
-Cheese'CheeseMakers'5.50'400'9
-Tomato Sauce'Italiano'2.75'700'10
+Butter'dairyco'5.5'250.0'1
+Flour'graincorp'2.0'1000.0'2
+Sugar'sweetltd'2000.0'1000.0'3
+Milk'dairyco'1.0'1000.0'4
+Eggs'farmfresh'4.0'600.0'5
+Salt'kitchenbasics'0.4'500.0'6
+Baking Powder'bakewell'1.2'200.0'7
+Olive Oil'medfoods'6.0'500.0'8
+Cheese'cheesemakers'5.5'400.0'9
+Tomato Sauce'italiano'2.75'700.0'10
+Butter'dairyco'1.0'250.0'10
+Milk'dairyco'1.0'1000.0'11
+Bjadsnfkajdsf'dairyco'1.0'1000.0'12
+Egg AND MAYO'farmfresh'25.0002'600.0'13
+Butter'dairyco'70.0'250.0'14
+Butter'dairyco'30.0'250.0'15
+Butter'dairyco'30.0'250.0'16
+Butter'dairyco'2.0'250.0'17
+Butter'dairyco'2.0'250.0'18
+Butter'dairyco'2.0'250.0'19
+Butter'dairyco'1.0'250.0'20
+Butter'dairyco'1.6'250.0'21

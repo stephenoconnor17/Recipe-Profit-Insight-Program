@@ -63,7 +63,7 @@ public class MyPanel extends JPanel{
 		buttonPanel.setLayout(null);
 		buttonPanel.setSize(mp.getSize().width, mp.getSize().height / 4);
 		buttonPanel.setLocation(0, ((mp.getSize().height / 4) * 3));
-		buttonPanel.setBackground(Color.black);
+		buttonPanel.setBackground(Color.lightGray);
 		
 		recipeButton = new JButton("Edit Recipes");
 		ingredientButton = new JButton("Edit Ingredients");
@@ -80,15 +80,16 @@ public class MyPanel extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				 JOptionPane.showMessageDialog(mp, "Button clicked!");
+				new IngredientFrame(fh,mp);
 			}
 		});
 		
 		recipeButton.setBounds(0,0,200,50);
-		ingredientButton.setBounds(0,50,200,50);
+		ingredientButton.setBounds(200,0,200,50);
 		
 		buttonPanel.add(ingredientButton);
 		buttonPanel.add(recipeButton);
+		
 		buttonPanel.setVisible(true);
 	}
 	
@@ -103,17 +104,10 @@ public class MyPanel extends JPanel{
 
 		};
 		fillDataModel();
-		/*
-		Recipe testr = new Recipe("name", 67f);
-		testr.addIngredient(new Ingredient("butter", "butterco", 4, 100, 18), 100);
-		testr.addIngredient(new Ingredient("ham", "butterco", 8, 100, 18), 100);
-		
-		//ADD ROWS OF INFO
-		
-		*/
 		jt = new JTable(dtm);
 		
 		//THIS BIT IS WHAT LETS US DRAW THE DIFFERENCE AS RED OR GREEN
+		//get last column, set its cell renderer to new renderer, which must implement the method we manipulate to decide draw color;
 		jt.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
 			
 			@Override
@@ -126,7 +120,7 @@ public class MyPanel extends JPanel{
 					
 				     try {
 			                // Remove the "+" sign if present, then parse as double
-			                double diff = Double.parseDouble(value.toString().replace("+", "").replace("$", ""));
+			                double diff = Double.parseDouble(value.toString().replace("+", "").replace("€", ""));
 			                
 			                if (diff > 0) {
 			                    c.setBackground(Color.GREEN);   // positive -> green
@@ -162,4 +156,5 @@ public class MyPanel extends JPanel{
 			dtm.addRow(RecipeHandler.recipes.get(i).getDisplayArr());
 		}	
 	}
+	
 }

@@ -36,9 +36,18 @@ public class Recipe {
 	
 	public void updateDisplayArr() {
 		this.displayArr[0] = this.name;
-		this.displayArr[1] = this.costToMake;
-		this.displayArr[2] = this.sellPoint;
-		this.displayArr[3] = this.saleDiff;
+		this.displayArr[1] = "€" + this.costToMake;
+		this.displayArr[2] = "€" + this.sellPoint;
+		
+		String prefix = "";
+		if(saleDiff < 0) {
+			prefix = "-";
+		}else if(saleDiff > 0) {
+			prefix = "+";
+		}else{
+			prefix = "";
+		}
+		this.displayArr[3] = prefix + "€" + this.saleDiff;
 	}
 	
 	public void updateSaleDiff() {
@@ -55,16 +64,6 @@ public class Recipe {
 		updateSaleDiff();
 		updateDisplayArr();
 	}
-	
-	/*
-	public void addIngredient(Ingredient ingredient, float unitsInGrams) {
-		this.recipeIngredients.add(ingredient);
-		this.ingredientUnitCost.put(ingredient, (ingredient.getCostPer1g() * unitsInGrams));
-		this.costToMake += (ingredient.getCostPer1g() * unitsInGrams);
-		
-		updateSaleDiff();
-		updateDisplayArr();
-	}*/
 	
 	public int returnIngredientListSize() {
 		return this.recipeIngredients.size();
@@ -130,5 +129,29 @@ public class Recipe {
 	
 	public float getGramsUsedOfIngredient(Ingredient i) {
 		return ingredientGramsUsed.get(i);
+	}
+	
+	public void updateCostToMake() {
+	    this.costToMake = 0;
+	    for (Ingredient i : recipeIngredients) {
+	        float gramsUsed = ingredientGramsUsed.get(i);
+	        this.costToMake += gramsUsed * i.getCostPer1g();
+	    }
+	}
+	
+	public void update() {
+		updateCostToMake();
+		updateSaleDiff();
+		updateDisplayArr();
+	}
+	
+	public boolean compareToRecipe(Recipe i) {
+		boolean toReturn = false;
+		
+		if(i.getName() == this.getName() && this.getSellPoint() == i.getSellPoint()) {
+			toReturn = true;
+		}
+		
+		return toReturn;
 	}
 }

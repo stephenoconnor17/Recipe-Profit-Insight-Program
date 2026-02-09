@@ -56,7 +56,7 @@ public class RecipeFrame extends JFrame{
 	
 	public RecipeFrame(FileHandler fh, MyPanel parent) {
 		this.parent = parent;
-		this.setSize(600,600);
+		this.setSize(800,600);
 		this.setTitle("Recipe Editor");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setResizable(false);
@@ -139,9 +139,9 @@ public class RecipeFrame extends JFrame{
 		isUpdating = true;
 		//Recipe r = RecipeHandler.recipes.
 		if(tempR == null) {
-			nameField.setText("Default");
-			costToMakeField.setText("Default");
-			sellPointField.setText("Default");
+			nameField.setText("");
+			costToMakeField.setText("");
+			sellPointField.setText("");
 			
 			model.clear();
 		}else {
@@ -192,7 +192,7 @@ public class RecipeFrame extends JFrame{
 		model = new DefaultListModel<String>();
 		ingredientList = new JList<String>(model);
 		
-		ingredientList.setBounds(10,240,550,280);
+		ingredientList.setBounds(10,240,750,280);
 		ingredientList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 	
@@ -202,7 +202,7 @@ public class RecipeFrame extends JFrame{
 		int i = 0;
 		for(Ingredient t : r.getIngredients()) {
 			
-			String toAdd = "ID: " + t.getID() + ", Name: " + t.getName() + ", Supplier: " + t.getSupplierName() +", Grams: " + r.getGramsUsedOfIngredient(t) + ", Cost In Recipe: " + (r.getCostOfIngredientInRecipe(t));
+			String toAdd = "ID: " + t.getID() + "| NAME: " + t.getName() + "| SUPPLIER: " + t.getSupplierName() +"| GRAMS: " + r.getGramsUsedOfIngredient(t) + "| COST IN RECIPE: €" + (r.getCostOfIngredientInRecipe(t));
 			
 			
 			model.addElement(toAdd); //each elements display in the Model is the element's toString();
@@ -285,23 +285,70 @@ public class RecipeFrame extends JFrame{
 	//save all recipes
 	public void saveRecipesAction() throws IOException {
 		Recipe saveName = grabRecipe();
+		
+		String name = nameField.getText();
+		String text = sellPointField.getText().trim();
+	
+		float sellPoint = 0;
+		if(!text.isEmpty()) {
+			try {
+				sellPoint = Float.valueOf(text);
+			}catch(NumberFormatException e) {
+				
+			}
+		}
+		//String ingList[] = ingredientList.
+		
 		if(saveName != null) {
-			saveName.setName(nameField.getText());
-			saveName.setSellPoint(Float.valueOf(sellPointField.getText()));
+			//RECIPE ALREADY EXISTS, JUST UPDATE
+			//INGREDIENTS ALREADY ADDED FROM ADDINGREDIENT, NO NEED TO DO ANYTHING,
+			//AS SAVING THEM WILL THEN FINALISE THEIR ADDITION TO RECIPE
+			saveName.setName(name);
+			saveName.setSellPoint(sellPoint);
+		}else {//if null then is new recipe, save.
+			saveName = new Recipe(name, sellPoint);
+			
+			DefaultListModel<String> model = (DefaultListModel<String>) ingredientList.getModel();
+
+			for (int i = 0; i < model.getSize(); i++) {
+			    String ingEntry = model.getElementAt(i);
+			    
+			    String[] parts = ingEntry.split("\\|"); //because |  is a special character.
+			    String idPart = parts[0].replace("ID:", "").trim();
+			    int ingId = Integer.parseInt(idPart);     
+
+			    Ingredient ing = RecipeHandler.ingredientIDMap.get(ingId);
+			   
+			    String gramsPart = parts[3].replace("GRAMS:", "").trim();
+			    float gramsUsed = Float.parseFloat(gramsPart);
+
+			    saveName.addIngredient(ing, gramsUsed);
+			}
+			
+			if(RecipeHandler.verifyNoRecipeCopy(saveName)) {
+				RecipeHandler.addRecipe(saveName);
+			}
+			
 		}
 		fh.writeRecipes();
 		
 		setUpComboBox();
 		
 		parent.fillDataModel();
+		recipeSelect.setSelectedItem(name);
 	}
 	
 	//add ingredient to recipe via popup list of all available ingredients
 	public void addIngredientAction() {
 		Recipe recipe = grabRecipe();
 		if(recipe == null) {
-			return;
+			recipe = new Recipe("Unfinished Recipe", 0);
+			RecipeHandler.addRecipe(recipe);
+	        recipeSelect.addItem("Unfinished Recipe");
+	        recipeSelect.setSelectedItem("Unfinished Recipe");
+
 		}
+		
 		new AddIngredientDialog(this, recipe);
 		
 		loadIngredientsIntoModel(recipe);
@@ -312,7 +359,7 @@ public class RecipeFrame extends JFrame{
 	public void removeIngredientAction() {
 		String ingEntry = ingredientList.getSelectedValue();
 		if(ingEntry != null) {
-		String[] seperated = ingEntry.split(",");
+		String[] seperated = ingEntry.split("\\|");
 		String idPart = seperated[0].replace("ID:","").trim();
 		Integer ingEntryId = Integer.valueOf(idPart);
 		//System.out.println(mr);
