@@ -36,18 +36,11 @@ public class Recipe {
 	
 	public void updateDisplayArr() {
 		this.displayArr[0] = this.name;
-		this.displayArr[1] = "€" + this.costToMake;
-		this.displayArr[2] = "€" + this.sellPoint;
+		this.displayArr[1] = String.format("€%.2f", this.costToMake);
+		this.displayArr[2] = String.format("€%.2f", this.sellPoint);
+		String prefix = saleDiff > 0 ? "+" : "-";
+		this.displayArr[3] = String.format("%s€%.2f", prefix, Math.abs(this.saleDiff));
 		
-		String prefix = "";
-		if(saleDiff < 0) {
-			prefix = "-";
-		}else if(saleDiff > 0) {
-			prefix = "+";
-		}else{
-			prefix = "";
-		}
-		this.displayArr[3] = prefix + "€" + this.saleDiff;
 	}
 	
 	public void updateSaleDiff() {
