@@ -13,148 +13,189 @@ import javax.swing.table.TableCellRenderer;
 
 import filep.*;
 
-public class MyPanel extends JPanel{
-	
+public class MyPanel extends JPanel {
+
 	DefaultTableModel dtm;
 	JTable jt;
 	JScrollPane jsp;
 	FileHandler fh;
-	
+
 	//
 	JPanel buttonPanel;
 	JButton recipeButton;
 	JButton ingredientButton;
 	//
-	
-	String[] tableNames = {"Recipe","Overall Cost","Sale","Difference"};
+
+	String[] tableNames = { "Recipe", "Overall Cost", "Sale", "Difference", "Food Cost Diff" }; // adding here adds
+																								// another column of
+																								// data.
 	Object[] rowtest;
-	
-	MyPanel(MyFrame f){
+
+	MyPanel(MyFrame f) {
 		this.setLayout(null);
 		Dimension screenSize = f.getSize();
-		
+
 		this.setSize(screenSize);
-		this.setBackground(new Color(0,255,255));
-		
-		//recipe table and filehandler init
+		this.setBackground(new Color(0, 255, 255));
+
+		// recipe table and filehandler init
 		fh = new FileHandler();
-		
-		//setUpDMandTable();
+
+		// setUpDMandTable();
 		fh.loadIngredients();
 		fh.loadRecipes();
 		setUpDMandTable();
-		
+
 		jsp = new JScrollPane(jt);
-		
+
 		jsp.setSize(screenSize.width, (screenSize.height / 4 * 3));
-		
+
 		this.add(jsp);
-		//----
+		// ----
 		setUpButtons(this);
-		
-		//Buttons panel init
-		
+
+		// Buttons panel init
+
 		this.add(buttonPanel);
 		this.setVisible(true);
 	}
-	
+
 	public void setUpButtons(MyPanel mp) {
 		buttonPanel = new JPanel();
 		buttonPanel.setLayout(null);
-		buttonPanel.setSize(mp.getSize().width, mp.getSize().height / 4);
+		buttonPanel.setSize(mp.getSize().width, mp.getSize().height / 5);
 		buttonPanel.setLocation(0, ((mp.getSize().height / 4) * 3));
 		buttonPanel.setBackground(Color.lightGray);
-		
+
 		recipeButton = new JButton("Edit Recipes");
 		ingredientButton = new JButton("Edit Ingredients");
-		
+
 		recipeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				 new RecipeFrame(fh, mp);
+				new RecipeFrame(fh, mp);
 			}
 		});
-		
+
 		ingredientButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				new IngredientFrame(fh,mp);
+				new IngredientFrame(fh, mp);
 			}
 		});
-		
-		recipeButton.setBounds(0,0,200,50);
-		ingredientButton.setBounds(200,0,200,50);
-		
+
+		recipeButton.setBounds(0, 0, 200, 50);
+		ingredientButton.setBounds(200, 0, 200, 50);
+
 		buttonPanel.add(ingredientButton);
 		buttonPanel.add(recipeButton);
-		
+
 		buttonPanel.setVisible(true);
 	}
-	
-	//SET UP DefaultTableModel and JTable
+
+	// SET UP DefaultTableModel and JTable
 	public void setUpDMandTable() {
 
 		dtm = new DefaultTableModel(tableNames, 0) {
 			@Override
-		    public boolean isCellEditable(int row, int column) {
-		        return false; // all cells are non-editable
-		    }
+			public boolean isCellEditable(int row, int column) {
+				return false; // all cells are non-editable
+			}
 
 		};
 		fillDataModel();
 		jt = new JTable(dtm);
-		
-		//THIS BIT IS WHAT LETS US DRAW THE DIFFERENCE AS RED OR GREEN
-		//get last column, set its cell renderer to new renderer, which must implement the method we manipulate to decide draw color;
+
+		// THIS BIT IS WHAT LETS US DRAW THE DIFFERENCE AS RED OR GREEN
+		// get last column, set its cell renderer to new renderer, which must implement
+		// the method we manipulate to decide draw color;
 		jt.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
-			
+
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 					boolean hasFocus, int row, int column) {
 				// TODO Auto-generated method stub
 				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-				
-				if(value != null) {
-					
-				     try {
-			                // Remove the "+" sign if present, then parse as double
-			                double diff = Double.parseDouble(value.toString().replace("+", "").replace("€", ""));
-			                
-			                if (diff > 0) {
-			                    c.setBackground(Color.GREEN);   // positive -> green
-			                    c.setForeground(Color.BLACK);
-			                } else if (diff < 0) {
-			                    c.setBackground(Color.RED);     // negative -> red
-			                    c.setForeground(Color.WHITE);
-			                } else {
-			                    c.setBackground(Color.YELLOW);  // zero -> yellow
-			                    c.setForeground(Color.BLACK);
-			                }
-			            } catch (NumberFormatException e) {
-			                c.setBackground(Color.WHITE); // fallback
-			                c.setForeground(Color.BLACK);
-			            }
-			        } else {
-			            c.setBackground(Color.WHITE);
-			            c.setForeground(Color.BLACK);
-			        }
-				
+
+				if (value != null) {
+
+					try {
+						// Remove the "+" sign if present, then parse as double
+						double diff = Double.parseDouble(value.toString().replace("+", "").replace("€", ""));
+
+						if (diff > 0) {
+							c.setBackground(Color.GREEN); // positive -> green
+							c.setForeground(Color.BLACK);
+						} else if (diff < 0) {
+							c.setBackground(Color.RED); // negative -> red
+							c.setForeground(Color.WHITE);
+						} else {
+							c.setBackground(Color.YELLOW); // zero -> yellow
+							c.setForeground(Color.BLACK);
+						}
+					} catch (NumberFormatException e) {
+						c.setBackground(Color.WHITE); // fallback
+						c.setForeground(Color.BLACK);
+					}
+				} else {
+					c.setBackground(Color.WHITE);
+					c.setForeground(Color.BLACK);
+				}
+
 				return c;
 			}
-			
+
 		});
-		//---END OF COLOR
+
+		jt.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
+
+			@Override
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					boolean hasFocus, int row, int column) {
+				// TODO Auto-generated method stub
+				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+				if (value != null) {
+
+					try {
+						// Remove the "+" sign if present, then parse as double
+						double diff = Double.parseDouble(value.toString().replace("+", "").replace("%", ""));
+
+						if (diff > 0) {
+							c.setBackground(Color.GREEN); // positive -> green
+							c.setForeground(Color.BLACK);
+						} else if (diff < 0) {
+							c.setBackground(Color.RED); // negative -> red
+							c.setForeground(Color.WHITE);
+						} else {
+							c.setBackground(Color.YELLOW); // zero -> yellow
+							c.setForeground(Color.BLACK);
+						}
+					} catch (NumberFormatException e) {
+						c.setBackground(Color.WHITE); // fallback
+						c.setForeground(Color.BLACK);
+					}
+				} else {
+					c.setBackground(Color.WHITE);
+					c.setForeground(Color.BLACK);
+				}
+
+				return c;
+			}
+
+		});
+		// ---END OF COLOR
 	}
-	
+
 	public void fillDataModel() {
 		dtm.setRowCount(0);
-		//dtm.setRowCount(RecipeHandler.recipes.size());
-		
-		for(int i = 0; i < RecipeHandler.recipes.size(); i++) {
+		// dtm.setRowCount(RecipeHandler.recipes.size());
+
+		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
 			dtm.addRow(RecipeHandler.recipes.get(i).getDisplayArr());
-		}	
+		}
 	}
-	
+
 }
