@@ -85,6 +85,10 @@ public class Ingredient {
 	public void setCost(float cost) {
 		this.costPer100g = (cost / grams) * 100;
 	}
+	
+	public double getCost() {
+		return this.getCostPer1g() * grams;
+	}
 
 	@Override
 	public String toString() {

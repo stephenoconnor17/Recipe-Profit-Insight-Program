@@ -9,17 +9,21 @@ public class Recipe {
 	private float costToMake;
 	private float sellPoint;
 	private float saleDiff;
+	private float ingredientCostPercentage;
+	private float profitMargin;
 
 	private ArrayList<Ingredient> recipeIngredients;
 	private Map<Ingredient, Float> ingredientUnitCost;
 	private Map<Ingredient, Float> ingredientGramsUsed;
 
-	private Object[] displayArr = new Object[5];
+	private Object[] displayArr = new Object[6];
 
 	public Recipe(String name, float sellPoint) {
 		this.name = name;
 		this.costToMake = 0;
 		this.sellPoint = sellPoint;
+		this.ingredientCostPercentage = 0;
+		this.profitMargin = 0;
 
 		updateSaleDiff();
 		updateDisplayArr();
@@ -35,23 +39,39 @@ public class Recipe {
 	}
 
 	public void updateDisplayArr() {
-		// 1 name
-		// 2 cost to make
-		// 3 selling point
-		// 4 the difference of selling point to making cost
-		// 5 food cost percentage which is cost of making over selling cost i.e what
-		// percent of recipe sell point returns the value gone into it.
+		// 0 name
+		// 1 cost to make
+		// 2 selling point
+		// 3 the difference of selling point to making cost
+		// 4 food cost percentage which is cost of making over selling cost i.e what
+		//   percent of recipe sell point returns the value gone into it.
+		// 5 profit margin.
 		this.displayArr[0] = this.name;
 		this.displayArr[1] = String.format("€%.2f", this.costToMake);
 		this.displayArr[2] = String.format("€%.2f", this.sellPoint);
 		String prefix = saleDiff > 0 ? "+" : "-";
 		this.displayArr[3] = String.format("%s€%.2f", prefix, Math.abs(this.saleDiff));
-		this.displayArr[4] = String.format("%s%.2f%%", prefix, Math.abs((costToMake / sellPoint) * 100));// to show as a
-																											// percentage
+		this.displayArr[4] = String.format("%s%.2f%%", prefix,Math.abs(ingredientCostPercentage));// to show as a percentage
+		this.displayArr[5] = String.format("%s%.2f%%", prefix,Math.abs(profitMargin));
+	
+	}
+	
+	public float getIngredientCostPercentage() {
+		return this.ingredientCostPercentage;
 	}
 
 	public void updateSaleDiff() {
 		this.saleDiff = this.sellPoint - this.costToMake;
+		this.ingredientCostPercentage = (costToMake / sellPoint) * 100;
+		this.profitMargin = (sellPoint - costToMake) / sellPoint * 100;
+	}
+	
+	public double getProfitMargin() {
+		return this.profitMargin;
+	}
+	
+	public double getSaleDiff() {
+		return this.saleDiff;
 	}
 
 	// ingriedient addition

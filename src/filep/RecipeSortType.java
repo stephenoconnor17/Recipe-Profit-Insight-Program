@@ -4,7 +4,7 @@ public enum RecipeSortType {
 	DEFAULT,
 
 	// Cost-related
-	BY_COST_ASC, BY_COST_DESC,
+	BY_COST_ASC, BY_COST_DESC,BY_SELLPOINT_ASC,BY_SELLPOINT_DESC,
 
 	// Name-related
 	BY_NAME_ASC, BY_NAME_DESC,

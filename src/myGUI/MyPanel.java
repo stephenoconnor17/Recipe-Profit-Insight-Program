@@ -26,10 +26,10 @@ public class MyPanel extends JPanel {
 	JButton ingredientButton;
 	//
 
-	String[] tableNames = { "Recipe", "Overall Cost", "Sale", "Difference", "Food Cost Diff" }; // adding here adds
+	String[] tableNames = { "Recipe", "Overall Cost", "Sale", "Difference", "Food Cost Diff" , "Profit Margin"}; // adding here adds
 																								// another column of
-																								// data.
-	Object[] rowtest;
+																								// data., which is display from the recipe display arr
+	Object[] rowtest;																			// only n columns are shown from display arr for n amount of tableName elements.
 
 	MyPanel(MyFrame f) {
 		this.setLayout(null);
@@ -149,6 +149,44 @@ public class MyPanel extends JPanel {
 
 		});
 
+		jt.getColumnModel().getColumn(5).setCellRenderer(new DefaultTableCellRenderer() {
+
+			@Override
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					boolean hasFocus, int row, int column) {
+				// TODO Auto-generated method stub
+				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+				if (value != null) {
+
+					try {
+						// Remove the "+" sign if present, then parse as double
+						double diff = Double.parseDouble(value.toString().replace("+", "").replace("%", ""));
+
+						if (diff > 0) {
+							c.setBackground(Color.GREEN); // positive -> green
+							c.setForeground(Color.BLACK);
+						} else if (diff < 0) {
+							c.setBackground(Color.RED); // negative -> red
+							c.setForeground(Color.WHITE);
+						} else {
+							c.setBackground(Color.YELLOW); // zero -> yellow
+							c.setForeground(Color.BLACK);
+						}
+					} catch (NumberFormatException e) {
+						c.setBackground(Color.WHITE); // fallback
+						c.setForeground(Color.BLACK);
+					}
+				} else {
+					c.setBackground(Color.WHITE);
+					c.setForeground(Color.BLACK);
+				}
+
+				return c;
+			}
+
+		});
+		
 		jt.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
 
 			@Override
