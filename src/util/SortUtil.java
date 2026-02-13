@@ -52,23 +52,18 @@ public class SortUtil {
         	Collections.sort(sorted, Comparator.comparingDouble(Recipe::getSaleDiff).reversed());
             break;
         case BY_MARGIN_ASC:
-        	
+        	Collections.sort(sorted, Comparator.comparingDouble(Recipe::getProfitMargin));
             break;
         case BY_MARGIN_DESC:
+        	Collections.sort(sorted, Comparator.comparingDouble(Recipe::getProfitMargin).reversed());
             break;
 
         // Ingredient count
         case BY_INGREDIENT_COUNT_ASC:
+        	Collections.sort(sorted, Comparator.comparingInt(Recipe::getIngredientAmount));
             break;
         case BY_INGREDIENT_COUNT_DESC:
-            break;
-
-        // Filtering-style views
-        case SHOW_ALL:
-            break;
-        case SHOW_PROFITABLE:
-            break;
-        case SHOW_UNPROFITABLE:
+        	Collections.sort(sorted, Comparator.comparingInt(Recipe::getIngredientAmount).reversed());
             break;
 		}
 		

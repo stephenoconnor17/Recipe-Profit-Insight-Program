@@ -13,8 +13,12 @@ public enum RecipeSortType {
 	BY_PROFIT_ASC, BY_PROFIT_DESC, BY_MARGIN_ASC, BY_MARGIN_DESC,
 
 	// Ingredient count
-	BY_INGREDIENT_COUNT_ASC, BY_INGREDIENT_COUNT_DESC,
-
+	BY_INGREDIENT_COUNT_ASC, BY_INGREDIENT_COUNT_DESC;
+/*
 	// Filtering-style views
-	SHOW_ALL, SHOW_PROFITABLE, SHOW_UNPROFITABLE
+	SHOW_ALL, SHOW_PROFITABLE, SHOW_UNPROFITABLE;
+	*/
+	public String toString() {
+		return name().replace("BY_","" ).replace("_"," ").toUpperCase();
+	}
 }

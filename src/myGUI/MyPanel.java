@@ -20,11 +20,11 @@ public class MyPanel extends JPanel {
 	JScrollPane jsp;
 	FileHandler fh;
 
-	//
+	
 	JPanel buttonPanel;
 	JButton recipeButton;
 	JButton ingredientButton;
-	//
+	JComboBox<RecipeSortType> sortSelect;
 
 	String[] tableNames = { "Recipe", "Overall Cost", "Sale", "Difference", "Food Cost Diff" , "Profit Margin"}; // adding here adds
 																								// another column of
@@ -53,11 +53,35 @@ public class MyPanel extends JPanel {
 		this.add(jsp);
 		// ----
 		setUpButtons(this);
+		setUpSortSelect();
 
 		// Buttons panel init
 
 		this.add(buttonPanel);
 		this.setVisible(true);
+	}
+	
+	public void setUpSortSelect() {
+		sortSelect = new JComboBox<RecipeSortType>();
+		RecipeSortType[] recipeSorts = RecipeSortType.values();
+		for(int i = 0; i < recipeSorts.length; i++) {
+			sortSelect.addItem(recipeSorts[i]);   
+		}
+		
+		sortSelect.addActionListener(e -> {
+			RecipeSortType rst = (RecipeSortType)sortSelect.getSelectedItem();
+			if(rst != null) {
+				RecipeHandler.sortRecipes(rst);
+				fillDataModel();
+			}
+		});
+		
+		sortSelect.setSize(200,50);
+		sortSelect.setLocation(400,0);
+		
+		buttonPanel.add(sortSelect);
+		
+		
 	}
 
 	public void setUpButtons(MyPanel mp) {

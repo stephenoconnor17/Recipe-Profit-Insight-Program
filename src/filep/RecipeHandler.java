@@ -3,6 +3,7 @@ package filep;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import util.SortUtil;
 
 public class RecipeHandler {
 	public static ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
@@ -54,73 +55,10 @@ public class RecipeHandler {
 	}
 
 	public static void sortRecipes(RecipeSortType sortType) {
-        switch (sortType) {
-            // Default / fallback
-            case DEFAULT:
-            	//do nothing lol.
-                break;
-
-            // Cost-related
-            case BY_COST_ASC:
-                break;
-            case BY_COST_DESC:
-                break;
-
-            // Name-related
-            case BY_NAME_ASC:
-                break;
-            case BY_NAME_DESC:
-                break;
-
-            // Profit / margin
-            case BY_PROFIT_ASC:
-                break;
-            case BY_PROFIT_DESC:
-                break;
-            case BY_MARGIN_ASC:
-                break;
-            case BY_MARGIN_DESC:
-                break;
-
-            // Ingredient count
-            case BY_INGREDIENT_COUNT_ASC:
-                break;
-            case BY_INGREDIENT_COUNT_DESC:
-                break;
-
-            // Filtering-style views
-            case SHOW_ALL:
-                break;
-            case SHOW_PROFITABLE:
-                break;
-            case SHOW_UNPROFITABLE:
-                break;
-        }
+        SortUtil.sortRecipes(recipes, sortType);
     }
 	
 	public static void sortIngredients(IngredientSortType sortType) {
-        switch (sortType) {
-            // Default / fallback
-            case DEFAULT:
-                break;
-
-            // Cost-related
-            case BY_COST_ASC:
-                break;
-            case BY_COST_DESC:
-                break;
-
-            // Name-related
-            case BY_NAME_ASC:
-                break;
-            case BY_NAME_DESC:
-                break;
-
-            // ID-related
-            case BY_ID_ASC:
-                break;
-            case BY_ID_DESC:
-                break;
-        }
+       SortUtil.sortIngredients(ingredients, sortType);
     }
 }

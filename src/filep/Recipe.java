@@ -173,4 +173,8 @@ public class Recipe {
 
 		return toReturn;
 	}
+	
+	public int getIngredientAmount() {
+		return this.recipeIngredients.size();
+	}
 }
