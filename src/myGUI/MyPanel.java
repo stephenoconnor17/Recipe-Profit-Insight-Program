@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -19,7 +21,7 @@ public class MyPanel extends JPanel {
 	JTable jt;
 	JScrollPane jsp;
 	FileHandler fh;
-
+	JTextField searchBar;
 	
 	JPanel buttonPanel;
 	JButton recipeButton;
@@ -54,6 +56,7 @@ public class MyPanel extends JPanel {
 		// ----
 		setUpButtons(this);
 		setUpSortSelect();
+		setUpSearchSelect();
 
 		// Buttons panel init
 
@@ -72,7 +75,12 @@ public class MyPanel extends JPanel {
 			RecipeSortType rst = (RecipeSortType)sortSelect.getSelectedItem();
 			if(rst != null) {
 				RecipeHandler.sortRecipes(rst);
-				fillDataModel();
+				String input = (String) searchBar.getText();
+	    		if(!input.trim().isEmpty()) {
+	    			fillDataModelSearch(input);
+	    		}else {
+	    			fillDataModel();
+	    		}
 			}
 		});
 		
@@ -281,5 +289,63 @@ public class MyPanel extends JPanel {
 			dtm.addRow(RecipeHandler.recipes.get(i).getDisplayArr());
 		}
 	}
+	
+	public void fillDataModelSearch(String s) {
+		dtm.setRowCount(0);
+		// dtm.setRowCount(RecipeHandler.recipes.size());
+
+		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
+			String recipeName = RecipeHandler.recipes.get(i).getName();
+			if(recipeName.toLowerCase().contains(s.toLowerCase())) {
+				dtm.addRow(RecipeHandler.recipes.get(i).getDisplayArr());
+			}
+		}
+	}
+	
+	public void setUpSearchSelect() {
+    	searchBar = new JTextField();
+    	searchBar.setBounds(620,15,200,30);
+    	
+    	searchBar.getDocument().addDocumentListener(new DocumentListener(){
+    		
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				String input = (String) searchBar.getText();
+	    		if(!input.trim().isEmpty()) {
+	    			fillDataModelSearch(input);
+	    		}else {
+	    			fillDataModel();
+	    		}
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				String input = (String) searchBar.getText();
+	    		if(!input.trim().isEmpty()) {
+	    			fillDataModelSearch(input);
+	    		}else {
+	    			fillDataModel();
+	    		}
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				String input = (String) searchBar.getText();
+	    		if(!input.trim().isEmpty()) {
+	    			fillDataModelSearch(input);
+	    		}else {
+	    			fillDataModel();
+	    		}
+	    	
+			}
+    	});
+    	
+    	JLabel searchLabel = new JLabel("Keyword Search");
+    	searchLabel.setBounds(650,0,200,115);
+    	
+    	buttonPanel.add(searchBar);
+    	buttonPanel.add(searchLabel);
+    }
 
 }
