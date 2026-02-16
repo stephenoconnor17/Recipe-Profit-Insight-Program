@@ -53,9 +53,16 @@ public class RecipeFrame extends JFrame {
 	JButton removeButton;
 
 	MyPanel parent;
+	
+	Recipe passed;
 
-	public RecipeFrame(FileHandler fh, MyPanel parent) {
+	public RecipeFrame(FileHandler fh, MyPanel parent, Recipe r) {
 		this.parent = parent;
+		if(r != null) {
+			this.passed = r;
+		}else {
+			this.passed = null;
+		}
 		this.setSize(800, 600);
 		this.setTitle("Recipe Editor");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -70,6 +77,9 @@ public class RecipeFrame extends JFrame {
 		comboBoxInit();
 		setUpComboBox();
 		setUpButtons();
+		selectPassed();
+		
+		
 
 		// setUpField();
 		//
@@ -95,6 +105,13 @@ public class RecipeFrame extends JFrame {
 
 		this.add(mp);
 		this.setVisible(true);
+	}
+	
+	public void selectPassed() {
+		if(passed != null){
+			recipeSelect.setSelectedItem(passed.getName());
+		}
+		//implicit functionality from actionlistener updating every time an action occurs.
 	}
 
 	public void setUpPanel() {

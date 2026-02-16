@@ -83,6 +83,25 @@ public class MyPanel extends JPanel {
 		
 		
 	}
+	public Recipe grabToPass() {
+		int toPass = jt.getSelectedRow();
+		if(toPass < 0) {
+			return null;
+		}
+		
+		String recipeName = (String) dtm.getValueAt(toPass, 0);
+		if(recipeName == null || recipeName.equals(" ")) {
+			return null;
+		}
+		
+		
+		Recipe r = RecipeHandler.recipeByName.get(recipeName);
+		if(r == null) {
+			return null;
+		}
+		
+		return r;
+	}
 
 	public void setUpButtons(MyPanel mp) {
 		buttonPanel = new JPanel();
@@ -98,9 +117,12 @@ public class MyPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				new RecipeFrame(fh, mp);
+				Recipe r = grabToPass();
+				new RecipeFrame(fh, mp, r);
 			}
 		});
+		
+		
 
 		ingredientButton.addActionListener(new ActionListener() {
 			@Override
