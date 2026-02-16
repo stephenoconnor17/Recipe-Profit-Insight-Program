@@ -12,6 +12,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.text.DefaultEditorKit;
 
 import filep.*;
 
@@ -283,17 +284,15 @@ public class MyPanel extends JPanel {
 
 	public void fillDataModel() {
 		dtm.setRowCount(0);
-		// dtm.setRowCount(RecipeHandler.recipes.size());
 
-		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
+		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {	
 			dtm.addRow(RecipeHandler.recipes.get(i).getDisplayArr());
 		}
 	}
 	
 	public void fillDataModelSearch(String s) {
 		dtm.setRowCount(0);
-		// dtm.setRowCount(RecipeHandler.recipes.size());
-
+		
 		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
 			String recipeName = RecipeHandler.recipes.get(i).getName();
 			if(recipeName.toLowerCase().contains(s.toLowerCase())) {
@@ -305,7 +304,7 @@ public class MyPanel extends JPanel {
 	public void setUpSearchSelect() {
     	searchBar = new JTextField();
     	searchBar.setBounds(620,15,200,30);
-    	
+  
     	searchBar.getDocument().addDocumentListener(new DocumentListener(){
     		
 			@Override

@@ -1,5 +1,7 @@
 package myGUI;
 
+import java.awt.Font;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -30,7 +32,7 @@ public class AddIngredientDialog extends JDialog {
 		super(parent, "Add Ingredient", true);
 		this.recipe = recipe;
 
-		this.setSize(900, 400);
+		this.setSize(1000, 400);
 		this.setLocationRelativeTo(parent);
 		this.setLayout(null);
 
@@ -45,16 +47,21 @@ public class AddIngredientDialog extends JDialog {
 	public void setUpList() {
 		model = new DefaultListModel<Ingredient>();
 
+		
+		
 		for (Ingredient i : RecipeHandler.ingredients) {
 			model.addElement(i);
 		}
 
 		ingredientList = new JList<>(model);
-		ingredientList.setBounds(10, 10, 860, 200);
+		ingredientList.setBounds(10, 10, 960, 200);
 		ingredientList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+		ingredientList.setFixedCellHeight(30);
+		ingredientList.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		
 		jsp = new JScrollPane(ingredientList);
-		jsp.setBounds(10, 10, 860, 200);
+		jsp.setBounds(10, 10, 960, 200);
 	}
 
 	public void setUpFields() {

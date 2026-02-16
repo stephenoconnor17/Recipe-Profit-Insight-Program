@@ -44,8 +44,9 @@ public class RecipeFrame extends JFrame {
 	JTextField nameField;
 	JTextField costToMakeField;
 	JTextField sellPointField;
+	JTextField searchBar;
 	// JTextField nameField;
-
+	
 	// Buttons for save, remove and add ingredient.
 	JButton saveButton;
 	JButton getIngredientsButton;
@@ -78,7 +79,7 @@ public class RecipeFrame extends JFrame {
 		setUpComboBox();
 		setUpButtons();
 		selectPassed();
-		
+		setUpSearchSelect();
 		
 
 		// setUpField();
@@ -137,12 +138,31 @@ public class RecipeFrame extends JFrame {
 
 	public void setUpComboBox() {
 		// Load options for recipe select.
+		isUpdating = true;
 		recipeSelect.removeAllItems();
 		recipeSelect.addItem("New recipe");
 
 		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
-			recipeSelect.addItem(RecipeHandler.recipes.get(i).getName());
+			recipeSelect.addItem((i+1) +". " +RecipeHandler.recipes.get(i).getName());
 		}
+		isUpdating = false;
+		grabRecipeAndFill();
+	}
+	
+	public void setUpComboBoxSearch(String s) {
+		// Load options for recipe select.
+		isUpdating = true;
+		recipeSelect.removeAllItems();
+		recipeSelect.addItem("New recipe");
+
+		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
+			String name = RecipeHandler.recipes.get(i).getName();
+			
+			if(name.toLowerCase().contains(s.toLowerCase())) {
+				recipeSelect.addItem((i+1) +". " +RecipeHandler.recipes.get(i).getName());
+			}
+		}
+		isUpdating = false;
 		grabRecipeAndFill();
 	}
 
@@ -169,7 +189,14 @@ public class RecipeFrame extends JFrame {
 	}
 
 	public Recipe grabRecipe() {
-		String myRecipe = (String) recipeSelect.getSelectedItem();
+		String trimmed =  (String) recipeSelect.getSelectedItem();
+		String myRecipe;
+		if(!trimmed.equals("New recipe")) {
+			myRecipe = trimmed.substring(trimmed.indexOf(".") + 1).trim();
+		}else {
+			myRecipe = null;
+		}
+	
 		Recipe tempR = RecipeHandler.recipeByName.get(myRecipe);
 
 		return tempR;
@@ -389,5 +416,51 @@ public class RecipeFrame extends JFrame {
 			// selectedRecipe.getIngredientFromList()
 		}
 	}
+	
+	public void setUpSearchSelect() {
+    	searchBar = new JTextField();
+    	searchBar.setBounds(550,15,200,30);
+  
+    	searchBar.getDocument().addDocumentListener(new DocumentListener(){
+    		
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				String input = (String) searchBar.getText();
+	    		if(!input.trim().isEmpty()) {
+	    			setUpComboBoxSearch(input);
+	    		}else {
+	    			setUpComboBox();
+	    		}
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				String input = (String) searchBar.getText();
+	    		if(!input.trim().isEmpty()) {
+	    			setUpComboBoxSearch(input);
+	    		}else {
+	    			setUpComboBox();
+	    		}
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				String input = (String) searchBar.getText();
+	    		if(!input.trim().isEmpty()) {
+	    			setUpComboBoxSearch(input);
+	    		}else {
+	    			setUpComboBox();
+	    		}
+	    	
+			}
+    	});
+    	
+    	JLabel searchLabel = new JLabel("Keyword Search");
+    	searchLabel.setBounds(550,0,200,115);
+    	
+    	mp.add(searchBar);
+    	mp.add(searchLabel);
+    }
 
 }

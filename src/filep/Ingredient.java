@@ -92,11 +92,18 @@ public class Ingredient {
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return "NAME: " + getName() + "| SUPPLIER: " + getSupplierName() + "| GRAMS PER UNIT: " + getGrams()
-				+ "| COST PER UNIT: €" + (getGrams() * getCostPer1g()) + "| COST PER 1G/100G/1000G: €" + getCostPer1g()
-				+ "/ €" + getCostPer100g() + "/ €" + getCostPer1kg() + "\n";
+	    java.text.DecimalFormat df = new java.text.DecimalFormat("0.0000"); //THIS is to prevent scientific notation formatting.
+
+	    return "NAME: " + getName()
+	        + " | SUPPLIER: " + getSupplierName()
+	        + " | GRAMS PER UNIT: " + getGrams()
+	        + " | COST PER UNIT: €" + df.format(getCost())
+	        + " | COST PER 1G/100G/1000G: €"
+	        + df.format(getCostPer1g()) + " / €"
+	        + df.format(getCostPer100g()) + " / €"
+	        + df.format(getCostPer1kg());
 	}
+
 
 	public boolean compareToIngredient(Ingredient i) {
 		boolean toReturn = false;
