@@ -13,5 +13,11 @@ public enum IngredientSortType {
 
     // ID-related (if ingredients have IDs)
     BY_ID_ASC,
-    BY_ID_DESC
+    BY_ID_DESC;
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return name().replace("BY_","").replace("_", " ").toUpperCase();
+	}
 }

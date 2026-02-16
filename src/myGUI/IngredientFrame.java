@@ -4,12 +4,15 @@ import javax.swing.*;
 import java.io.IOException;
 
 import filep.Ingredient;
+import filep.IngredientSortType;
 import filep.RecipeHandler;
+import filep.RecipeSortType;
 import filep.FileHandler;
 
 public class IngredientFrame extends JFrame {
 
     JComboBox<String> ingredientSelect;
+    JComboBox<IngredientSortType> sortSelect;
 
     JTextField nameField;
     JTextField supplierField;
@@ -37,6 +40,7 @@ public class IngredientFrame extends JFrame {
         setUpComboBox();
         setUpFields();
         setUpButtons();
+        setUpSortSelect();
 
         setVisible(true);
     }
@@ -61,8 +65,10 @@ public class IngredientFrame extends JFrame {
         ingredientSelect.removeAllItems();
         ingredientSelect.addItem("New Ingredient"); // New ingredient
 
+        int j = 1;
         for (Ingredient i : RecipeHandler.ingredients) {
-            ingredientSelect.addItem(i.getName());
+            ingredientSelect.addItem(j + ". " + i.getName());
+            j++;
         }
         isUpdating = false;
     }
@@ -104,8 +110,8 @@ public class IngredientFrame extends JFrame {
         saveButton = new JButton("Save");
         deleteButton = new JButton("Delete");
 
-        saveButton.setBounds(250, 80, 120, 40);
-        deleteButton.setBounds(250, 140, 120, 40);
+        saveButton.setBounds(225, 80, 120, 40);
+        deleteButton.setBounds(225, 140, 120, 40);
 
         saveButton.addActionListener(e -> saveIngredient());
         deleteButton.addActionListener(e -> {
@@ -122,7 +128,8 @@ public class IngredientFrame extends JFrame {
     }
     
     public Ingredient grabIngredient() {
-    	String selection = (String) ingredientSelect.getSelectedItem();
+    	String select = (String) ingredientSelect.getSelectedItem();
+    	String selection = select.substring(select.indexOf(".") + 1).trim();
     	Ingredient i = RecipeHandler.ingredientByName.get(selection);
     	
     	return i;
@@ -218,4 +225,30 @@ public class IngredientFrame extends JFrame {
     	RecipeHandler.updateRecipes();
     	parent.fillDataModel();
     }
+    
+    public void setUpSortSelect() {
+		sortSelect = new JComboBox<IngredientSortType>();
+		IngredientSortType[] ingredientSorts = IngredientSortType.values();
+		for(int i = 0; i < ingredientSorts.length; i++) {
+			sortSelect.addItem(ingredientSorts[i]);   
+		}
+		
+		sortSelect.addActionListener(e -> {
+			IngredientSortType ist = (IngredientSortType)sortSelect.getSelectedItem();
+			if(ist != null) {
+				RecipeHandler.sortIngredients(ist);
+				reloadComboBox();
+				loadIngredient();
+			}
+		});
+		
+		sortSelect.setSize(200,50);
+		sortSelect.setLocation(350,10);
+		JLabel sortLabel = new JLabel("Sort Type");
+		sortLabel.setBounds(400,60,200,20);
+		
+		this.add(sortLabel);
+		this.add(sortSelect);
+		
+	}
 }
