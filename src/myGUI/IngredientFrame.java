@@ -1,6 +1,9 @@
 package myGUI;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import java.io.IOException;
 
 import filep.Ingredient;
@@ -18,6 +21,8 @@ public class IngredientFrame extends JFrame {
     JTextField supplierField;
     JTextField costField;
     JTextField gramsField;
+    
+    JTextField searchBar;
 
     JButton saveButton;
     JButton deleteButton;
@@ -41,6 +46,7 @@ public class IngredientFrame extends JFrame {
         setUpFields();
         setUpButtons();
         setUpSortSelect();
+        setUpSearchSelect();
 
         setVisible(true);
     }
@@ -69,6 +75,21 @@ public class IngredientFrame extends JFrame {
         for (Ingredient i : RecipeHandler.ingredients) {
             ingredientSelect.addItem(j + ". " + i.getName());
             j++;
+        }
+        isUpdating = false;
+    }
+    
+    private void reloadSearchComboBox(String s) {
+        isUpdating = true;
+        ingredientSelect.removeAllItems();
+        ingredientSelect.addItem("New Ingredient"); // New ingredient
+
+        int j = 1;
+        for (Ingredient i : RecipeHandler.ingredients) {
+        	if(i.getName().toLowerCase().contains(s.toLowerCase())) { //make it all lowercase for easier comparison
+        		ingredientSelect.addItem(j + ". " + i.getName());
+        		j++;
+        	}
         }
         isUpdating = false;
     }
@@ -237,7 +258,13 @@ public class IngredientFrame extends JFrame {
 			IngredientSortType ist = (IngredientSortType)sortSelect.getSelectedItem();
 			if(ist != null) {
 				RecipeHandler.sortIngredients(ist);
-				reloadComboBox();
+				
+				String input = (String) searchBar.getText();
+	    		if(input != null || !input.equals(" ".trim())) {
+	    			reloadSearchComboBox(input);
+	    		}else {
+	    			reloadComboBox();
+	    		}
 				loadIngredient();
 			}
 		});
@@ -251,4 +278,52 @@ public class IngredientFrame extends JFrame {
 		this.add(sortSelect);
 		
 	}
+    
+    public void setUpSearchSelect() {
+    	searchBar = new JTextField();
+    	searchBar.setBounds(350,100,200,30);
+    	
+    	searchBar.getDocument().addDocumentListener(new DocumentListener(){
+    		
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				String input = (String) searchBar.getText();
+	    		if(!input.trim().isEmpty()) {
+	    			reloadSearchComboBox(input);
+	    		}else {
+	    			reloadComboBox();
+	    		}
+	    		loadIngredient();
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				String input = (String) searchBar.getText();
+	    		if(!input.trim().isEmpty()) {
+	    			reloadSearchComboBox(input);
+	    		}else {
+	    			reloadComboBox();
+	    		}
+	    		loadIngredient();
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				String input = (String) searchBar.getText();
+	    		if(!input.trim().isEmpty()) {
+	    			reloadSearchComboBox(input);
+	    		}else {
+	    			reloadComboBox();
+	    		}
+	    		loadIngredient();
+			}
+    	});
+    	
+    	JLabel searchLabel = new JLabel("Keyword Search");
+    	searchLabel.setBounds(400,80,200,115);
+    	
+    	this.add(searchBar);
+    	this.add(searchLabel);
+    }
 }
