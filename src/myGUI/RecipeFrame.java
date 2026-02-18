@@ -109,9 +109,15 @@ public class RecipeFrame extends JFrame {
 	}
 	
 	public void selectPassed() {
-		if(passed != null){
-			recipeSelect.setSelectedItem(passed.getName());
-		}
+		if (passed != null) {
+	        for (int i = 0; i < recipeSelect.getItemCount(); i++) {
+	            String item = recipeSelect.getItemAt(i);
+	            if (item.endsWith(passed.getName())) {
+	                recipeSelect.setSelectedItem(item);
+	                break;
+	            }
+	        }
+	    }
 		//implicit functionality from actionlistener updating every time an action occurs.
 	}
 

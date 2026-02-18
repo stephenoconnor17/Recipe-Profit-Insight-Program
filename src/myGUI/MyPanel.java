@@ -103,6 +103,7 @@ public class MyPanel extends JPanel {
 			return null;
 		}
 		
+		recipeName = recipeName.substring(recipeName.indexOf(".") + 1).trim();
 		
 		Recipe r = RecipeHandler.recipeByName.get(recipeName);
 		if(r == null) {
