@@ -15,6 +15,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.text.DefaultEditorKit;
 
 import filep.*;
+import util.CellRenderer;
 
 public class MyPanel extends JPanel {
 
@@ -167,119 +168,11 @@ public class MyPanel extends JPanel {
 		// THIS BIT IS WHAT LETS US DRAW THE DIFFERENCE AS RED OR GREEN
 		// get last column, set its cell renderer to new renderer, which must implement
 		// the method we manipulate to decide draw color;
-		jt.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
+		jt.getColumnModel().getColumn(3).setCellRenderer(new CellRenderer("€"));
 
-			@Override
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					boolean hasFocus, int row, int column) {
-				// TODO Auto-generated method stub
-				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-				if (value != null) {
-
-					try {
-						// Remove the "+" sign if present, then parse as double
-						double diff = Double.parseDouble(value.toString().replace("+", "").replace("€", ""));
-
-						if (diff > 0) {
-							c.setBackground(Color.GREEN); // positive -> green
-							c.setForeground(Color.BLACK);
-						} else if (diff < 0) {
-							c.setBackground(Color.RED); // negative -> red
-							c.setForeground(Color.WHITE);
-						} else {
-							c.setBackground(Color.YELLOW); // zero -> yellow
-							c.setForeground(Color.BLACK);
-						}
-					} catch (NumberFormatException e) {
-						c.setBackground(Color.WHITE); // fallback
-						c.setForeground(Color.BLACK);
-					}
-				} else {
-					c.setBackground(Color.WHITE);
-					c.setForeground(Color.BLACK);
-				}
-
-				return c;
-			}
-
-		});
-
-		jt.getColumnModel().getColumn(5).setCellRenderer(new DefaultTableCellRenderer() {
-
-			@Override
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					boolean hasFocus, int row, int column) {
-				// TODO Auto-generated method stub
-				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-				if (value != null) {
-
-					try {
-						// Remove the "+" sign if present, then parse as double
-						double diff = Double.parseDouble(value.toString().replace("+", "").replace("%", ""));
-
-						if (diff > 0) {
-							c.setBackground(Color.GREEN); // positive -> green
-							c.setForeground(Color.BLACK);
-						} else if (diff < 0) {
-							c.setBackground(Color.RED); // negative -> red
-							c.setForeground(Color.WHITE);
-						} else {
-							c.setBackground(Color.YELLOW); // zero -> yellow
-							c.setForeground(Color.BLACK);
-						}
-					} catch (NumberFormatException e) {
-						c.setBackground(Color.WHITE); // fallback
-						c.setForeground(Color.BLACK);
-					}
-				} else {
-					c.setBackground(Color.WHITE);
-					c.setForeground(Color.BLACK);
-				}
-
-				return c;
-			}
-
-		});
+		jt.getColumnModel().getColumn(5).setCellRenderer(new CellRenderer("%"));
 		
-		jt.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
-
-			@Override
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					boolean hasFocus, int row, int column) {
-				// TODO Auto-generated method stub
-				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-				if (value != null) {
-
-					try {
-						// Remove the "+" sign if present, then parse as double
-						double diff = Double.parseDouble(value.toString().replace("+", "").replace("%", ""));
-
-						if (diff > 0) {
-							c.setBackground(Color.GREEN); // positive -> green
-							c.setForeground(Color.BLACK);
-						} else if (diff < 0) {
-							c.setBackground(Color.RED); // negative -> red
-							c.setForeground(Color.WHITE);
-						} else {
-							c.setBackground(Color.YELLOW); // zero -> yellow
-							c.setForeground(Color.BLACK);
-						}
-					} catch (NumberFormatException e) {
-						c.setBackground(Color.WHITE); // fallback
-						c.setForeground(Color.BLACK);
-					}
-				} else {
-					c.setBackground(Color.WHITE);
-					c.setForeground(Color.BLACK);
-				}
-
-				return c;
-			}
-
-		});
+		jt.getColumnModel().getColumn(4).setCellRenderer(new CellRenderer("%"));
 		// ---END OF COLOR
 	}
 

@@ -110,13 +110,7 @@ public class RecipeFrame extends JFrame {
 	
 	public void selectPassed() {
 		if (passed != null) {
-	        for (int i = 0; i < recipeSelect.getItemCount(); i++) {
-	            String item = recipeSelect.getItemAt(i);
-	            if (item.endsWith(passed.getName())) {
-	                recipeSelect.setSelectedItem(item);
-	                break;
-	            }
-	        }
+			selectByName(passed.getName());
 	    }
 		//implicit functionality from actionlistener updating every time an action occurs.
 	}
@@ -385,7 +379,20 @@ public class RecipeFrame extends JFrame {
 		setUpComboBox();
 
 		parent.fillDataModel();
-		recipeSelect.setSelectedItem(name);
+		//recipeSelect.setSelectedItem(name);
+		selectByName(name);
+	}
+	
+	public void selectByName(String name) {
+	    for (int i = 0; i < recipeSelect.getItemCount(); i++) {
+	        String item = recipeSelect.getItemAt(i);
+	        if (item.equals("New recipe")) continue;
+	        String trimmed = item.substring(item.indexOf(".") + 1).trim();
+	        if (trimmed.equals(name)) {
+	            recipeSelect.setSelectedItem(item);
+	            return;
+	        }
+	    }
 	}
 
 	// add ingredient to recipe via popup list of all available ingredients
