@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -22,11 +23,13 @@ import javax.swing.event.DocumentListener;
 import filep.Ingredient;
 import filep.Recipe;
 import filep.RecipeHandler;
+import filep.RecipeSortType;
 import filep.FileHandler;
 
 public class RecipeFrame extends JFrame {
 
 	JComboBox<String> recipeSelect;
+	JComboBox<RecipeSortType> sortSelect;
 	JPanel mp;
 	FileHandler fh;
 
@@ -46,7 +49,7 @@ public class RecipeFrame extends JFrame {
 	JTextField sellPointField;
 	JTextField searchBar;
 	// JTextField nameField;
-	
+
 	// Buttons for save, remove and add ingredient.
 	JButton saveButton;
 	JButton getIngredientsButton;
@@ -54,14 +57,14 @@ public class RecipeFrame extends JFrame {
 	JButton removeButton;
 
 	MyPanel parent;
-	
+
 	Recipe passed;
 
 	public RecipeFrame(FileHandler fh, MyPanel parent, Recipe r) {
 		this.parent = parent;
-		if(r != null) {
+		if (r != null) {
 			this.passed = r;
-		}else {
+		} else {
 			this.passed = null;
 		}
 		this.setSize(800, 600);
@@ -80,7 +83,7 @@ public class RecipeFrame extends JFrame {
 		setUpButtons();
 		selectPassed();
 		setUpSearchSelect();
-		
+		setUpSortSelect();
 
 		// setUpField();
 		//
@@ -107,12 +110,13 @@ public class RecipeFrame extends JFrame {
 		this.add(mp);
 		this.setVisible(true);
 	}
-	
+
 	public void selectPassed() {
 		if (passed != null) {
 			selectByName(passed.getName());
-	    }
-		//implicit functionality from actionlistener updating every time an action occurs.
+		}
+		// implicit functionality from actionlistener updating every time an action
+		// occurs.
 	}
 
 	public void setUpPanel() {
@@ -143,12 +147,12 @@ public class RecipeFrame extends JFrame {
 		recipeSelect.addItem("New recipe");
 
 		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
-			recipeSelect.addItem((i+1) +". " +RecipeHandler.recipes.get(i).getName());
+			recipeSelect.addItem((i + 1) + ". " + RecipeHandler.recipes.get(i).getName());
 		}
 		isUpdating = false;
 		grabRecipeAndFill();
 	}
-	
+
 	public void setUpComboBoxSearch(String s) {
 		// Load options for recipe select.
 		isUpdating = true;
@@ -157,13 +161,47 @@ public class RecipeFrame extends JFrame {
 
 		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
 			String name = RecipeHandler.recipes.get(i).getName();
-			
-			if(name.toLowerCase().contains(s.toLowerCase())) {
-				recipeSelect.addItem((i+1) +". " +RecipeHandler.recipes.get(i).getName());
+
+			if (name.toLowerCase().contains(s.toLowerCase())) {
+				recipeSelect.addItem((i + 1) + ". " + RecipeHandler.recipes.get(i).getName());
 			}
 		}
 		isUpdating = false;
 		grabRecipeAndFill();
+	}
+
+	public void setUpSortSelect() {
+		sortSelect = new JComboBox<RecipeSortType>();
+		RecipeSortType[] recipeSorts = RecipeSortType.values();
+		for (int i = 0; i < recipeSorts.length; i++) {
+			sortSelect.addItem(recipeSorts[i]);
+		}
+
+		sortSelect.addActionListener(e -> {
+			RecipeSortType rst = (RecipeSortType) sortSelect.getSelectedItem();
+			if (rst != null) {
+				RecipeHandler.sortRecipes(rst);
+				String input = (String) searchBar.getText();
+				if (!input.trim().isEmpty()) {
+					// fillDataModelSearch(input);
+					setUpComboBoxSearch(input);
+				} else {
+					// fillDataModel();
+					setUpComboBox();
+				}
+			}
+		});
+
+		sortSelect.setSize(200, 50);
+		sortSelect.setLocation(550, 100);
+
+		JLabel sortLabel = new JLabel("Sort By");
+		sortLabel.setBounds(550,150,200,20);
+		
+		
+		mp.add(sortLabel);
+		mp.add(sortSelect);
+
 	}
 
 	public void grabRecipeAndFill() {
@@ -189,14 +227,14 @@ public class RecipeFrame extends JFrame {
 	}
 
 	public Recipe grabRecipe() {
-		String trimmed =  (String) recipeSelect.getSelectedItem();
+		String trimmed = (String) recipeSelect.getSelectedItem();
 		String myRecipe;
-		if(!trimmed.equals("New recipe")) {
+		if (!trimmed.equals("New recipe")) {
 			myRecipe = trimmed.substring(trimmed.indexOf(".") + 1).trim();
-		}else {
+		} else {
 			myRecipe = null;
 		}
-	
+
 		Recipe tempR = RecipeHandler.recipeByName.get(myRecipe);
 
 		return tempR;
@@ -241,10 +279,18 @@ public class RecipeFrame extends JFrame {
 		int i = 0;
 		for (Ingredient t : r.getIngredients()) {
 
+			DecimalFormat df = new DecimalFormat("0.0000");
+
 			String toAdd = "ID: " + t.getID() + "| NAME: " + t.getName() + "| SUPPLIER: " + t.getSupplierName()
 					+ "| GRAMS: " + r.getGramsUsedOfIngredient(t) + "| COST IN RECIPE: €"
-					+ (r.getCostOfIngredientInRecipe(t));
+					+ df.format(r.getCostOfIngredientInRecipe(t));
 
+			/*
+			 * 
+			 * String toAdd = "ID: " + t.getID() + "| NAME: " + t.getName() + "| SUPPLIER: "
+			 * + t.getSupplierName() + "| GRAMS: " + r.getGramsUsedOfIngredient(t) +
+			 * "| COST IN RECIPE: €" + (r.getCostOfIngredientInRecipe(t));
+			 */
 			model.addElement(toAdd); // each elements display in the Model is the element's toString();
 			// there was certain values which I couldnt get from passing through an
 			// Ingredient object and making my own toString();
@@ -271,7 +317,12 @@ public class RecipeFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				removeRecipeAction();
+				try {
+					removeRecipeAction();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 
@@ -304,7 +355,7 @@ public class RecipeFrame extends JFrame {
 	}
 
 	// remove selected recipe
-	public void removeRecipeAction() {
+	public void removeRecipeAction() throws IOException {
 		Recipe toRemove = grabRecipe();
 		if (toRemove == null) {
 			return;
@@ -318,7 +369,12 @@ public class RecipeFrame extends JFrame {
 		if (result == JOptionPane.YES_OPTION) {
 			RecipeHandler.recipes.remove(toRemove);
 			RecipeHandler.recipeByName.remove(toRemove.getName());
+			
+			fh.writeRecipes();
+
 			setUpComboBox();
+
+			parent.fillDataModel();
 		} else if (result == JOptionPane.NO_OPTION) {
 			return;
 		} else {
@@ -350,49 +406,55 @@ public class RecipeFrame extends JFrame {
 			saveName.setName(name);
 			saveName.setSellPoint(sellPoint);
 		} else {// if null then is new recipe, save.
-			saveName = new Recipe(name, sellPoint);
+			if (name.trim().isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Recipe must have a name.");
 
-			DefaultListModel<String> model = (DefaultListModel<String>) ingredientList.getModel();
+			} else {
 
-			for (int i = 0; i < model.getSize(); i++) {
-				String ingEntry = model.getElementAt(i);
+				saveName = new Recipe(name, sellPoint);
 
-				String[] parts = ingEntry.split("\\|"); // because | is a special character.
-				String idPart = parts[0].replace("ID:", "").trim();
-				int ingId = Integer.parseInt(idPart);
+				DefaultListModel<String> model = (DefaultListModel<String>) ingredientList.getModel();
 
-				Ingredient ing = RecipeHandler.ingredientIDMap.get(ingId);
+				for (int i = 0; i < model.getSize(); i++) {
+					String ingEntry = model.getElementAt(i);
 
-				String gramsPart = parts[3].replace("GRAMS:", "").trim();
-				float gramsUsed = Float.parseFloat(gramsPart);
+					String[] parts = ingEntry.split("\\|"); // because | is a special character.
+					String idPart = parts[0].replace("ID:", "").trim();
+					int ingId = Integer.parseInt(idPart);
 
-				saveName.addIngredient(ing, gramsUsed);
+					Ingredient ing = RecipeHandler.ingredientIDMap.get(ingId);
+
+					String gramsPart = parts[3].replace("GRAMS:", "").trim();
+					float gramsUsed = Float.parseFloat(gramsPart);
+
+					saveName.addIngredient(ing, gramsUsed);
+				}
+
+				if (RecipeHandler.verifyNoRecipeCopy(saveName)) {
+					RecipeHandler.addRecipe(saveName);
+				}
 			}
-
-			if (RecipeHandler.verifyNoRecipeCopy(saveName)) {
-				RecipeHandler.addRecipe(saveName);
-			}
-
 		}
 		fh.writeRecipes();
 
 		setUpComboBox();
 
 		parent.fillDataModel();
-		//recipeSelect.setSelectedItem(name);
+		// recipeSelect.setSelectedItem(name);
 		selectByName(name);
 	}
-	
+
 	public void selectByName(String name) {
-	    for (int i = 0; i < recipeSelect.getItemCount(); i++) {
-	        String item = recipeSelect.getItemAt(i);
-	        if (item.equals("New recipe")) continue;
-	        String trimmed = item.substring(item.indexOf(".") + 1).trim();
-	        if (trimmed.equals(name)) {
-	            recipeSelect.setSelectedItem(item);
-	            return;
-	        }
-	    }
+		for (int i = 0; i < recipeSelect.getItemCount(); i++) {
+			String item = recipeSelect.getItemAt(i);
+			if (item.equals("New recipe"))
+				continue;
+			String trimmed = item.substring(item.indexOf(".") + 1).trim();
+			if (trimmed.equals(name)) {
+				recipeSelect.setSelectedItem(item);
+				return;
+			}
+		}
 	}
 
 	// add ingredient to recipe via popup list of all available ingredients
@@ -429,51 +491,53 @@ public class RecipeFrame extends JFrame {
 			// selectedRecipe.getIngredientFromList()
 		}
 	}
-	
+
 	public void setUpSearchSelect() {
-    	searchBar = new JTextField();
-    	searchBar.setBounds(550,15,200,30);
-  
-    	searchBar.getDocument().addDocumentListener(new DocumentListener(){
-    		
+		searchBar = new JTextField();
+		searchBar.setBounds(550, 15, 200, 30);
+
+		searchBar.getDocument().addDocumentListener(new DocumentListener() {
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				// TODO Auto-generated method stub
 				String input = (String) searchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			setUpComboBoxSearch(input);
-	    		}else {
-	    			setUpComboBox();
-	    		}
+				if (!input.trim().isEmpty()) {
+					setUpComboBoxSearch(input);
+				} else {
+					setUpComboBox();
+				}
 			}
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				// TODO Auto-generated method stub
 				String input = (String) searchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			setUpComboBoxSearch(input);
-	    		}else {
-	    			setUpComboBox();
-	    		}
+				if (!input.trim().isEmpty()) {
+					setUpComboBoxSearch(input);
+				} else {
+					setUpComboBox();
+				}
 			}
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				// TODO Auto-generated method stub
 				String input = (String) searchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			setUpComboBoxSearch(input);
-	    		}else {
-	    			setUpComboBox();
-	    		}
-	    	
+				if (!input.trim().isEmpty()) {
+					setUpComboBoxSearch(input);
+				} else {
+					setUpComboBox();
+				}
+
 			}
-    	});
-    	
-    	JLabel searchLabel = new JLabel("Keyword Search");
-    	searchLabel.setBounds(550,0,200,115);
-    	
-    	mp.add(searchBar);
-    	mp.add(searchLabel);
-    }
+		});
+
+		JLabel searchLabel = new JLabel("Keyword Search");
+		searchLabel.setBounds(550, 0, 200, 115);
+
+		mp.add(searchBar);
+		mp.add(searchLabel);
+	}
 
 }

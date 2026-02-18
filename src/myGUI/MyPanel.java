@@ -24,16 +24,18 @@ public class MyPanel extends JPanel {
 	JScrollPane jsp;
 	FileHandler fh;
 	JTextField searchBar;
-	
+
 	JPanel buttonPanel;
 	JButton recipeButton;
 	JButton ingredientButton;
 	JComboBox<RecipeSortType> sortSelect;
 
-	String[] tableNames = { "Recipe", "Overall Cost", "Sale", "Difference", "Food Cost Diff" , "Profit Margin"}; // adding here adds
-																								// another column of
-																								// data., which is display from the recipe display arr
-	Object[] rowtest;																			// only n columns are shown from display arr for n amount of tableName elements.
+	String[] tableNames = { "Recipe", "Overall Cost", "Sale", "Difference", "Food Cost Diff", "Profit Margin" }; // adding
+																													// here
+																													// adds
+	// another column of
+	// data., which is display from the recipe display arr
+	Object[] rowtest; // only n columns are shown from display arr for n amount of tableName elements.
 
 	MyPanel(MyFrame f) {
 		this.setLayout(null);
@@ -65,52 +67,52 @@ public class MyPanel extends JPanel {
 		this.add(buttonPanel);
 		this.setVisible(true);
 	}
-	
+
 	public void setUpSortSelect() {
 		sortSelect = new JComboBox<RecipeSortType>();
 		RecipeSortType[] recipeSorts = RecipeSortType.values();
-		for(int i = 0; i < recipeSorts.length; i++) {
-			sortSelect.addItem(recipeSorts[i]);   
+		for (int i = 0; i < recipeSorts.length; i++) {
+			sortSelect.addItem(recipeSorts[i]);
 		}
-		
+
 		sortSelect.addActionListener(e -> {
-			RecipeSortType rst = (RecipeSortType)sortSelect.getSelectedItem();
-			if(rst != null) {
+			RecipeSortType rst = (RecipeSortType) sortSelect.getSelectedItem();
+			if (rst != null) {
 				RecipeHandler.sortRecipes(rst);
 				String input = (String) searchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			fillDataModelSearch(input);
-	    		}else {
-	    			fillDataModel();
-	    		}
+				if (!input.trim().isEmpty()) {
+					fillDataModelSearch(input);
+				} else {
+					fillDataModel();
+				}
 			}
 		});
-		
-		sortSelect.setSize(200,50);
-		sortSelect.setLocation(400,0);
-		
+
+		sortSelect.setSize(200, 50);
+		sortSelect.setLocation(400, 0);
+
 		buttonPanel.add(sortSelect);
-		
-		
+
 	}
+
 	public Recipe grabToPass() {
 		int toPass = jt.getSelectedRow();
-		if(toPass < 0) {
+		if (toPass < 0) {
 			return null;
 		}
-		
+
 		String recipeName = (String) dtm.getValueAt(toPass, 0);
-		if(recipeName == null || recipeName.equals(" ")) {
+		if (recipeName == null || recipeName.equals(" ")) {
 			return null;
 		}
-		
+
 		recipeName = recipeName.substring(recipeName.indexOf(".") + 1).trim();
-		
+
 		Recipe r = RecipeHandler.recipeByName.get(recipeName);
-		if(r == null) {
+		if (r == null) {
 			return null;
 		}
-		
+
 		return r;
 	}
 
@@ -132,8 +134,6 @@ public class MyPanel extends JPanel {
 				new RecipeFrame(fh, mp, r);
 			}
 		});
-		
-		
 
 		ingredientButton.addActionListener(new ActionListener() {
 			@Override
@@ -171,7 +171,7 @@ public class MyPanel extends JPanel {
 		jt.getColumnModel().getColumn(3).setCellRenderer(new CellRenderer("€"));
 
 		jt.getColumnModel().getColumn(5).setCellRenderer(new CellRenderer("%"));
-		
+
 		jt.getColumnModel().getColumn(4).setCellRenderer(new CellRenderer("%"));
 		// ---END OF COLOR
 	}
@@ -179,66 +179,68 @@ public class MyPanel extends JPanel {
 	public void fillDataModel() {
 		dtm.setRowCount(0);
 
-		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {	
+		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
 			dtm.addRow(RecipeHandler.recipes.get(i).getDisplayArr());
 		}
 	}
-	
+
 	public void fillDataModelSearch(String s) {
 		dtm.setRowCount(0);
-		
+
 		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
 			String recipeName = RecipeHandler.recipes.get(i).getName();
-			if(recipeName.toLowerCase().contains(s.toLowerCase())) {
+			if (recipeName.toLowerCase().contains(s.toLowerCase())) {
 				dtm.addRow(RecipeHandler.recipes.get(i).getDisplayArr());
 			}
 		}
 	}
-	
+
 	public void setUpSearchSelect() {
-    	searchBar = new JTextField();
-    	searchBar.setBounds(620,15,200,30);
-  
-    	searchBar.getDocument().addDocumentListener(new DocumentListener(){
-    		
+		searchBar = new JTextField();
+		searchBar.setBounds(620, 15, 200, 30);
+
+		searchBar.getDocument().addDocumentListener(new DocumentListener() {
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				// TODO Auto-generated method stub
 				String input = (String) searchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			fillDataModelSearch(input);
-	    		}else {
-	    			fillDataModel();
-	    		}
+				if (!input.trim().isEmpty()) {
+					fillDataModelSearch(input);
+				} else {
+					fillDataModel();
+				}
 			}
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				// TODO Auto-generated method stub
 				String input = (String) searchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			fillDataModelSearch(input);
-	    		}else {
-	    			fillDataModel();
-	    		}
+				if (!input.trim().isEmpty()) {
+					fillDataModelSearch(input);
+				} else {
+					fillDataModel();
+				}
 			}
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				// TODO Auto-generated method stub
 				String input = (String) searchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			fillDataModelSearch(input);
-	    		}else {
-	    			fillDataModel();
-	    		}
-	    	
+				if (!input.trim().isEmpty()) {
+					fillDataModelSearch(input);
+				} else {
+					fillDataModel();
+				}
+
 			}
-    	});
-    	
-    	JLabel searchLabel = new JLabel("Keyword Search");
-    	searchLabel.setBounds(650,0,200,115);
-    	
-    	buttonPanel.add(searchBar);
-    	buttonPanel.add(searchLabel);
-    }
+		});
+
+		JLabel searchLabel = new JLabel("Keyword Search");
+		searchLabel.setBounds(650, 0, 200, 115);
+
+		buttonPanel.add(searchBar);
+		buttonPanel.add(searchLabel);
+	}
 
 }
