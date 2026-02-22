@@ -67,7 +67,7 @@ public class RecipeFrame extends JFrame {
 		} else {
 			this.passed = null;
 		}
-		this.setSize(800, 600);
+		this.setSize(1000, 650);
 		this.setTitle("Recipe Editor");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setResizable(false);
@@ -193,10 +193,10 @@ public class RecipeFrame extends JFrame {
 		});
 
 		sortSelect.setSize(200, 50);
-		sortSelect.setLocation(550, 100);
+		sortSelect.setLocation(500, 70);
 
 		JLabel sortLabel = new JLabel("Sort By");
-		sortLabel.setBounds(550,150,200,20);
+		sortLabel.setBounds(500,120,200,20);
 		
 		
 		mp.add(sortLabel);
@@ -494,7 +494,7 @@ public class RecipeFrame extends JFrame {
 
 	public void setUpSearchSelect() {
 		searchBar = new JTextField();
-		searchBar.setBounds(550, 15, 200, 30);
+		searchBar.setBounds(500, 15, 200, 30);
 
 		searchBar.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -534,7 +534,7 @@ public class RecipeFrame extends JFrame {
 		});
 
 		JLabel searchLabel = new JLabel("Keyword Search");
-		searchLabel.setBounds(550, 0, 200, 115);
+		searchLabel.setBounds(500, 0, 200, 115);
 
 		mp.add(searchBar);
 		mp.add(searchLabel);
