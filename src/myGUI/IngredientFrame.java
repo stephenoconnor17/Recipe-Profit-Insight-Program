@@ -81,35 +81,27 @@ public class IngredientFrame extends JFrame {
         isUpdating = false;
     }
     
-    private void reloadSearchComboBox(String s) {
-        isUpdating = true;
-        ingredientSelect.removeAllItems();
-        ingredientSelect.addItem("New Ingredient"); // New ingredient
+    public void reloadComboBoxFiltered() {
+    	isUpdating = true;
+	    ingredientSelect.removeAllItems();
+	    String nameInput = searchBar.getText().toLowerCase().trim();
+	    String supplierInput = supplierSearchBar.getText().toLowerCase().trim();
 
-        int j = 1;
-        for (Ingredient i : RecipeHandler.ingredients) {
-        	if(i.getName().toLowerCase().contains(s.toLowerCase())) { //make it all lowercase for easier comparison
-        		ingredientSelect.addItem(j + ". " + i.getName());
-        		j++;
-        	}
-        }
-        isUpdating = false;
-    }
-    
-    private void reloadSupplierComboBox(String s) {
-        isUpdating = true;
-        ingredientSelect.removeAllItems();
-        ingredientSelect.addItem("New Ingredient"); // New ingredient
+	    ingredientSelect.addItem("New Ingredient"); // New ingredient
+	    
+	    int j = 1;
+	    for (Ingredient i : RecipeHandler.ingredients) {
+	        boolean matchesName = nameInput.isEmpty() || i.getName().toLowerCase().contains(nameInput);
+	        boolean matchesSupplier = supplierInput.isEmpty() || i.getSupplierName().toLowerCase().contains(supplierInput);
 
-        int j = 1;
-        for (Ingredient i : RecipeHandler.ingredients) {
-        	if(i.getSupplierName().toLowerCase().contains(s.toLowerCase())) { //make it all lowercase for easier comparison
-        		ingredientSelect.addItem(j + ". " + i.getName());
-        		j++;
-        	}
-        }
-        isUpdating = false;
-    }
+	        if (matchesName && matchesSupplier) {
+	        	ingredientSelect.addItem(j + ". " + i.getName());
+	        	j++;
+	        }
+	    }
+	    
+	    isUpdating = true;
+	}
 
     private void setUpFields() {
         JLabel nameLabel = new JLabel("Name");
@@ -276,12 +268,7 @@ public class IngredientFrame extends JFrame {
 			if(ist != null) {
 				RecipeHandler.sortIngredients(ist);
 				
-				String input = (String) searchBar.getText();
-	    		if(input != null || !input.equals(" ".trim())) {
-	    			reloadSearchComboBox(input);
-	    		}else {
-	    			reloadComboBox();
-	    		}
+				reloadComboBoxFiltered();
 				loadIngredient();
 			}
 		});
@@ -297,98 +284,68 @@ public class IngredientFrame extends JFrame {
 	}
     
     public void setUpSearchSelect() {
-    	supplierSearchBar = new JTextField();
-    	supplierSearchBar.setBounds(350,90,200,30);
-    	
-    	supplierSearchBar.getDocument().addDocumentListener(new DocumentListener(){
-    		
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				String input = (String) supplierSearchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			reloadSearchComboBox(input);
-	    		}else {
-	    			reloadComboBox();
-	    		}
-	    		loadIngredient();
-			}
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				String input = (String) supplierSearchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			reloadSearchComboBox(input);
-	    		}else {
-	    			reloadComboBox();
-	    		}
-	    		loadIngredient();
-			}
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				String input = (String) supplierSearchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			reloadSearchComboBox(input);
-	    		}else {
-	    			reloadComboBox();
-	    		}
-	    		loadIngredient();
-			}
-    	});
-    	
-    	JLabel supplierSearchLabel = new JLabel("Keyword Search");
-    	supplierSearchLabel.setBounds(400,70,200,115);
-    	
-    	this.add(supplierSearchBar);
-    	this.add(supplierSearchLabel);
-    }
-    
-    public void setUpSupplierSearchSelect() {
     	searchBar = new JTextField();
-    	searchBar.setBounds(350,150,200,30);
+    	searchBar.setBounds(350,90,200,30);
     	
     	searchBar.getDocument().addDocumentListener(new DocumentListener(){
     		
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				// TODO Auto-generated method stub
-				String input = (String) searchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			reloadSupplierComboBox(input);
-	    		}else {
-	    			reloadComboBox();
-	    		}
+				reloadComboBoxFiltered();
 	    		loadIngredient();
 			}
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				// TODO Auto-generated method stub
-				String input = (String) searchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			reloadSupplierComboBox(input);
-	    		}else {
-	    			reloadComboBox();
-	    		}
+				reloadComboBoxFiltered();
 	    		loadIngredient();
 			}
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				// TODO Auto-generated method stub
-				String input = (String) searchBar.getText();
-	    		if(!input.trim().isEmpty()) {
-	    			reloadSupplierComboBox(input);
-	    		}else {
-	    			reloadComboBox();
-	    		}
+				reloadComboBoxFiltered();
 	    		loadIngredient();
 			}
     	});
     	
-    	JLabel searchLabel = new JLabel("Supplier Search");
-    	searchLabel.setBounds(400,130,200,115);
+    	JLabel searchLabel = new JLabel("Keyword Search");
+    	searchLabel.setBounds(400,70,200,115);
     	
     	this.add(searchBar);
     	this.add(searchLabel);
+    }
+    
+    public void setUpSupplierSearchSelect() {
+    	supplierSearchBar = new JTextField();
+    	supplierSearchBar.setBounds(350,150,200,30);
+    	
+    	supplierSearchBar.getDocument().addDocumentListener(new DocumentListener(){
+    		
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				reloadComboBoxFiltered();
+	    		loadIngredient();
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				reloadComboBoxFiltered();
+	    		loadIngredient();
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				reloadComboBoxFiltered();
+	    		loadIngredient();
+			}
+    	});
+    	
+    	JLabel supplierSearchLabel = new JLabel("Supplier Search");
+    	supplierSearchLabel.setBounds(400,130,200,115);
+    	
+    	this.add(supplierSearchBar);
+    	this.add(supplierSearchLabel);
     }
 }
