@@ -10,6 +10,8 @@ import java.util.Scanner;
 public class FileHandler {
 	private String recipeFileName = "recipes.txt";
 	private String ingredientFileName = "ingredients.txt";
+	private final String delimiter = "|";
+	private final String splitDelimiter = "\\|";
 
 	// ingredients in the form of name suppliername cost grams id
 	// read each ingredient
@@ -18,7 +20,7 @@ public class FileHandler {
 		try (Scanner scanner = new Scanner(myFile)) {
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
-				String[] parts = line.split("'");
+				String[] parts = line.split(splitDelimiter);
 
 				String name = parts[0];
 				String supplier = parts[1];
@@ -43,28 +45,30 @@ public class FileHandler {
 		for (int i = 0; i < RecipeHandler.ingredients.size(); i++) {
 			Ingredient current = RecipeHandler.ingredients.get(i);
 
-			myfw.write(current.getName() + "'" + current.getSupplierName() + "'"
-					+ (current.getCostPer1g() * current.getGrams()) + "'" + current.getGrams() + "'" + current.getID()
+			myfw.write(current.getName() + delimiter + current.getSupplierName() + delimiter
+					+ (current.getCostPer1g() * current.getGrams()) + delimiter + current.getGrams() + delimiter + current.getID()
 					+ "\n");
 		}
 		myfw.close();
 	}
 
 	// load recipes from file.
-	// they should be in the format of name, sellpoint, ids
+	// they should be in the format of name, sellpoint,packaging,manpower,electricity, ids
 	public void loadRecipes() {
 		File myFile = new File(recipeFileName);
 		try (Scanner scanner = new Scanner(myFile)) {
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
-				String[] parts = line.split("'");
+				String[] parts = line.split(splitDelimiter);
 
 				String name = parts[0];
 				float cost = Float.parseFloat(parts[1]);
-				ArrayList<Integer> ids = new ArrayList<Integer>();
+				float packaging = Float.parseFloat(parts[2]);
+				float manpower = Float.parseFloat(parts[3]);
+				float electricity = Float.parseFloat(parts[4]);
 				Recipe temp = new Recipe(name, cost);
 
-				for (int i = 2; i < parts.length; i++) {
+				for (int i = 5; i < parts.length; i++) {
 					String[] ingredientParts = parts[i].split("/");
 
 					int ingredientId = Integer.parseInt(ingredientParts[0]);
@@ -76,6 +80,10 @@ public class FileHandler {
 						temp.addIngredient(ing, grams);
 					}
 				}
+				
+				temp.setElectricityCost(electricity);
+				temp.setManPowerCost(manpower);
+				temp.setPackagingCost(packaging);
 
 				RecipeHandler.recipes.add(temp);
 				RecipeHandler.recipeByName.put(temp.getName(), temp);
@@ -91,10 +99,10 @@ public class FileHandler {
 		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
 			Recipe current = RecipeHandler.recipes.get(i);
 
-			myfw.write(current.getName() + "'" + current.getSellPoint());
+			myfw.write(current.getName() + delimiter + current.getSellPoint() + delimiter + current.getPackagingCost() + delimiter + current.getManPowerCost() + delimiter + current.getElectricityCost());
 			for (int j = 0; j < current.returnIngredientListSize(); j++) {
 				Ingredient myI = current.getIngredientFromList(j);
-				myfw.write("'" + myI.getID() + "/" + current.getGramsUsedOfIngredient(myI));
+				myfw.write(delimiter + myI.getID() + "/" + current.getGramsUsedOfIngredient(myI));
 			}
 			myfw.write("\n");
 

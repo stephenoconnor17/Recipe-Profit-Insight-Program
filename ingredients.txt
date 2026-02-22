@@ -1,150 +1,150 @@
-All-Purpose Flour'sysco foods'10000.0'25000.0'1001
-Salt'morton'8.0'50000.0'1007
-Baking Soda'arm and hammer'12.0'8000.0'1021
-Carrots'sysco produce'12.0'50000.0'1044
-Jalapenos'fresh direct'15.0'10000.0'1047
-Cornstarch'argo'15.0'10000.0'1125
-Lime Juice'nellie and joes'15.0'5000.0'1148
-Lemon Juice'santa cruz'15.0'5000.0'1149
-Powdered Sugar'domino'15.000001'15000.0'1006
-Onions'sysco produce'15.000001'70000.0'1041
-Chickpeas'goya'15.000001'25000.0'1115
-Kidney Beans'goya'15.000001'25000.0'1117
-Brown Sugar'domino'16.0'20000.0'1005
-Celery'sysco produce'16.0'40000.0'1045
-Hot Sauce'franks redhot'16.0'8000.0'1147
-Black Beans'goya'16.8'28000.0'1116
-Granulated Sugar'c and h sugar'18.0'30000.0'1004
-Red Onions'sysco produce'18.0'40000.0'1042
-Cilantro'fresh herbs co'18.0'5000.0'1063
-Tomato Paste'hunts'18.0'20000.0'1066
-Red Wine Vinegar'pompeian'18.0'10000.0'1075
-White Wine Vinegar'pompeian'18.0'10000.0'1076
-Tortillas Flour'mission'18.0'15000.0'1099
-Lentils Green'goya'18.0'18000.0'1119
-Yeast Active Dry'fleischmanns'18.0'2000.0'1126
-Sriracha'huy fong'18.0'6000.0'1138
-Oyster Sauce'lee kum kee'18.0'6000.0'1141
-Potatoes'idaho spuds'20.0'100000.0'1048
-Parsley'fresh herbs co'20.0'5000.0'1062
-Diced Tomatoes'hunts'20.0'40000.0'1068
-Lentils Red'goya'20.0'20000.0'1118
-Apple Cider Vinegar'bragg'20.0'8000.0'1150
-Tortillas Corn'mission'21.000002'12000.0'1100
-Capers'reese'21.000002'3000.0'1111
-Hoisin Sauce'lee kum kee'21.000002'6000.0'1142
-Dill'fresh herbs co'21.999998'3000.0'1064
-Worcestershire'lea and perrins'22.0'10000.0'1073
-Gelatin'knox'22.5'3000.0'1124
-Whole Wheat Flour'bobs red mill'22.534534'15000.0'1003
-Crushed Tomatoes'san marzano'24.0'45000.0'1067
-Soy Sauce'kikkoman'24.0'15000.0'1072
-White Wine'cooking wine co'24.0'15000.0'1109
-Red Wine'cooking wine co'24.0'15000.0'1110
-Fish Sauce'red boat'24.0'4000.0'1140
-Paprika'mccormick'24.000002'3000.0'1009
-Thyme'mccormick'24.000002'1500.0'1013
-Eggs'cal-maine'24.000002'12000.0'1027
-Bread Crumbs'progresso'24.000002'12000.0'1097
-Poppy Seeds'mccormick'24.000002'3000.0'1128
-Zucchini'fresh direct'24.999998'35000.0'1058
-Baking Powder'clabber girl'25.0'10000.0'1020
-Gochujang'mother in laws'25.0'5000.0'1139
-Lasagna Noodles'barilla'25.000002'25000.0'1091
-Rosemary'mccormick'25.999998'1500.0'1014
-Panko'kikkoman'26.0'10000.0'1098
-Bread Flour'king arthur'27.999998'20000.0'1002
-Flax Seeds'bobs red mill'27.999998'5000.0'1130
-BBQ Sauce'sweet baby rays'27.999998'12000.0'1146
-Romaine Lettuce'fresh direct'28.0'35000.0'1054
-Pasta Fettuccine'barilla'28.0'35000.0'1090
-Oregano'mccormick'28.000002'2000.0'1011
-Onion Powder'mccormick'28.000002'4000.0'1016
-Nutmeg'mccormick'28.000002'1000.0'1018
-Dijon Mustard'grey poupon'28.000002'8000.0'1077
-Phyllo Dough'athens'28.000002'8000.0'1102
-Cumin'mccormick'30.0'2500.0'1010
-Basil'mccormick'30.0'2000.0'1012
-Cinnamon'mccormick'30.0'3000.0'1017
-Sesame Seeds'mccormick'30.0'5000.0'1127
-Tomatoes'fresh direct'30.000002'60000.0'1039
-Sweet Potatoes'fresh direct'30.000002'50000.0'1049
-Sour Cream'daisy'30.000002'15000.0'1086
-Couscous'near east'30.000002'15000.0'1096
-Peanut Butter'jif'30.000002'15000.0'1136
-Raisins'sun-maid'31.999996'12000.0'1132
-Garlic Powder'mccormick'32.0'4000.0'1015
-Whole Milk'organic valley'32.0'80000.0'1026
-Limes'fresh direct'32.0'25000.0'1061
-Vegetable Stock'kitchen basics'32.0'40000.0'1071
-Pasta Penne'barilla'32.0'40000.0'1088
-Pizza Dough'pre-made'32.0'20000.0'1103
-Olives Kalamata'mezzetta'32.0'8000.0'1112
-Coconut Flakes'lets do organic'32.0'8000.0'1120
-Green Beans'sysco produce'35.0'30000.0'1057
-Rice Jasmine'dynasty'35.0'35000.0'1094
-Artichoke Hearts'cara mia'35.000004'10000.0'1114
-Cherry Tomatoes'fresh direct'36.0'30000.0'1040
-Garlic'fresh direct'36.0'15000.0'1043
-Lemons'fresh direct'36.0'30000.0'1060
-Chicken Stock'kitchen basics'36.0'60000.0'1069
-Pasta Spaghetti'barilla'36.0'45000.0'1089
-Coconut Milk'thai kitchen'37.5'25000.0'1108
-Cauliflower'fresh direct'38.0'30000.0'1051
-Kale'earthbound farm'40.0'18000.0'1053
-Beef Stock'kitchen basics'40.0'50000.0'1070
-Rice Basmati'royal'40.0'40000.0'1093
-Puff Pastry'pepperidge farm'40.0'10000.0'1101
-Apricots Dried'mariani'40.0'5000.0'1134
-Pesto'classico'40.0'5000.0'1143
-Mixed Greens'earthbound farm'42.0'15000.0'1055
-Rice Arborio'riceselect'42.0'30000.0'1092
-Alfrado Sauce'classico'42.0'10000.0'1145
-Broccoli'fresh direct'42.000004'35000.0'1050
-Dates'sunsweet'42.000004'6000.0'1133
-Ricotta'galbani'43.2'18000.0'1085
-Sun-dried Tomatoes'california sun'43.999996'6000.0'1113
-Chia Seeds'nutiva'44.0'4000.0'1129
-Black Pepper'mccormick'44.999996'5000.0'1008
-Cocoa Powder'hersheys'44.999996'10000.0'1121
-Marinara Sauce'raos'45.0'15000.0'1144
-Vegetable Oil'wesson'45.000004'75000.0'1023
-Cranberries Dried'ocean spray'48.0'8000.0'1131
-Spinach'earthbound farm'48.000004'20000.0'1052
-Balsamic Vinegar'colavita'48.000004'12000.0'1074
-Greek Yogurt'fage'48.000004'20000.0'1087
-Chocolate Chips'nestle'48.000004'12000.0'1122
-Bell Peppers'fresh direct'54.000004'45000.0'1046
-Cream Cheese'philadelphia'55.999996'20000.0'1084
-White Chocolate'ghirardelli'56.000004'8000.0'1123
-Tahini'joyva'56.000004'8000.0'1135
-Quinoa'ancient harvest'60.0'20000.0'1095
-Heavy Cream'horizon'60.000004'30000.0'1025
-Mushrooms'giorgio'60.000004'25000.0'1059
-Honey'local harvest'60.000004'15000.0'1078
-Asparagus'fresh direct'64.0'20000.0'1056
-Almond Butter'justins'64.0'8000.0'1137
-Vanilla Extract'nielsen-massey'65.0'2000.0'1019
-Feta Cheese'athenos'66.0'15000.0'1083
-Maple Syrup'pure vermont'75.0'10000.0'1079
-Walnuts'diamond'84.00001'12000.0'1105
-Olive Oil'bertolli'85.0'50000.0'1022
-Italian Sausage'johnsonville'90.0'30000.0'1034
-Almonds'blue diamond'90.0'15000.0'1104
-Mozzarella'galbani'96.0'30000.0'1081
-Pecans'fisher'96.00001'10000.0'1106
-Cheddar Cheese'tillamook'100.00001'25000.0'1082
-Bacon'hormel'110.0'25000.0'1033
-Chicken Thighs'tyson'120.0'80000.0'1029
-Avocado'fresh direct'120.0'40000.0'1065
-Pork Loin'smithfield'120.00001'60000.0'1032
-Cod Fillet'norway select'120.00001'25000.0'1037
-Pine Nuts'trader essentials'125.0'5000.0'1107
-Parmesan Cheese'galbani'140.00002'20000.0'1080
-Ground Beef'sysco'160.0'90000.0'1030
-Butter'land o lakes'179.99998'40000.0'1024
-Chicken Breast'tyson'180.0'100000.0'1028
-Tuna Steak'pacific fresh'190.0'20000.0'1038
-Shrimp'gulf pride'245.00003'35000.0'1036
-Salmon Fillet'alaska seafood'280.00003'40000.0'1035
-Beef Tenderloin'premium angus'350.0'35000.0'1031
+All-Purpose Flour|sysco foods|10000.0|25000.0|1001
+Salt|morton|8.0|50000.0|1007
+Baking Soda|arm and hammer|12.0|8000.0|1021
+Carrots|sysco produce|12.0|50000.0|1044
+Jalapenos|fresh direct|15.0|10000.0|1047
+Cornstarch|argo|15.0|10000.0|1125
+Lime Juice|nellie and joes|15.0|5000.0|1148
+Lemon Juice|santa cruz|15.0|5000.0|1149
+Powdered Sugar|domino|15.000001|15000.0|1006
+Onions|sysco produce|15.000001|70000.0|1041
+Chickpeas|goya|15.000001|25000.0|1115
+Kidney Beans|goya|15.000001|25000.0|1117
+Brown Sugar|domino|16.0|20000.0|1005
+Celery|sysco produce|16.0|40000.0|1045
+Hot Sauce|franks redhot|16.0|8000.0|1147
+Black Beans|goya|16.8|28000.0|1116
+Granulated Sugar|c and h sugar|18.0|30000.0|1004
+Red Onions|sysco produce|18.0|40000.0|1042
+Cilantro|fresh herbs co|18.0|5000.0|1063
+Tomato Paste|hunts|18.0|20000.0|1066
+Red Wine Vinegar|pompeian|18.0|10000.0|1075
+White Wine Vinegar|pompeian|18.0|10000.0|1076
+Tortillas Flour|mission|18.0|15000.0|1099
+Lentils Green|goya|18.0|18000.0|1119
+Yeast Active Dry|fleischmanns|18.0|2000.0|1126
+Sriracha|huy fong|18.0|6000.0|1138
+Oyster Sauce|lee kum kee|18.0|6000.0|1141
+Potatoes|idaho spuds|20.0|100000.0|1048
+Parsley|fresh herbs co|20.0|5000.0|1062
+Diced Tomatoes|hunts|20.0|40000.0|1068
+Lentils Red|goya|20.0|20000.0|1118
+Apple Cider Vinegar|bragg|20.0|8000.0|1150
+Tortillas Corn|mission|21.000002|12000.0|1100
+Capers|reese|21.000002|3000.0|1111
+Hoisin Sauce|lee kum kee|21.000002|6000.0|1142
+Dill|fresh herbs co|21.999998|3000.0|1064
+Worcestershire|lea and perrins|22.0|10000.0|1073
+Gelatin|knox|22.5|3000.0|1124
+Whole Wheat Flour|bobs red mill|22.534534|15000.0|1003
+Crushed Tomatoes|san marzano|24.0|45000.0|1067
+Soy Sauce|kikkoman|24.0|15000.0|1072
+White Wine|cooking wine co|24.0|15000.0|1109
+Red Wine|cooking wine co|24.0|15000.0|1110
+Fish Sauce|red boat|24.0|4000.0|1140
+Paprika|mccormick|24.000002|3000.0|1009
+Thyme|mccormick|24.000002|1500.0|1013
+Eggs|cal-maine|24.000002|12000.0|1027
+Bread Crumbs|progresso|24.000002|12000.0|1097
+Poppy Seeds|mccormick|24.000002|3000.0|1128
+Zucchini|fresh direct|24.999998|35000.0|1058
+Baking Powder|clabber girl|25.0|10000.0|1020
+Gochujang|mother in laws|25.0|5000.0|1139
+Lasagna Noodles|barilla|25.000002|25000.0|1091
+Rosemary|mccormick|25.999998|1500.0|1014
+Panko|kikkoman|26.0|10000.0|1098
+Bread Flour|king arthur|27.999998|20000.0|1002
+Flax Seeds|bobs red mill|27.999998|5000.0|1130
+BBQ Sauce|sweet baby rays|27.999998|12000.0|1146
+Romaine Lettuce|fresh direct|28.0|35000.0|1054
+Pasta Fettuccine|barilla|28.0|35000.0|1090
+Oregano|mccormick|28.000002|2000.0|1011
+Onion Powder|mccormick|28.000002|4000.0|1016
+Nutmeg|mccormick|28.000002|1000.0|1018
+Dijon Mustard|grey poupon|28.000002|8000.0|1077
+Phyllo Dough|athens|28.000002|8000.0|1102
+Cumin|mccormick|30.0|2500.0|1010
+Basil|mccormick|30.0|2000.0|1012
+Cinnamon|mccormick|30.0|3000.0|1017
+Sesame Seeds|mccormick|30.0|5000.0|1127
+Tomatoes|fresh direct|30.000002|60000.0|1039
+Sweet Potatoes|fresh direct|30.000002|50000.0|1049
+Sour Cream|daisy|30.000002|15000.0|1086
+Couscous|near east|30.000002|15000.0|1096
+Peanut Butter|jif|30.000002|15000.0|1136
+Raisins|sun-maid|31.999996|12000.0|1132
+Garlic Powder|mccormick|32.0|4000.0|1015
+Whole Milk|organic valley|32.0|80000.0|1026
+Limes|fresh direct|32.0|25000.0|1061
+Vegetable Stock|kitchen basics|32.0|40000.0|1071
+Pasta Penne|barilla|32.0|40000.0|1088
+Pizza Dough|pre-made|32.0|20000.0|1103
+Olives Kalamata|mezzetta|32.0|8000.0|1112
+Coconut Flakes|lets do organic|32.0|8000.0|1120
+Green Beans|sysco produce|35.0|30000.0|1057
+Rice Jasmine|dynasty|35.0|35000.0|1094
+Artichoke Hearts|cara mia|35.000004|10000.0|1114
+Cherry Tomatoes|fresh direct|36.0|30000.0|1040
+Garlic|fresh direct|36.0|15000.0|1043
+Lemons|fresh direct|36.0|30000.0|1060
+Chicken Stock|kitchen basics|36.0|60000.0|1069
+Pasta Spaghetti|barilla|36.0|45000.0|1089
+Coconut Milk|thai kitchen|37.5|25000.0|1108
+Cauliflower|fresh direct|38.0|30000.0|1051
+Kale|earthbound farm|40.0|18000.0|1053
+Beef Stock|kitchen basics|40.0|50000.0|1070
+Rice Basmati|royal|40.0|40000.0|1093
+Puff Pastry|pepperidge farm|40.0|10000.0|1101
+Apricots Dried|mariani|40.0|5000.0|1134
+Pesto|classico|40.0|5000.0|1143
+Mixed Greens|earthbound farm|42.0|15000.0|1055
+Rice Arborio|riceselect|42.0|30000.0|1092
+Alfrado Sauce|classico|42.0|10000.0|1145
+Broccoli|fresh direct|42.000004|35000.0|1050
+Dates|sunsweet|42.000004|6000.0|1133
+Ricotta|galbani|43.2|18000.0|1085
+Sun-dried Tomatoes|california sun|43.999996|6000.0|1113
+Chia Seeds|nutiva|44.0|4000.0|1129
+Black Pepper|mccormick|44.999996|5000.0|1008
+Cocoa Powder|hersheys|44.999996|10000.0|1121
+Marinara Sauce|raos|45.0|15000.0|1144
+Vegetable Oil|wesson|45.000004|75000.0|1023
+Cranberries Dried|ocean spray|48.0|8000.0|1131
+Spinach|earthbound farm|48.000004|20000.0|1052
+Balsamic Vinegar|colavita|48.000004|12000.0|1074
+Greek Yogurt|fage|48.000004|20000.0|1087
+Chocolate Chips|nestle|48.000004|12000.0|1122
+Bell Peppers|fresh direct|54.000004|45000.0|1046
+Cream Cheese|philadelphia|55.999996|20000.0|1084
+White Chocolate|ghirardelli|56.000004|8000.0|1123
+Tahini|joyva|56.000004|8000.0|1135
+Quinoa|ancient harvest|60.0|20000.0|1095
+Heavy Cream|horizon|60.000004|30000.0|1025
+Mushrooms|giorgio|60.000004|25000.0|1059
+Honey|local harvest|60.000004|15000.0|1078
+Asparagus|fresh direct|64.0|20000.0|1056
+Almond Butter|justins|64.0|8000.0|1137
+Vanilla Extract|nielsen-massey|65.0|2000.0|1019
+Feta Cheese|athenos|66.0|15000.0|1083
+Maple Syrup|pure vermont|75.0|10000.0|1079
+Walnuts|diamond|84.00001|12000.0|1105
+Olive Oil|bertolli|85.0|50000.0|1022
+Italian Sausage|johnsonville|90.0|30000.0|1034
+Almonds|blue diamond|90.0|15000.0|1104
+Mozzarella|galbani|96.0|30000.0|1081
+Pecans|fisher|96.00001|10000.0|1106
+Cheddar Cheese|tillamook|100.00001|25000.0|1082
+Bacon|hormel|110.0|25000.0|1033
+Chicken Thighs|tyson|120.0|80000.0|1029
+Avocado|fresh direct|120.0|40000.0|1065
+Pork Loin|smithfield|120.00001|60000.0|1032
+Cod Fillet|norway select|120.00001|25000.0|1037
+Pine Nuts|trader essentials|125.0|5000.0|1107
+Parmesan Cheese|galbani|140.00002|20000.0|1080
+Ground Beef|sysco|160.0|90000.0|1030
+Butter|land o lakes|179.99998|40000.0|1024
+Chicken Breast|tyson|180.0|100000.0|1028
+Tuna Steak|pacific fresh|190.0|20000.0|1038
+Shrimp|gulf pride|245.00003|35000.0|1036
+Salmon Fillet|alaska seafood|280.00003|40000.0|1035
+Beef Tenderloin|premium angus|350.0|35000.0|1031

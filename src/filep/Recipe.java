@@ -11,6 +11,11 @@ public class Recipe {
 	private float saleDiff;
 	private float ingredientCostPercentage;
 	private float profitMargin;
+	
+	//util variables
+	private float manPowerCost;
+	private float electricityCost;
+	private float packagingCost;
 
 	private ArrayList<Ingredient> recipeIngredients;
 	private Map<Ingredient, Float> ingredientUnitCost;
@@ -24,6 +29,10 @@ public class Recipe {
 		this.sellPoint = sellPoint;
 		this.ingredientCostPercentage = 0;
 		this.profitMargin = 0;
+		
+		this.packagingCost = 0;
+		this.electricityCost = 0;
+		this.manPowerCost = 0;
 
 		updateSaleDiff();
 		updateDisplayArr();
@@ -132,6 +141,33 @@ public class Recipe {
 	public float getSellPoint() {
 		return this.sellPoint;
 	}
+	
+	public float getElectricityCost() {
+		return this.electricityCost;
+	}
+	
+	public float getManPowerCost() {
+		return this.manPowerCost;
+	}
+	
+	public float getPackagingCost() {
+		return this.packagingCost;
+	}
+	
+	public void setElectricityCost(float electricityCost) {
+		this.electricityCost = electricityCost;
+		update();
+	}
+	
+	public void setManPowerCost(float manPowerCost) {
+		this.manPowerCost = manPowerCost;
+		update();
+	}
+	
+	public void setPackagingCost(float packagingCost) {
+		this.packagingCost = packagingCost;
+		update();
+	}
 
 	public ArrayList<Ingredient> getIngredients() {
 		return this.recipeIngredients;
@@ -152,6 +188,9 @@ public class Recipe {
 
 	public void updateCostToMake() {
 		this.costToMake = 0;
+		costToMake += electricityCost;
+		costToMake += manPowerCost;
+		costToMake += packagingCost;
 		for (Ingredient i : recipeIngredients) {
 			float gramsUsed = ingredientGramsUsed.get(i);
 			this.costToMake += gramsUsed * i.getCostPer1g();

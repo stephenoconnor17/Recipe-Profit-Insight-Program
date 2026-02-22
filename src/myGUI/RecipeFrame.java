@@ -48,6 +48,9 @@ public class RecipeFrame extends JFrame {
 	JTextField costToMakeField;
 	JTextField sellPointField;
 	JTextField searchBar;
+	JTextField electricityField;
+	JTextField manpowerField;
+	JTextField packagingField;
 	// JTextField nameField;
 
 	// Buttons for save, remove and add ingredient.
@@ -74,19 +77,16 @@ public class RecipeFrame extends JFrame {
 
 		this.fh = fh;
 
-		setUpPanel();
-		// setups
+		setUpPanel();          // creates mp first, everything else needs it
 		setUpField();
 		setUpIngredientList();
+		setUpUtilFields();     // must be before selectPassed since grabRecipeAndFill uses these fields
 		comboBoxInit();
 		setUpComboBox();
 		setUpButtons();
-		selectPassed();
 		setUpSearchSelect();
 		setUpSortSelect();
-
-		// setUpField();
-		//
+		selectPassed();        // last, since it triggers grabRecipeAndFill which needs all fields ready
 
 		mp.add(recipeSelect);
 
@@ -213,12 +213,17 @@ public class RecipeFrame extends JFrame {
 			nameField.setText("");
 			costToMakeField.setText("");
 			sellPointField.setText("");
-
+			electricityField.setText("");
+			manpowerField.setText("");
+			packagingField.setText("");
 			model.clear();
 		} else {
 			nameField.setText(tempR.getName());
 			costToMakeField.setText(String.valueOf(tempR.getCostToMake()));
 			sellPointField.setText(String.valueOf(tempR.getSellPoint()));
+			electricityField.setText(String.valueOf(tempR.getElectricityCost()));
+			manpowerField.setText(String.valueOf(tempR.getManPowerCost()));
+			packagingField.setText(String.valueOf(tempR.getPackagingCost()));
 
 			loadIngredientsIntoModel(tempR);
 		}
@@ -381,23 +386,43 @@ public class RecipeFrame extends JFrame {
 			return;
 		}
 	}
+	
+	public float getFloatFromString(String input) {
+		float toReturn = 0;
+		try {
+			toReturn = Float.valueOf(input);
+		} catch (NumberFormatException e) {}
+		
+		return toReturn;
+	}
 
 	// save all recipes
 	public void saveRecipesAction() throws IOException {
 		Recipe saveName = grabRecipe();
 
 		String name = nameField.getText();
-		String text = sellPointField.getText().trim();
-
+		String sellPointText = sellPointField.getText().trim();
+		String electricityText = electricityField.getText().trim();
+		String manpowerText = manpowerField.getText().trim();
+		String packagingText = packagingField.getText().trim();
+		
+		
 		float sellPoint = 0;
-		if (!text.isEmpty()) {
-			try {
-				sellPoint = Float.valueOf(text);
-			} catch (NumberFormatException e) {
-
-			}
+		float electricity = 0;
+		float manpower = 0;
+		float packaging = 0;
+		if (!sellPointText.isEmpty()) {
+			sellPoint = getFloatFromString(sellPointText);
 		}
-		// String ingList[] = ingredientList.
+		if (!electricityText.isEmpty()) {
+			electricity = getFloatFromString(electricityText);
+		}
+		if (!manpowerText.isEmpty()) {
+			manpower = getFloatFromString(manpowerText);
+		}
+		if (!packagingText.isEmpty()) {
+			packaging = getFloatFromString(packagingText);
+		}
 
 		if (saveName != null) {
 			// RECIPE ALREADY EXISTS, JUST UPDATE
@@ -405,6 +430,9 @@ public class RecipeFrame extends JFrame {
 			// AS SAVING THEM WILL THEN FINALISE THEIR ADDITION TO RECIPE
 			saveName.setName(name);
 			saveName.setSellPoint(sellPoint);
+			saveName.setElectricityCost(electricity);
+			saveName.setManPowerCost(manpower);
+			saveName.setPackagingCost(packaging);
 		} else {// if null then is new recipe, save.
 			if (name.trim().isEmpty()) {
 				JOptionPane.showMessageDialog(this, "Recipe must have a name.");
@@ -412,6 +440,10 @@ public class RecipeFrame extends JFrame {
 			} else {
 
 				saveName = new Recipe(name, sellPoint);
+				
+				saveName.setElectricityCost(electricity);
+				saveName.setManPowerCost(manpower);
+				saveName.setPackagingCost(packaging);
 
 				DefaultListModel<String> model = (DefaultListModel<String>) ingredientList.getModel();
 
@@ -442,6 +474,32 @@ public class RecipeFrame extends JFrame {
 		parent.fillDataModel();
 		// recipeSelect.setSelectedItem(name);
 		selectByName(name);
+	}
+	
+	public void setUpUtilFields() {
+	    electricityField = new JTextField();
+	    manpowerField = new JTextField();
+	    packagingField = new JTextField();
+
+	    JLabel electricityLabel = new JLabel("Electricity Cost");
+	    JLabel manpowerLabel = new JLabel("Manpower Cost");
+	    JLabel packagingLabel = new JLabel("Packaging Cost");
+
+	    electricityLabel.setBounds(720, 0, 150, 20);
+	    electricityField.setBounds(720, 20, 150, 25);
+
+	    manpowerLabel.setBounds(720, 50, 150, 20);
+	    manpowerField.setBounds(720, 70, 150, 25);
+
+	    packagingLabel.setBounds(720, 100, 150, 20);
+	    packagingField.setBounds(720, 120, 150, 25);
+
+	    mp.add(electricityLabel);
+	    mp.add(electricityField);
+	    mp.add(manpowerLabel);
+	    mp.add(manpowerField);
+	    mp.add(packagingLabel);
+	    mp.add(packagingField);
 	}
 
 	public void selectByName(String name) {
