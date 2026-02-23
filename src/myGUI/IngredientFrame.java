@@ -81,6 +81,18 @@ public class IngredientFrame extends JFrame {
         isUpdating = false;
     }
     
+    public void selectByName(String name) {
+        for (int i = 0; i < ingredientSelect.getItemCount(); i++) {
+            String item = ingredientSelect.getItemAt(i);
+            if (item.equals("New Ingredient")) continue;
+            String stripped = item.substring(item.indexOf(".") + 1).trim();
+            if (stripped.equals(name)) {
+                ingredientSelect.setSelectedItem(item);
+                return;
+            }
+        }
+    }
+    
     public void reloadComboBoxFiltered() {
     	isUpdating = true;
 	    ingredientSelect.removeAllItems();
@@ -100,7 +112,7 @@ public class IngredientFrame extends JFrame {
 	        }
 	    }
 	    
-	    isUpdating = true;
+	    isUpdating = false;
 	}
 
     private void setUpFields() {
@@ -198,6 +210,7 @@ public class IngredientFrame extends JFrame {
                 Ingredient i = new Ingredient(name, supplier, cost, grams, Ingredient.newID);
                 if(RecipeHandler.verifyNoIngredientCopy(i)) {
                 	RecipeHandler.addIngredient(i);
+                	
                 }else {
                 	//CANNOT SAVE DUPLICATE INGREDIENT RESPONSE
                 }
@@ -216,7 +229,7 @@ public class IngredientFrame extends JFrame {
             
             updateParent();
             
-            ingredientSelect.setSelectedItem(name);
+            selectByName(name);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Invalid input");
         }
