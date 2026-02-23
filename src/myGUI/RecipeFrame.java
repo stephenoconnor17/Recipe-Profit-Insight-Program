@@ -51,6 +51,17 @@ public class RecipeFrame extends JFrame {
 	JTextField electricityField;
 	JTextField manpowerField;
 	JTextField packagingField;
+	
+	//FIELDs WHERE FINAL COST IS SUGGEST BY TAKING IN
+	//DESIRED MARKUP PERCENTAGE, APPLYING TO COST OF RECIPE FROM INGREDIENTS, MANPOWER, PACKAGING AND ELECTRICITY
+	//THEN APPLYING VAT ASWELL.
+	
+	final float vat1Value = 0.09f, vat2Value = 0.135f, vat3Value = 0.23f;
+	JTextField suggestedCost;
+	JTextField markupField;
+	JButton vat1;
+	JButton vat2;
+	JButton vat3;
 	// JTextField nameField;
 
 	// Buttons for save, remove and add ingredient.
@@ -87,6 +98,7 @@ public class RecipeFrame extends JFrame {
 		setUpSearchSelect();
 		setUpSortSelect();
 		selectPassed();        // last, since it triggers grabRecipeAndFill which needs all fields ready
+		setUpVatAndMarkup();
 
 		mp.add(recipeSelect);
 
@@ -597,5 +609,49 @@ public class RecipeFrame extends JFrame {
 		mp.add(searchBar);
 		mp.add(searchLabel);
 	}
+	
+	
+	int vatSelect = 1;
+	public void setUpVatAndMarkup() {
+		vat1 = new JButton(String.valueOf(vat1Value*100) + "%");
+		vat2 = new JButton(String.format("%.2f",vat2Value*100) + "%");
+		vat3 = new JButton(String.valueOf(vat3Value*100) + "%");
+		
+		
+		
+		vat1.setBounds(500,200,80,40);
+		vat2.setBounds(580,200,80,40);
+		vat3.setBounds(660,200,80,40);
+		
+		vat1.addActionListener(e -> showSuggestedPricing(1));
+		vat2.addActionListener(e -> showSuggestedPricing(2));
+		vat3.addActionListener(e -> showSuggestedPricing(3));
+		
+		JLabel markupLabel = new JLabel("Markup %");
+		markupLabel.setBounds(500, 150, 100, 20);
+		markupField = new JTextField();
+		markupField.setBounds(500, 170, 100, 25);
 
+		JLabel suggestedCostLabel = new JLabel("Suggested Price");
+		suggestedCostLabel.setBounds(610, 150, 120, 20);
+		suggestedCost = new JTextField();
+		suggestedCost.setBounds(610, 170, 120, 25);
+		suggestedCost.setEditable(false);
+
+		
+		mp.add(vat1);
+		mp.add(vat2);
+		mp.add(vat3);
+		mp.add(suggestedCostLabel);
+		mp.add(suggestedCost);
+		mp.add(markupLabel);
+		mp.add(markupField);
+	}
+	
+	public void showSuggestedPricing(int selection) {
+		
+	}
+	
 }
+
+
