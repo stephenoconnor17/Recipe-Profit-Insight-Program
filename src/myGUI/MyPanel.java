@@ -49,6 +49,7 @@ public class MyPanel extends JPanel {
 
 		// setUpDMandTable();
 		fh.loadIngredients();
+		fh.loadIdFile();
 		fh.loadRecipes();
 		setUpDMandTable();
 

@@ -12,6 +12,7 @@ public class RecipeHandler {
 
 	public static ArrayList<Recipe> recipes = new ArrayList<Recipe>();
 	public static Map<String, Recipe> recipeByName = new HashMap<>();
+	public static int nextAvailableID = 0;
 
 	public static void updateRecipes() {
 		for (int i = 0; i < recipes.size(); i++) {

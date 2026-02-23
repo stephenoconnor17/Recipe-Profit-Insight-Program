@@ -1,5 +1,5 @@
 All-Purpose Flour|sysco foods|10000.0|25000.0|1001
-Salt|morton|8.0|50000.0|1007
+Salt|morton|8.154|50000.0|1007
 Baking Soda|arm and hammer|12.0|8000.0|1021
 Carrots|sysco produce|12.0|50000.0|1044
 Jalapenos|fresh direct|15.0|10000.0|1047
@@ -146,6 +146,10 @@ Butter|land o lakes|179.99998|40000.0|1024
 Chicken Breast|tyson|180.0|100000.0|1028
 Tuna Steak|pacific fresh|190.0|20000.0|1038
 Shrimp|gulf pride|245.00003|35000.0|1036
-Salmon Fillet|alaska seafood|280.00003|40000.0|1035
+Salmon Fillet|alaska seafood|281.00003|40000.0|1035
 Beef Tenderloin|premium angus|350.0|35000.0|1031
 kjdfvjkdsf|asdfad|54.0|5000.0|150
+Help|me|1.0|50.0|151
+BurgersSlop|meatco|10.0|1000.0|152
+adfdasf|adsf|22.999998|24.0|153
+hh|gg|22.0|22.0|5

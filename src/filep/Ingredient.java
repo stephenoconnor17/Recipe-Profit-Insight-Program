@@ -7,7 +7,7 @@ public class Ingredient {
 	private float grams;
 	private int id;
 
-	public static int newID = 0;
+	public static final int NEW_ID_SENTINEL = 0;
 
 	// PASS THROUGH THE COST AND GRAMS.
 	public Ingredient(String name, String supplier, float cost, float grams, int id) {
@@ -20,10 +20,11 @@ public class Ingredient {
 			this.costPer100g = 0f;
 		}
 
-		if (id == Ingredient.newID) {
-			this.id = RecipeHandler.ingredients.size();
-			while (RecipeHandler.ingredientIDMap.get(id) != null) {
-				this.id++;
+		if (id == Ingredient.NEW_ID_SENTINEL) {
+			this.id = RecipeHandler.nextAvailableID;
+			while (RecipeHandler.ingredientIDMap.get(this.id) != null) {
+				RecipeHandler.nextAvailableID++;
+				this.id = RecipeHandler.nextAvailableID;
 			}
 		} else {
 			this.id = id;
@@ -107,12 +108,17 @@ public class Ingredient {
 
 	public boolean compareToIngredient(Ingredient i) {
 		boolean toReturn = false;
-
+		
+		String ingredientName = i.getName().toLowerCase();
+		String ingredientSupplier = i.getSupplierName().toLowerCase();
+		String thisIngredientName = this.name.toLowerCase();
+		String thisIngredientSupplier = this.supplier.toLowerCase();
+		
 		if (i.getID() == this.getID()) {
 			toReturn = true;
 		}
 
-		if (i.getName() == this.getName() && this.getSupplierName() == i.getSupplierName()) {
+		if (ingredientName.equals(thisIngredientName) && ingredientSupplier.equals(thisIngredientSupplier)) {
 			toReturn = true;
 		}
 

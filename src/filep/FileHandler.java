@@ -10,9 +10,37 @@ import java.util.Scanner;
 public class FileHandler {
 	private String recipeFileName = "recipes.txt";
 	private String ingredientFileName = "ingredients.txt";
+	private String idFileName = "idfile.txt";
 	private final String delimiter = "|";
 	private final String splitDelimiter = "\\|";
 
+	public void loadIdFile() {
+		File myFile = new File(idFileName);
+		try (Scanner scanner = new Scanner(myFile)) {
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				try {
+					Integer nextID = Integer.valueOf(line);
+					if(nextID != null && nextID > 0) {
+						RecipeHandler.nextAvailableID = nextID;
+					}else {
+						RecipeHandler.nextAvailableID = RecipeHandler.ingredients.size() + 1;
+					}
+				}catch(Exception e) {
+					
+				}
+			}
+
+		} catch (FileNotFoundException e) {
+
+		}
+	}
+	
+	public void writeIdFile() throws IOException {
+		FileWriter myFile = new FileWriter(idFileName);
+		myFile.write(String.valueOf(RecipeHandler.nextAvailableID));
+		myFile.close();
+	}
 	// ingredients in the form of name suppliername cost grams id
 	// read each ingredient
 	public void loadIngredients() {
@@ -50,6 +78,9 @@ public class FileHandler {
 					+ "\n");
 		}
 		myfw.close();
+		
+		RecipeHandler.nextAvailableID++;
+		writeIdFile();
 	}
 
 	// load recipes from file.
