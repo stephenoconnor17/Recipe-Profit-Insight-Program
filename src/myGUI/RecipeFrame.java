@@ -1,5 +1,6 @@
 package myGUI;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -637,7 +638,6 @@ public class RecipeFrame extends JFrame {
 		suggestedCost = new JTextField();
 		suggestedCost.setBounds(610, 170, 120, 25);
 		suggestedCost.setEditable(false);
-
 		
 		mp.add(vat1);
 		mp.add(vat2);
@@ -649,7 +649,57 @@ public class RecipeFrame extends JFrame {
 	}
 	
 	public void showSuggestedPricing(int selection) {
+		float vat = 0;
 		
+		switch(selection) {
+		case 1:
+			vat = vat1Value;
+			vat1.setBackground(Color.green);
+			vat2.setBackground(null);
+			vat3.setBackground(null);
+			break;
+		case 2:
+			vat = vat2Value;
+			vat1.setBackground(null);
+			vat2.setBackground(Color.green);
+			vat3.setBackground(null);
+			break;
+		case 3:
+			vat = vat3Value;
+			vat1.setBackground(null);
+			vat2.setBackground(null);
+			vat3.setBackground(Color.green);
+			break;
+		default:
+			vat = vat1Value;
+			vat1.setBackground(Color.green);
+			vat2.setBackground(null);
+			vat3.setBackground(null);
+			break;
+		}
+		
+		String markupString = markupField.getText();
+		
+		if(!markupString.isEmpty()) {
+			try {
+				float markup = Float.valueOf(markupString) / 100;
+				if(markup > 0) {
+					Recipe r = grabRecipe();
+					if(r == null) {
+						return;
+					}
+					float cost = r.getCostToMake();
+					cost = cost * (1 + markup);
+					cost = cost * (1 + vat);
+					String suggestedCostString = String.format("€ %.2f", cost);
+					suggestedCost.setText(suggestedCostString);
+				}
+			}catch(NumberFormatException e) {
+				
+			}
+			
+			
+		}
 	}
 	
 }

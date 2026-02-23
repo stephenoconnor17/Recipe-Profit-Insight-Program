@@ -148,3 +148,4 @@ Tuna Steak|pacific fresh|190.0|20000.0|1038
 Shrimp|gulf pride|245.00003|35000.0|1036
 Salmon Fillet|alaska seafood|280.00003|40000.0|1035
 Beef Tenderloin|premium angus|350.0|35000.0|1031
+kjdfvjkdsf|asdfad|2.0|5000.0|150
