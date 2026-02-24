@@ -11,9 +11,48 @@ public class FileHandler {
 	private String recipeFileName = "recipes.txt";
 	private String ingredientFileName = "ingredients.txt";
 	private String idFileName = "idfile.txt";
+	private String vatFileName = "vatfile.txt";
 	private final String delimiter = "|";
 	private final String splitDelimiter = "\\|";
+	
+	public void writeVATFile() throws IOException {
+		FileWriter myFile = new FileWriter(vatFileName);
+		for(int i = 0; i < 4; i++) {
+			if(VATHandler.vats[i] >= 0 &&VATHandler.vats[i] <= 1) { // must be in range of 0 to 1 because of 0 to 100%
+				myFile.write(String.valueOf(VATHandler.vats[i]) + "\n");
+			}else {
+				myFile.write("0\n");
+			}
+		}
+		myFile.close();
+	}
+	
+	public void loadVATFile() {
+		File myFile = new File(vatFileName);
+		try (Scanner scanner = new Scanner(myFile)) {
+			int i = 0;
+			while (scanner.hasNextLine() && i < 4) {
+				String line = scanner.nextLine();
+				try {
+					Float nextVat = Float.valueOf(line); //no need for null check!
+					if(nextVat >= 0 && nextVat <= 1) {
+						VATHandler.vats[i] = nextVat;
+					}else {
+						VATHandler.vats[i] = 0f;
+					}
+					
+				}catch(Exception e) {
+					
+				}
+				
+				i++;
+			}
 
+		} catch (FileNotFoundException e) {
+
+		}
+	}
+	
 	public void loadIdFile() {
 		File myFile = new File(idFileName);
 		try (Scanner scanner = new Scanner(myFile)) {
