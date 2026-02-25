@@ -1,247 +1,209 @@
 package myGUI;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.text.DefaultEditorKit;
 
 import filep.*;
 import util.CellRenderer;
 
 public class MyPanel extends JPanel {
 
-	DefaultTableModel dtm;
-	JTable jt;
-	JScrollPane jsp;
-	FileHandler fh;
-	JTextField searchBar;
+    DefaultTableModel dtm;
+    JTable jt;
+    JScrollPane jsp;
+    FileHandler fh;
+    JTextField searchBar;
 
-	JPanel buttonPanel;
-	JButton recipeButton;
-	JButton ingredientButton;
-	JComboBox<RecipeSortType> sortSelect;
+    JPanel buttonPanel;
+    JButton recipeButton;
+    JButton ingredientButton;
+    JComboBox<RecipeSortType> sortSelect;
 
-	String[] tableNames = { "Recipe", "Overall Cost", "Sale", "Difference", "Food Cost Diff", "Profit Margin" }; // adding
-																													// here
-																													// adds
-	// another column of
-	// data., which is display from the recipe display arr
-	Object[] rowtest; // only n columns are shown from display arr for n amount of tableName elements.
+    String[] tableNames = { "Recipe", "Overall Cost", "Sale", "Difference", "Food Cost Diff", "Profit Margin" };
 
-	MyPanel(MyFrame f) {
-		this.setLayout(null);
-		Dimension screenSize = f.getSize();
+    MyPanel(MyFrame f) {
+        setLayout(new BorderLayout());
+        setBackground(new Color(0, 255, 255));
 
-		this.setSize(screenSize);
-		this.setBackground(new Color(0, 255, 255));
+        // --- data init
+        fh = new FileHandler();
+        fh.loadIngredients();
+        fh.loadIdFile();
+        fh.loadRecipes();
 
-		// recipe table and filehandler init
-		fh = new FileHandler();
+        // --- table
+        setUpDMandTable();
+        jsp = new JScrollPane(jt);
+        add(jsp, BorderLayout.CENTER);
 
-		// setUpDMandTable();
-		fh.loadIngredients();
-		fh.loadIdFile();
-		fh.loadRecipes();
-		setUpDMandTable();
+        // --- bottom controls
+        setUpControlBar();     // creates buttonPanel + adds components
+        add(buttonPanel, BorderLayout.SOUTH);
 
-		jsp = new JScrollPane(jt);
+        // Good practice when building UI dynamically
+        revalidate();
+        repaint();
+    }
 
-		jsp.setSize(screenSize.width, (screenSize.height / 4 * 3));
+    // -----------------------------
+    // Bottom bar (buttons + sort + search)
+    // -----------------------------
+    private void setUpControlBar() {
+        buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setBackground(Color.lightGray);
 
-		this.add(jsp);
-		// ----
-		setUpButtons(this);
-		setUpSortSelect();
-		setUpSearchSelect();
+        // IMPORTANT: give it a real height. Don't use getHeight() here.
+        buttonPanel.setPreferredSize(new Dimension(10, 90));
 
-		// Buttons panel init
+        recipeButton = new JButton("Edit Recipes");
+        ingredientButton = new JButton("Edit Ingredients");
 
-		this.add(buttonPanel);
-		this.setVisible(true);
-	}
+        recipeButton.addActionListener(e -> {
+            Recipe r = grabToPass();
+            new RecipeFrame(fh, this, r);
+        });
 
-	public void setUpSortSelect() {
-		sortSelect = new JComboBox<RecipeSortType>();
-		RecipeSortType[] recipeSorts = RecipeSortType.values();
-		for (int i = 0; i < recipeSorts.length; i++) {
-			sortSelect.addItem(recipeSorts[i]);
-		}
+        ingredientButton.addActionListener(e -> {
+            new IngredientFrame(fh, this);
+        });
 
-		sortSelect.addActionListener(e -> {
-			RecipeSortType rst = (RecipeSortType) sortSelect.getSelectedItem();
-			if (rst != null) {
-				RecipeHandler.sortRecipes(rst);
-				String input = (String) searchBar.getText();
-				if (!input.trim().isEmpty()) {
-					fillDataModelSearch(input);
-				} else {
-					fillDataModel();
-				}
-			}
-		});
+        // keep similar sizing to your old 200x50 buttons
+        Dimension btnSize = new Dimension(200, 50);
+        recipeButton.setPreferredSize(btnSize);
+        ingredientButton.setPreferredSize(btnSize);
 
-		sortSelect.setSize(200, 50);
-		sortSelect.setLocation(400, 0);
+        // sort select
+        sortSelect = new JComboBox<>();
+        for (RecipeSortType rst : RecipeSortType.values()) {
+            sortSelect.addItem(rst);
+        }
+        sortSelect.setPreferredSize(new Dimension(200, 50));
+        sortSelect.addActionListener(e -> {
+            RecipeSortType rst = (RecipeSortType) sortSelect.getSelectedItem();
+            if (rst != null) {
+                RecipeHandler.sortRecipes(rst);
+                String input = (searchBar != null) ? searchBar.getText() : "";
+                if (!input.trim().isEmpty()) fillDataModelSearch(input);
+                else fillDataModel();
+            }
+        });
 
-		buttonPanel.add(sortSelect);
+        // search label + field
+        JLabel searchLabel = new JLabel("Keyword Search");
+        searchBar = new JTextField(16); // columns, better than pixel bounds
 
-	}
+        searchBar.getDocument().addDocumentListener(new DocumentListener() {
+            @Override public void insertUpdate(DocumentEvent e) { run(); }
+            @Override public void removeUpdate(DocumentEvent e) { run(); }
+            @Override public void changedUpdate(DocumentEvent e) { run(); }
 
-	public Recipe grabToPass() {
-		int toPass = jt.getSelectedRow();
-		if (toPass < 0) {
-			return null;
-		}
+            private void run() {
+                String input = searchBar.getText();
+                if (!input.trim().isEmpty()) fillDataModelSearch(input);
+                else fillDataModel();
+            }
+        });
 
-		String recipeName = (String) dtm.getValueAt(toPass, 0);
-		if (recipeName == null || recipeName.equals(" ")) {
-			return null;
-		}
+        // ---- Layout placements (same “left buttons, middle sort, right search”)
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.anchor = GridBagConstraints.WEST;
 
-		recipeName = recipeName.substring(recipeName.indexOf(".") + 1).trim();
+        // Button 1
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        buttonPanel.add(recipeButton, gbc);
 
-		Recipe r = RecipeHandler.recipeByName.get(recipeName);
-		if (r == null) {
-			return null;
-		}
+        // Button 2
+        gbc.gridx = 1;
+        buttonPanel.add(ingredientButton, gbc);
 
-		return r;
-	}
+        // Sort in the middle
+        gbc.gridx = 2;
+        gbc.insets = new Insets(8, 16, 8, 16);
+        gbc.anchor = GridBagConstraints.CENTER;
+        buttonPanel.add(sortSelect, gbc);
 
-	public void setUpButtons(MyPanel mp) {
-		buttonPanel = new JPanel();
-		buttonPanel.setLayout(null);
-		buttonPanel.setSize(mp.getSize().width, mp.getSize().height / 5);
-		buttonPanel.setLocation(0, ((mp.getSize().height / 4) * 3));
-		buttonPanel.setBackground(Color.lightGray);
+        // Spacer that expands to push search to the right
+        gbc.gridx = 3;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        buttonPanel.add(Box.createHorizontalStrut(1), gbc);
 
-		recipeButton = new JButton("Edit Recipes");
-		ingredientButton = new JButton("Edit Ingredients");
+        // Search label
+        gbc.gridx = 4;
+        gbc.weightx = 4.0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.anchor = GridBagConstraints.EAST;
+        buttonPanel.add(searchLabel, gbc);
 
-		recipeButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				Recipe r = grabToPass();
-				new RecipeFrame(fh, mp, r);
-			}
-		});
+        // Search field
+        gbc.gridx = 5;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(8, 0, 8, 12);
+        gbc.ipady = 8; // makes it taller similar to your old 30px
+        buttonPanel.add(searchBar, gbc);
+    }
 
-		ingredientButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				new IngredientFrame(fh, mp);
-			}
-		});
+    // -----------------------------
+    // Table + model
+    // -----------------------------
+    public void setUpDMandTable() {
+        dtm = new DefaultTableModel(tableNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
-		recipeButton.setBounds(0, 0, 200, 50);
-		ingredientButton.setBounds(200, 0, 200, 50);
+        fillDataModel();
+        jt = new JTable(dtm);
 
-		buttonPanel.add(ingredientButton);
-		buttonPanel.add(recipeButton);
+        jt.getColumnModel().getColumn(3).setCellRenderer(new CellRenderer("€"));
+        jt.getColumnModel().getColumn(5).setCellRenderer(new CellRenderer("%"));
+        jt.getColumnModel().getColumn(4).setCellRenderer(new CellRenderer("%"));
+    }
 
-		buttonPanel.setVisible(true);
-	}
+    public void fillDataModel() {
+        dtm.setRowCount(0);
+        for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
+            dtm.addRow(RecipeHandler.recipes.get(i).getDisplayArr());
+        }
+    }
 
-	// SET UP DefaultTableModel and JTable
-	public void setUpDMandTable() {
+    public void fillDataModelSearch(String s) {
+        dtm.setRowCount(0);
+        for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
+            String recipeName = RecipeHandler.recipes.get(i).getName();
+            if (recipeName != null && recipeName.toLowerCase().contains(s.toLowerCase())) {
+                dtm.addRow(RecipeHandler.recipes.get(i).getDisplayArr());
+            }
+        }
+    }
 
-		dtm = new DefaultTableModel(tableNames, 0) {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false; // all cells are non-editable
-			}
+    // -----------------------------
+    // Selection -> Recipe
+    // -----------------------------
+    public Recipe grabToPass() {
+        int toPass = jt.getSelectedRow();
+        if (toPass < 0) return null;
 
-		};
-		fillDataModel();
-		jt = new JTable(dtm);
+        String recipeName = (String) dtm.getValueAt(toPass, 0);
+        if (recipeName == null || recipeName.trim().isEmpty()) return null;
 
-		// THIS BIT IS WHAT LETS US DRAW THE DIFFERENCE AS RED OR GREEN
-		// get last column, set its cell renderer to new renderer, which must implement
-		// the method we manipulate to decide draw color;
-		jt.getColumnModel().getColumn(3).setCellRenderer(new CellRenderer("€"));
-
-		jt.getColumnModel().getColumn(5).setCellRenderer(new CellRenderer("%"));
-
-		jt.getColumnModel().getColumn(4).setCellRenderer(new CellRenderer("%"));
-		// ---END OF COLOR
-	}
-
-	public void fillDataModel() {
-		dtm.setRowCount(0);
-
-		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
-			dtm.addRow(RecipeHandler.recipes.get(i).getDisplayArr());
-		}
-	}
-
-	public void fillDataModelSearch(String s) {
-		dtm.setRowCount(0);
-
-		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
-			String recipeName = RecipeHandler.recipes.get(i).getName();
-			if (recipeName.toLowerCase().contains(s.toLowerCase())) {
-				dtm.addRow(RecipeHandler.recipes.get(i).getDisplayArr());
-			}
-		}
-	}
-
-	public void setUpSearchSelect() {
-		searchBar = new JTextField();
-		searchBar.setBounds(620, 15, 200, 30);
-
-		searchBar.getDocument().addDocumentListener(new DocumentListener() {
-
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				String input = (String) searchBar.getText();
-				if (!input.trim().isEmpty()) {
-					fillDataModelSearch(input);
-				} else {
-					fillDataModel();
-				}
-			}
-
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				String input = (String) searchBar.getText();
-				if (!input.trim().isEmpty()) {
-					fillDataModelSearch(input);
-				} else {
-					fillDataModel();
-				}
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				String input = (String) searchBar.getText();
-				if (!input.trim().isEmpty()) {
-					fillDataModelSearch(input);
-				} else {
-					fillDataModel();
-				}
-
-			}
-		});
-
-		JLabel searchLabel = new JLabel("Keyword Search");
-		searchLabel.setBounds(650, 0, 200, 115);
-
-		buttonPanel.add(searchBar);
-		buttonPanel.add(searchLabel);
-	}
-
+        recipeName = recipeName.substring(recipeName.indexOf(".") + 1).trim();
+        return RecipeHandler.recipeByName.get(recipeName);
+    }
 }

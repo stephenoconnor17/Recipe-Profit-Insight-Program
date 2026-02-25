@@ -1,21 +1,27 @@
 package myGUI;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
@@ -52,11 +58,11 @@ public class RecipeFrame extends JFrame {
 	JTextField electricityField;
 	JTextField manpowerField;
 	JTextField packagingField;
-	
+
 	//FIELDs WHERE FINAL COST IS SUGGEST BY TAKING IN
 	//DESIRED MARKUP PERCENTAGE, APPLYING TO COST OF RECIPE FROM INGREDIENTS, MANPOWER, PACKAGING AND ELECTRICITY
 	//THEN APPLYING VAT ASWELL.
-	
+
 	final float vat1Value = 0.09f, vat2Value = 0.135f, vat3Value = 0.23f;
 	JTextField suggestedCost;
 	JTextField markupField;
@@ -74,6 +80,14 @@ public class RecipeFrame extends JFrame {
 	MyPanel parent;
 
 	Recipe passed;
+
+	// --- NEW: layout panels (layout-only change)
+	private JPanel topPanel;
+	private JPanel centerPanel;
+	private JPanel rightPanel;
+
+	// ingredient list scroll (layout-only improvement)
+	private JScrollPane ingredientScroll;
 
 	public RecipeFrame(FileHandler fh, MyPanel parent, Recipe r) {
 		this.parent = parent;
@@ -101,25 +115,54 @@ public class RecipeFrame extends JFrame {
 		selectPassed();        // last, since it triggers grabRecipeAndFill which needs all fields ready
 		setUpVatAndMarkup();
 
-		mp.add(recipeSelect);
+		// --- OLD: mp.add(...) calls were here, but those relied on null layout + bounds.
+		// --- NEW: add everything into the correct panels (layout-only change)
 
-		mp.add(nameField);
-		mp.add(nameLabel);
+		// Top bar
+		addToTop(recipeSelect, 0, 0, 2, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(8, 8, 4, 8));
+		addToTop(saveButton, 2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(8, 4, 4, 4));
+		addToTop(removeButton, 3, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(8, 4, 4, 8));
 
-		mp.add(sellPointLabel);
-		mp.add(sellPointField);
+		// Search + sort row in top bar
+		// (label added inside setUpSearchSelect / setUpSortSelect into topPanel)
+		// keep them right-aligned
+		// NOTE: searchBar / sortSelect are already added by their setup methods.
 
-		mp.add(costToMakeField);
-		mp.add(costToMakeLabel);
+		// Center content (fields + list + ingredient buttons)
+		addToCenter(nameLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(8, 8, 2, 8));
+		addToCenter(nameField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 8, 8, 8));
 
-		mp.add(ingredientLabel);
-		mp.add(ingredientList);
+		addToCenter(costToMakeLabel, 0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 8, 2, 8));
+		addToCenter(costToMakeField, 0, 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 8, 8, 8));
 
-		mp.add(saveButton);
-		mp.add(removeButton);
-		mp.add(removeIngredientButton);
-		mp.add(getIngredientsButton);
+		addToCenter(sellPointLabel, 0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 8, 2, 8));
+		addToCenter(sellPointField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 8, 8, 8));
 
+		addToCenter(ingredientLabel, 0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 8, 2, 8));
+		addToCenter(ingredientScroll, 0, 7, 2, 1, 1.0, 1.0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, new Insets(0, 8, 8, 8));
+
+		// Ingredient buttons to the right of the fields/list
+		/*
+		addToCenter(getIngredientsButton, 2, 7, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTH, new Insets(0, 8, 8, 8));
+		addToCenter(removeIngredientButton, 2, 8, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTH, new Insets(0, 8, 8, 8));
+	*/
+		JPanel ingBtns = new JPanel(new GridBagLayout());
+		GridBagConstraints b = new GridBagConstraints();
+		b.gridx = 0; b.gridy = 0;
+		b.fill = GridBagConstraints.HORIZONTAL;
+		b.insets = new Insets(0, 0, 8, 0);
+		ingBtns.add(getIngredientsButton, b);
+
+		b.gridy = 1;
+		b.insets = new Insets(0, 0, 0, 0);
+		ingBtns.add(removeIngredientButton, b);
+
+		// put the button panel beside the list, aligned to top of the list row
+		addToCenter(ingBtns, 2, 7, 1, 1,
+		        0.0, 1.0,
+		        GridBagConstraints.VERTICAL, GridBagConstraints.NORTH,
+		        new Insets(0, 8, 8, 8));
+		
 		this.add(mp);
 		this.setVisible(true);
 	}
@@ -134,7 +177,17 @@ public class RecipeFrame extends JFrame {
 
 	public void setUpPanel() {
 		mp = new JPanel();
-		mp.setLayout(null);
+		// mp.setLayout(null);
+		// --- NEW: normal layout manager
+		mp.setLayout(new BorderLayout());
+
+		topPanel = new JPanel(new GridBagLayout());
+		centerPanel = new JPanel(new GridBagLayout());
+		rightPanel = new JPanel(new GridBagLayout());
+
+		mp.add(topPanel, BorderLayout.NORTH);
+		mp.add(centerPanel, BorderLayout.CENTER);
+		mp.add(rightPanel, BorderLayout.EAST);
 
 		this.setVisible(true);
 	}
@@ -143,7 +196,8 @@ public class RecipeFrame extends JFrame {
 
 	public void comboBoxInit() {
 		recipeSelect = new JComboBox<String>();
-		recipeSelect.setBounds(10, 10, 300, 35);
+		// recipeSelect.setBounds(10, 10, 300, 35);
+		recipeSelect.setPreferredSize(new Dimension(300, 35));
 		recipeSelect.setEditable(false);
 		recipeSelect.addActionListener(e -> {
 			if (!isUpdating) {
@@ -205,16 +259,16 @@ public class RecipeFrame extends JFrame {
 			}
 		});
 
-		sortSelect.setSize(200, 50);
-		sortSelect.setLocation(500, 70);
+		// sortSelect.setSize(200, 50);
+		// sortSelect.setLocation(500, 70);
+		sortSelect.setPreferredSize(new Dimension(200, 35));
 
 		JLabel sortLabel = new JLabel("Sort By");
-		sortLabel.setBounds(500,120,200,20);
-		
-		
-		mp.add(sortLabel);
-		mp.add(sortSelect);
+		// sortLabel.setBounds(500,120,200,20);
 
+		// --- NEW: add to topPanel using layout
+		addToTop(sortLabel, 6, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(8, 12, 0, 8));
+		addToTop(sortSelect, 6, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 12, 8, 8));
 	}
 
 	public void grabRecipeAndFill() {
@@ -269,17 +323,23 @@ public class RecipeFrame extends JFrame {
 		costToMakeField = new JTextField();
 		sellPointField = new JTextField();
 
-		nameLabel.setBounds(10, 55, 300, 20);
-		nameField.setBounds(10, 75, 300, 35);
+		// nameLabel.setBounds(10, 55, 300, 20);
+		// nameField.setBounds(10, 75, 300, 35);
 
-		costToMakeLabel.setBounds(10, 110, 300, 20);
-		costToMakeField.setBounds(10, 130, 300, 35);
+		// costToMakeLabel.setBounds(10, 110, 300, 20);
+		// costToMakeField.setBounds(10, 130, 300, 35);
 		costToMakeField.setEditable(false);
 
-		sellPointLabel.setBounds(10, 165, 300, 20);
-		sellPointField.setBounds(10, 185, 300, 35);
+		// sellPointLabel.setBounds(10, 165, 300, 20);
+		// sellPointField.setBounds(10, 185, 300, 35);
 
-		ingredientLabel.setBounds(10, 220, 300, 20);
+		// ingredientLabel.setBounds(10, 220, 300, 20);
+
+		// keep roughly your sizing vibe
+		Dimension fieldSize = new Dimension(300, 35);
+		nameField.setPreferredSize(fieldSize);
+		costToMakeField.setPreferredSize(fieldSize);
+		sellPointField.setPreferredSize(fieldSize);
 
 	}
 
@@ -287,8 +347,11 @@ public class RecipeFrame extends JFrame {
 		model = new DefaultListModel<String>();
 		ingredientList = new JList<String>(model);
 
-		ingredientList.setBounds(10, 240, 750, 280);
+		// ingredientList.setBounds(10, 240, 750, 280);
 		ingredientList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+		ingredientScroll = new JScrollPane(ingredientList);
+		ingredientScroll.setPreferredSize(new Dimension(750, 280));
 	}
 
 	public void loadIngredientsIntoModel(Recipe r) {
@@ -304,7 +367,7 @@ public class RecipeFrame extends JFrame {
 					+ df.format(r.getCostOfIngredientInRecipe(t));
 
 			/*
-			 * 
+			 *
 			 * String toAdd = "ID: " + t.getID() + "| NAME: " + t.getName() + "| SUPPLIER: "
 			 * + t.getSupplierName() + "| GRAMS: " + r.getGramsUsedOfIngredient(t) +
 			 * "| COST IN RECIPE: €" + (r.getCostOfIngredientInRecipe(t));
@@ -326,10 +389,16 @@ public class RecipeFrame extends JFrame {
 		removeIngredientButton = new JButton("Remove Ingredient");
 		removeButton = new JButton("Delete Recipe");
 
-		saveButton.setBounds(320, 10, 160, 50);
-		getIngredientsButton.setBounds(320, 130, 160, 50);
-		removeIngredientButton.setBounds(320, 190, 160, 50);
-		removeButton.setBounds(320, 70, 160, 50);
+		// saveButton.setBounds(320, 10, 160, 50);
+		// getIngredientsButton.setBounds(320, 130, 160, 50);
+		// removeIngredientButton.setBounds(320, 190, 160, 50);
+		// removeButton.setBounds(320, 70, 160, 50);
+
+		Dimension btn = new Dimension(160, 40);
+		saveButton.setPreferredSize(btn);
+		removeButton.setPreferredSize(btn);
+		getIngredientsButton.setPreferredSize(btn);
+		removeIngredientButton.setPreferredSize(btn);
 
 		removeButton.addActionListener(new ActionListener() {
 			@Override
@@ -387,7 +456,7 @@ public class RecipeFrame extends JFrame {
 		if (result == JOptionPane.YES_OPTION) {
 			RecipeHandler.recipes.remove(toRemove);
 			RecipeHandler.recipeByName.remove(toRemove.getName());
-			
+
 			fh.writeRecipes();
 
 			setUpComboBox();
@@ -399,13 +468,13 @@ public class RecipeFrame extends JFrame {
 			return;
 		}
 	}
-	
+
 	public float getFloatFromString(String input) {
 		float toReturn = 0;
 		try {
 			toReturn = Float.valueOf(input);
 		} catch (NumberFormatException e) {}
-		
+
 		return toReturn;
 	}
 
@@ -418,8 +487,8 @@ public class RecipeFrame extends JFrame {
 		String electricityText = electricityField.getText().trim();
 		String manpowerText = manpowerField.getText().trim();
 		String packagingText = packagingField.getText().trim();
-		
-		
+
+
 		float sellPoint = 0;
 		float electricity = 0;
 		float manpower = 0;
@@ -453,7 +522,7 @@ public class RecipeFrame extends JFrame {
 			} else {
 
 				saveName = new Recipe(name, sellPoint);
-				
+
 				saveName.setElectricityCost(electricity);
 				saveName.setManPowerCost(manpower);
 				saveName.setPackagingCost(packaging);
@@ -488,7 +557,7 @@ public class RecipeFrame extends JFrame {
 		// recipeSelect.setSelectedItem(name);
 		selectByName(name);
 	}
-	
+
 	public void setUpUtilFields() {
 	    electricityField = new JTextField();
 	    manpowerField = new JTextField();
@@ -498,21 +567,29 @@ public class RecipeFrame extends JFrame {
 	    JLabel manpowerLabel = new JLabel("Manpower Cost");
 	    JLabel packagingLabel = new JLabel("Packaging Cost");
 
-	    electricityLabel.setBounds(720, 0, 150, 20);
-	    electricityField.setBounds(720, 20, 150, 25);
+	    // electricityLabel.setBounds(720, 0, 150, 20);
+	    // electricityField.setBounds(720, 20, 150, 25);
 
-	    manpowerLabel.setBounds(720, 50, 150, 20);
-	    manpowerField.setBounds(720, 70, 150, 25);
+	    // manpowerLabel.setBounds(720, 50, 150, 20);
+	    // manpowerField.setBounds(720, 70, 150, 25);
 
-	    packagingLabel.setBounds(720, 100, 150, 20);
-	    packagingField.setBounds(720, 120, 150, 25);
+	    // packagingLabel.setBounds(720, 100, 150, 20);
+	    // packagingField.setBounds(720, 120, 150, 25);
 
-	    mp.add(electricityLabel);
-	    mp.add(electricityField);
-	    mp.add(manpowerLabel);
-	    mp.add(manpowerField);
-	    mp.add(packagingLabel);
-	    mp.add(packagingField);
+	    Dimension util = new Dimension(150, 25);
+	    electricityField.setPreferredSize(util);
+	    manpowerField.setPreferredSize(util);
+	    packagingField.setPreferredSize(util);
+
+	    // --- NEW: add to rightPanel using layout
+	    addToRight(electricityLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(8, 8, 2, 8));
+	    addToRight(electricityField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 8, 8, 8));
+
+	    addToRight(manpowerLabel, 0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 8, 2, 8));
+	    addToRight(manpowerField, 0, 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 8, 8, 8));
+
+	    addToRight(packagingLabel, 0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 8, 2, 8));
+	    addToRight(packagingField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 8, 12, 8));
 	}
 
 	public void selectByName(String name) {
@@ -565,7 +642,8 @@ public class RecipeFrame extends JFrame {
 
 	public void setUpSearchSelect() {
 		searchBar = new JTextField();
-		searchBar.setBounds(500, 15, 200, 30);
+		// searchBar.setBounds(500, 15, 200, 30);
+		searchBar.setPreferredSize(new Dimension(200, 30));
 
 		searchBar.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -605,52 +683,78 @@ public class RecipeFrame extends JFrame {
 		});
 
 		JLabel searchLabel = new JLabel("Keyword Search");
-		searchLabel.setBounds(500, 0, 200, 115);
+		// searchLabel.setBounds(500, 0, 200, 115);
 
-		mp.add(searchBar);
-		mp.add(searchLabel);
+		// --- NEW: add to topPanel using layout (right side)
+		addToTop(searchLabel, 5, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(8, 8, 0, 8));
+		addToTop(searchBar, 5, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 8, 8, 8));
 	}
-	
-	
+
 	int vatSelect = 1;
 	public void setUpVatAndMarkup() {
 		vat1 = new JButton(String.valueOf(vat1Value*100) + "%");
 		vat2 = new JButton(String.format("%.2f",vat2Value*100) + "%");
 		vat3 = new JButton(String.valueOf(vat3Value*100) + "%");
-		
-		
-		
-		vat1.setBounds(500,200,80,40);
-		vat2.setBounds(580,200,80,40);
-		vat3.setBounds(660,200,80,40);
-		
+
+		// vat1.setBounds(500,200,80,40);
+		// vat2.setBounds(580,200,80,40);
+		// vat3.setBounds(660,200,80,40);
+
+		vat1.setPreferredSize(new Dimension(80, 35));
+		vat2.setPreferredSize(new Dimension(80, 35));
+		vat3.setPreferredSize(new Dimension(80, 35));
+
 		vat1.addActionListener(e -> showSuggestedPricing(1));
 		vat2.addActionListener(e -> showSuggestedPricing(2));
 		vat3.addActionListener(e -> showSuggestedPricing(3));
-		
+
 		JLabel markupLabel = new JLabel("Markup %");
-		markupLabel.setBounds(500, 150, 100, 20);
+		// markupLabel.setBounds(500, 150, 100, 20);
 		markupField = new JTextField();
-		markupField.setBounds(500, 170, 100, 25);
+		// markupField.setBounds(500, 170, 100, 25);
+		markupField.setPreferredSize(new Dimension(100, 25));
 
 		JLabel suggestedCostLabel = new JLabel("Suggested Price");
-		suggestedCostLabel.setBounds(610, 150, 120, 20);
+		// suggestedCostLabel.setBounds(610, 150, 120, 20);
 		suggestedCost = new JTextField();
-		suggestedCost.setBounds(610, 170, 120, 25);
+		// suggestedCost.setBounds(610, 170, 120, 25);
+		suggestedCost.setPreferredSize(new Dimension(120, 25));
 		suggestedCost.setEditable(false);
-		
-		mp.add(vat1);
-		mp.add(vat2);
-		mp.add(vat3);
-		mp.add(suggestedCostLabel);
-		mp.add(suggestedCost);
-		mp.add(markupLabel);
-		mp.add(markupField);
+
+		// --- NEW: add to rightPanel using layout
+		int baseRow = 6;
+
+		addToRight(markupLabel, 0, baseRow, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 8, 2, 8));
+		addToRight(markupField, 0, baseRow+1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 8, 8, 8));
+
+		addToRight(suggestedCostLabel, 0, baseRow+2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 8, 2, 8));
+		addToRight(suggestedCost, 0, baseRow+3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 8, 8, 8));
+
+		// VAT row
+		addToRight(vat1, 0, baseRow+4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 8, 8, 4));
+		addToRight(vat2, 0, baseRow+4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(0, 0, 8, 4));
+		addToRight(vat3, 0, baseRow+4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(0, 0, 8, 8));
+
+		// Make those three VAT buttons sit in a single row nicely:
+		// (layout-only trick: put them into a sub-panel)
+		JPanel vatRow = new JPanel(new GridBagLayout());
+		GridBagConstraints v = new GridBagConstraints();
+		v.gridy = 0;
+		v.insets = new Insets(0, 0, 0, 6);
+		v.gridx = 0; vatRow.add(vat1, v);
+		v.gridx = 1; vatRow.add(vat2, v);
+		v.gridx = 2; v.insets = new Insets(0, 0, 0, 0); vatRow.add(vat3, v);
+
+		// remove individually-added VAT buttons from rightPanel and add vatRow instead
+		rightPanel.remove(vat1);
+		rightPanel.remove(vat2);
+		rightPanel.remove(vat3);
+		addToRight(vatRow, 0, baseRow+4, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 8, 8, 8));
 	}
-	
+
 	public void showSuggestedPricing(int selection) {
 		float vat = 0;
-		
+
 		switch(selection) {
 		case 1:
 			vat = vat1Value;
@@ -677,9 +781,9 @@ public class RecipeFrame extends JFrame {
 			vat3.setBackground(null);
 			break;
 		}
-		
+
 		String markupString = markupField.getText();
-		
+
 		if(!markupString.isEmpty()) {
 			try {
 				float markup = Float.valueOf(markupString) / 100;
@@ -695,13 +799,56 @@ public class RecipeFrame extends JFrame {
 					suggestedCost.setText(suggestedCostString);
 				}
 			}catch(NumberFormatException e) {
-				
+
 			}
-			
-			
 		}
 	}
-	
+
+	// -------------------------
+	// Layout helpers (layout-only)
+	// -------------------------
+	private void addToTop(JComponent c, int x, int y, int w, int h,
+			double wx, double wy, int fill, int anchor, Insets insets) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.gridwidth = w;
+		gbc.gridheight = h;
+		gbc.weightx = wx;
+		gbc.weighty = wy;
+		gbc.fill = fill;
+		gbc.anchor = anchor;
+		gbc.insets = insets;
+		topPanel.add(c, gbc);
+	}
+
+	private void addToCenter(JComponent c, int x, int y, int w, int h,
+			double wx, double wy, int fill, int anchor, Insets insets) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.gridwidth = w;
+		gbc.gridheight = h;
+		gbc.weightx = wx;
+		gbc.weighty = wy;
+		gbc.fill = fill;
+		gbc.anchor = anchor;
+		gbc.insets = insets;
+		centerPanel.add(c, gbc);
+	}
+
+	private void addToRight(JComponent c, int x, int y, int w, int h,
+			double wx, double wy, int fill, int anchor, Insets insets) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.gridwidth = w;
+		gbc.gridheight = h;
+		gbc.weightx = wx;
+		gbc.weighty = wy;
+		gbc.fill = fill;
+		gbc.anchor = anchor;
+		gbc.insets = insets;
+		rightPanel.add(c, gbc);
+	}
 }
-
-

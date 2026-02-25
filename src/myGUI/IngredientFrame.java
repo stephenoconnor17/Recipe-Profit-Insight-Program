@@ -4,12 +4,17 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
 import java.io.IOException;
 
 import filep.Ingredient;
 import filep.IngredientSortType;
 import filep.RecipeHandler;
-import filep.RecipeSortType;
 import filep.FileHandler;
 
 public class IngredientFrame extends JFrame {
@@ -32,16 +37,31 @@ public class IngredientFrame extends JFrame {
 	MyPanel parent;
 	boolean isUpdating = false;
 
+	// --- NEW: layout panels (layout-only change)
+	private JPanel mainPanel;
+	private JPanel leftPanel;
+	private JPanel rightPanel;
+
 	public IngredientFrame(FileHandler fh, MyPanel mf) {
 		this.fh = fh;
 		this.parent = mf;
 
 		setTitle("Ingredient Editor");
 		setSize(600, 400);
-		setLayout(null);
+		// setLayout(null);
+		setLayout(new BorderLayout());
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
+
+		// --- NEW: create panels (layout-only change)
+		mainPanel = new JPanel(new BorderLayout());
+		leftPanel = new JPanel(new GridBagLayout());
+		rightPanel = new JPanel(new GridBagLayout());
+
+		mainPanel.add(leftPanel, BorderLayout.CENTER);
+		mainPanel.add(rightPanel, BorderLayout.EAST);
+		add(mainPanel, BorderLayout.CENTER);
 
 		setUpComboBox();
 		setUpFields();
@@ -55,7 +75,8 @@ public class IngredientFrame extends JFrame {
 
 	private void setUpComboBox() {
 		ingredientSelect = new JComboBox<>();
-		ingredientSelect.setBounds(10, 10, 300, 35);
+		// ingredientSelect.setBounds(10, 10, 300, 35);
+		ingredientSelect.setPreferredSize(new Dimension(300, 35));
 
 		reloadComboBox();
 
@@ -65,7 +86,17 @@ public class IngredientFrame extends JFrame {
 			}
 		});
 
-		add(ingredientSelect);
+		// add(ingredientSelect);
+		// --- NEW: add to leftPanel using layout (layout-only change)
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth = 2;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(8, 10, 8, 10);
+		leftPanel.add(ingredientSelect, gbc);
 	}
 
 	private void reloadComboBox() {
@@ -128,34 +159,63 @@ public class IngredientFrame extends JFrame {
 		costField = new JTextField();
 		gramsField = new JTextField();
 
-		nameLabel.setBounds(10, 60, 120, 20);
-		nameField.setBounds(10, 80, 200, 30);
+		// nameLabel.setBounds(10, 60, 120, 20);
+		// nameField.setBounds(10, 80, 200, 30);
+		// supplierLabel.setBounds(10, 115, 120, 20);
+		// supplierField.setBounds(10, 135, 200, 30);
+		// costLabel.setBounds(10, 170, 120, 20);
+		// costField.setBounds(10, 190, 200, 30);
+		// gramsLabel.setBounds(10, 225, 120, 20);
+		// gramsField.setBounds(10, 245, 200, 30);
 
-		supplierLabel.setBounds(10, 115, 120, 20);
-		supplierField.setBounds(10, 135, 200, 30);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(6, 10, 2, 10);
 
-		costLabel.setBounds(10, 170, 120, 20);
-		costField.setBounds(10, 190, 200, 30);
+		// Row 1: Name
+		gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
+		leftPanel.add(nameLabel, gbc);
 
-		gramsLabel.setBounds(10, 225, 120, 20);
-		gramsField.setBounds(10, 245, 200, 30);
+		gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 10, 6, 10);
+		leftPanel.add(nameField, gbc);
 
-		add(nameLabel);
-		add(nameField);
-		add(supplierLabel);
-		add(supplierField);
-		add(costLabel);
-		add(costField);
-		add(gramsLabel);
-		add(gramsField);
+		// Row 2: Supplier
+		gbc.insets = new Insets(6, 10, 2, 10);
+		gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
+		leftPanel.add(supplierLabel, gbc);
+
+		gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 10, 6, 10);
+		leftPanel.add(supplierField, gbc);
+
+		// Row 3: Total Cost
+		gbc.insets = new Insets(6, 10, 2, 10);
+		gbc.gridx = 0; gbc.gridy = 5; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
+		leftPanel.add(costLabel, gbc);
+
+		gbc.gridx = 0; gbc.gridy = 6; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 10, 6, 10);
+		leftPanel.add(costField, gbc);
+
+		// Row 4: Grams Bought
+		gbc.insets = new Insets(6, 10, 2, 10);
+		gbc.gridx = 0; gbc.gridy = 7; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
+		leftPanel.add(gramsLabel, gbc);
+
+		gbc.gridx = 0; gbc.gridy = 8; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 10, 10, 10);
+		leftPanel.add(gramsField, gbc);
 	}
 
 	private void setUpButtons() {
 		saveButton = new JButton("Save");
 		deleteButton = new JButton("Delete");
 
-		saveButton.setBounds(225, 80, 120, 40);
-		deleteButton.setBounds(225, 140, 120, 40);
+		// saveButton.setBounds(225, 80, 120, 40);
+		// deleteButton.setBounds(225, 140, 120, 40);
+		saveButton.setPreferredSize(new Dimension(120, 40));
+		deleteButton.setPreferredSize(new Dimension(120, 40));
 
 		saveButton.addActionListener(e -> saveIngredient());
 		deleteButton.addActionListener(e -> {
@@ -167,8 +227,22 @@ public class IngredientFrame extends JFrame {
 			}
 		});
 
-		add(saveButton);
-		add(deleteButton);
+		// add(saveButton);
+		// add(deleteButton);
+
+		// --- NEW: place beside fields, similar to your old position (layout-only change)
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 1;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.anchor = GridBagConstraints.NORTH;
+		gbc.insets = new Insets(6, 0, 6, 10);
+
+		gbc.gridy = 2;
+		leftPanel.add(saveButton, gbc);
+
+		gbc.gridy = 4;
+		leftPanel.add(deleteButton, gbc);
 	}
 
 	public Ingredient grabIngredient() {
@@ -290,19 +364,33 @@ public class IngredientFrame extends JFrame {
 			}
 		});
 
-		sortSelect.setSize(200, 50);
-		sortSelect.setLocation(350, 10);
+		// sortSelect.setSize(200, 50);
+		// sortSelect.setLocation(350, 10);
+		sortSelect.setPreferredSize(new Dimension(200, 35));
+
 		JLabel sortLabel = new JLabel("Sort Type");
-		sortLabel.setBounds(400, 60, 200, 20);
+		// sortLabel.setBounds(400, 60, 200, 20);
 
-		this.add(sortLabel);
-		this.add(sortSelect);
+		// this.add(sortLabel);
+		// this.add(sortSelect);
 
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(10, 10, 2, 10);
+
+		gbc.gridy = 0;
+		rightPanel.add(sortLabel, gbc);
+
+		gbc.gridy = 1;
+		gbc.insets = new Insets(0, 10, 10, 10);
+		rightPanel.add(sortSelect, gbc);
 	}
 
 	public void setUpSearchSelect() {
 		searchBar = new JTextField();
-		searchBar.setBounds(350, 90, 200, 30);
+		// searchBar.setBounds(350, 90, 200, 30);
 
 		searchBar.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -329,15 +417,28 @@ public class IngredientFrame extends JFrame {
 		});
 
 		JLabel searchLabel = new JLabel("Keyword Search");
-		searchLabel.setBounds(400, 70, 200, 115);
+		// searchLabel.setBounds(400, 70, 200, 115);
 
-		this.add(searchBar);
-		this.add(searchLabel);
+		// this.add(searchBar);
+		// this.add(searchLabel);
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 10, 2, 10);
+
+		gbc.gridy = 2;
+		rightPanel.add(searchLabel, gbc);
+
+		gbc.gridy = 3;
+		gbc.insets = new Insets(0, 10, 10, 10);
+		rightPanel.add(searchBar, gbc);
 	}
 
 	public void setUpSupplierSearchSelect() {
 		supplierSearchBar = new JTextField();
-		supplierSearchBar.setBounds(350, 150, 200, 30);
+		// supplierSearchBar.setBounds(350, 150, 200, 30);
 
 		supplierSearchBar.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -364,9 +465,22 @@ public class IngredientFrame extends JFrame {
 		});
 
 		JLabel supplierSearchLabel = new JLabel("Supplier Search");
-		supplierSearchLabel.setBounds(400, 130, 200, 115);
+		// supplierSearchLabel.setBounds(400, 130, 200, 115);
 
-		this.add(supplierSearchBar);
-		this.add(supplierSearchLabel);
+		// this.add(supplierSearchBar);
+		// this.add(supplierSearchLabel);
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 10, 2, 10);
+
+		gbc.gridy = 4;
+		rightPanel.add(supplierSearchLabel, gbc);
+
+		gbc.gridy = 5;
+		gbc.insets = new Insets(0, 10, 10, 10);
+		rightPanel.add(supplierSearchBar, gbc);
 	}
 }
