@@ -31,6 +31,7 @@ import filep.Ingredient;
 import filep.Recipe;
 import filep.RecipeHandler;
 import filep.RecipeSortType;
+import filep.VATHandler;
 import filep.FileHandler;
 
 public class RecipeFrame extends JFrame {
@@ -63,12 +64,12 @@ public class RecipeFrame extends JFrame {
 	//DESIRED MARKUP PERCENTAGE, APPLYING TO COST OF RECIPE FROM INGREDIENTS, MANPOWER, PACKAGING AND ELECTRICITY
 	//THEN APPLYING VAT ASWELL.
 
-	final float vat1Value = 0.09f, vat2Value = 0.135f, vat3Value = 0.23f;
 	JTextField suggestedCost;
 	JTextField markupField;
 	JButton vat1;
 	JButton vat2;
 	JButton vat3;
+	JButton vat4;
 	// JTextField nameField;
 
 	// Buttons for save, remove and add ingredient.
@@ -107,13 +108,14 @@ public class RecipeFrame extends JFrame {
 		setUpField();
 		setUpIngredientList();
 		setUpUtilFields();     // must be before selectPassed since grabRecipeAndFill uses these fields
+		setUpVatAndMarkup();
 		comboBoxInit();
 		setUpComboBox();
 		setUpButtons();
 		setUpSearchSelect();
 		setUpSortSelect();
 		selectPassed();        // last, since it triggers grabRecipeAndFill which needs all fields ready
-		setUpVatAndMarkup();
+		
 
 		// --- OLD: mp.add(...) calls were here, but those relied on null layout + bounds.
 		// --- NEW: add everything into the correct panels (layout-only change)
@@ -287,12 +289,15 @@ public class RecipeFrame extends JFrame {
 		} else {
 			nameField.setText(tempR.getName());
 			costToMakeField.setText(String.valueOf(tempR.getCostToMake()));
+			markupField.setText(String.valueOf(tempR.getMarkUp()));
 			sellPointField.setText(String.valueOf(tempR.getSellPoint()));
 			electricityField.setText(String.valueOf(tempR.getElectricityCost()));
 			manpowerField.setText(String.valueOf(tempR.getManPowerCost()));
 			packagingField.setText(String.valueOf(tempR.getPackagingCost()));
 
+			showSuggestedPricing(tempR.getVatSelection());
 			loadIngredientsIntoModel(tempR);
+			
 		}
 
 		isUpdating = false;
@@ -483,18 +488,19 @@ public class RecipeFrame extends JFrame {
 		Recipe saveName = grabRecipe();
 
 		String name = nameField.getText();
-		String sellPointText = sellPointField.getText().trim();
+		//String sellPointText = sellPointField.getText().trim();
+		String markUpText = markupField.getText().trim();
 		String electricityText = electricityField.getText().trim();
 		String manpowerText = manpowerField.getText().trim();
 		String packagingText = packagingField.getText().trim();
 
 
-		float sellPoint = 0;
+		float markUp = 0;
 		float electricity = 0;
 		float manpower = 0;
 		float packaging = 0;
-		if (!sellPointText.isEmpty()) {
-			sellPoint = getFloatFromString(sellPointText);
+		if (!markUpText.isEmpty()) {
+			markUp = getFloatFromString(markUpText);
 		}
 		if (!electricityText.isEmpty()) {
 			electricity = getFloatFromString(electricityText);
@@ -511,7 +517,7 @@ public class RecipeFrame extends JFrame {
 			// INGREDIENTS ALREADY ADDED FROM ADDINGREDIENT, NO NEED TO DO ANYTHING,
 			// AS SAVING THEM WILL THEN FINALISE THEIR ADDITION TO RECIPE
 			saveName.setName(name);
-			saveName.setSellPoint(sellPoint);
+			saveName.setMarkUp(markUp);
 			saveName.setElectricityCost(electricity);
 			saveName.setManPowerCost(manpower);
 			saveName.setPackagingCost(packaging);
@@ -521,7 +527,7 @@ public class RecipeFrame extends JFrame {
 
 			} else {
 
-				saveName = new Recipe(name, sellPoint);
+				saveName = new Recipe(name);
 
 				saveName.setElectricityCost(electricity);
 				saveName.setManPowerCost(manpower);
@@ -609,7 +615,7 @@ public class RecipeFrame extends JFrame {
 	public void addIngredientAction() {
 		Recipe recipe = grabRecipe();
 		if (recipe == null) {
-			recipe = new Recipe("Unfinished Recipe", 0);
+			recipe = new Recipe("Unfinished Recipe");
 			RecipeHandler.addRecipe(recipe);
 			recipeSelect.addItem("Unfinished Recipe");
 			recipeSelect.setSelectedItem("Unfinished Recipe");
@@ -692,9 +698,10 @@ public class RecipeFrame extends JFrame {
 
 	int vatSelect = 1;
 	public void setUpVatAndMarkup() {
-		vat1 = new JButton(String.valueOf(vat1Value*100) + "%");
-		vat2 = new JButton(String.format("%.2f",vat2Value*100) + "%");
-		vat3 = new JButton(String.valueOf(vat3Value*100) + "%");
+		vat1 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(1)*100) + "%");
+		vat2 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(2)*100) + "%");
+		vat3 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(3)*100) + "%");
+		vat4 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(4)*100) + "%");
 
 		// vat1.setBounds(500,200,80,40);
 		// vat2.setBounds(580,200,80,40);
@@ -703,10 +710,12 @@ public class RecipeFrame extends JFrame {
 		vat1.setPreferredSize(new Dimension(80, 35));
 		vat2.setPreferredSize(new Dimension(80, 35));
 		vat3.setPreferredSize(new Dimension(80, 35));
+		vat4.setPreferredSize(new Dimension(80, 35));
 
 		vat1.addActionListener(e -> showSuggestedPricing(1));
 		vat2.addActionListener(e -> showSuggestedPricing(2));
 		vat3.addActionListener(e -> showSuggestedPricing(3));
+		vat4.addActionListener(e -> showSuggestedPricing(4));
 
 		JLabel markupLabel = new JLabel("Markup %");
 		// markupLabel.setBounds(500, 150, 100, 20);
@@ -731,9 +740,9 @@ public class RecipeFrame extends JFrame {
 		addToRight(suggestedCost, 0, baseRow+3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 8, 8, 8));
 
 		// VAT row
-		addToRight(vat1, 0, baseRow+4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 8, 8, 4));
-		addToRight(vat2, 0, baseRow+4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(0, 0, 8, 4));
-		addToRight(vat3, 0, baseRow+4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(0, 0, 8, 8));
+	//	addToRight(vat1, 0, baseRow+4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 8, 8, 4));
+	//	addToRight(vat2, 0, baseRow+4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(0, 0, 8, 4));
+		//addToRight(vat3, 0, baseRow+4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(0, 0, 8, 8));
 
 		// Make those three VAT buttons sit in a single row nicely:
 		// (layout-only trick: put them into a sub-panel)
@@ -743,7 +752,8 @@ public class RecipeFrame extends JFrame {
 		v.insets = new Insets(0, 0, 0, 6);
 		v.gridx = 0; vatRow.add(vat1, v);
 		v.gridx = 1; vatRow.add(vat2, v);
-		v.gridx = 2; v.insets = new Insets(0, 0, 0, 0); vatRow.add(vat3, v);
+		v.gridx = 2; vatRow.add(vat3, v);
+		v.gridx = 3; v.insets = new Insets(0, 0, 0, 0); vatRow.add(vat4, v);
 
 		// remove individually-added VAT buttons from rightPanel and add vatRow instead
 		rightPanel.remove(vat1);
@@ -751,57 +761,58 @@ public class RecipeFrame extends JFrame {
 		rightPanel.remove(vat3);
 		addToRight(vatRow, 0, baseRow+4, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 8, 8, 8));
 	}
-
 	public void showSuggestedPricing(int selection) {
-		float vat = 0;
+	    switch(selection) {
+	        case 1:
+	            vat1.setBackground(Color.green);
+	            vat2.setBackground(null);
+	            vat3.setBackground(null);
+	            vat4.setBackground(null);
+	            break;
+	        case 2:
+	            vat1.setBackground(null);
+	            vat2.setBackground(Color.green);
+	            vat3.setBackground(null);
+	            vat4.setBackground(null);
+	            break;
+	        case 3:
+	            vat1.setBackground(null);
+	            vat2.setBackground(null);
+	            vat3.setBackground(Color.green);
+	            vat4.setBackground(null);
+	            break;
+	        case 4:
+	        	vat1.setBackground(null);
+	            vat2.setBackground(null);
+	            vat3.setBackground(null);
+	            vat4.setBackground(Color.green);
+	            break;
+	        default:
+	            vat1.setBackground(Color.green);
+	            vat2.setBackground(null);
+	            vat3.setBackground(null);
+	            vat4.setBackground(null);
+	            break;
+	    }
 
-		switch(selection) {
-		case 1:
-			vat = vat1Value;
-			vat1.setBackground(Color.green);
-			vat2.setBackground(null);
-			vat3.setBackground(null);
-			break;
-		case 2:
-			vat = vat2Value;
-			vat1.setBackground(null);
-			vat2.setBackground(Color.green);
-			vat3.setBackground(null);
-			break;
-		case 3:
-			vat = vat3Value;
-			vat1.setBackground(null);
-			vat2.setBackground(null);
-			vat3.setBackground(Color.green);
-			break;
-		default:
-			vat = vat1Value;
-			vat1.setBackground(Color.green);
-			vat2.setBackground(null);
-			vat3.setBackground(null);
-			break;
-		}
+	    String markupString = markupField.getText();
 
-		String markupString = markupField.getText();
+	    if (!markupString.isEmpty()) {
+	        try {
+	            float markup = Float.valueOf(markupString);
+	            if (markup > 0) {
+	                Recipe r = grabRecipe();
+	                if (r == null) return;
 
-		if(!markupString.isEmpty()) {
-			try {
-				float markup = Float.valueOf(markupString) / 100;
-				if(markup > 0) {
-					Recipe r = grabRecipe();
-					if(r == null) {
-						return;
-					}
-					float cost = r.getCostToMake();
-					cost = cost * (1 + markup);
-					cost = cost * (1 + vat);
-					String suggestedCostString = String.format("€ %.2f", cost);
-					suggestedCost.setText(suggestedCostString);
-				}
-			}catch(NumberFormatException e) {
+	                r.setMarkUp(markup);
+	                r.setVatSelection(selection);
 
-			}
-		}
+	                suggestedCost.setText(String.format("€ %.2f", r.getSellPoint()));
+	            }
+	        } catch (NumberFormatException e) {
+
+	        }
+	    }
 	}
 
 	// -------------------------

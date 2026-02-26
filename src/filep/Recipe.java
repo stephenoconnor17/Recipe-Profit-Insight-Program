@@ -9,8 +9,11 @@ public class Recipe {
 	private float costToMake;
 	private float sellPoint;
 	private float saleDiff;
+	private float markUp;
 	private float ingredientCostPercentage;
 	private float profitMargin;
+	
+	private int vatSelection;
 	
 	//util variables
 	private float manPowerCost;
@@ -23,12 +26,15 @@ public class Recipe {
 
 	private Object[] displayArr = new Object[6];
 
-	public Recipe(String name, float sellPoint) {
+	public Recipe(String name) {
 		this.name = name;
 		this.costToMake = 0;
-		this.sellPoint = sellPoint;
+		this.sellPoint = 0;
 		this.ingredientCostPercentage = 0;
 		this.profitMargin = 0;
+		this.markUp = 0;
+		
+		this.vatSelection = 1;
 		
 		this.packagingCost = 0;
 		this.electricityCost = 0;
@@ -65,6 +71,31 @@ public class Recipe {
 	
 	}
 	
+	public void setMarkUp(float markup) {
+		this.markUp = markup;
+		update();
+	}
+	
+	public float getMarkUp() {
+		return this.markUp;
+	}
+	
+	public void setVatSelection(int selection) {
+		if(selection >= 1 && selection <= 4) { //4 VAT AVAILABLE TO USER.
+			this.vatSelection  = selection;
+			update();
+		}
+	}
+	
+	public int getVatSelection() {
+		return this.vatSelection;
+	}
+	
+	public void updateSellPointAfterVat() {
+		this.sellPoint = (this.costToMake * (1 + (markUp / 100))) * (1 + VATHandler.getVatFromSelection(vatSelection));
+		//COST * (1 + VAT) is how we get value of ingredient after vat
+	}
+	
 	public float getIngredientCostPercentage() {
 		return this.ingredientCostPercentage;
 	}
@@ -89,9 +120,7 @@ public class Recipe {
 		this.ingredientUnitCost.put(ingredient, ((ingredient.getCostAfterVat() / ingredient.getGrams() ) * unitsInGrams ));
 		this.ingredientGramsUsed.put(ingredient, unitsInGrams);
 		this.costToMake += unitsInGrams * (ingredient.getCostAfterVat() / ingredient.getGrams());
-
-		updateSaleDiff();
-		updateDisplayArr();
+		update();
 	}
 
 	public int returnIngredientListSize() {
@@ -118,11 +147,14 @@ public class Recipe {
 		updateDisplayArr();
 	}
 
+	
+	/*
 	public void setSellPoint(float sellPoint) {
 		this.sellPoint = sellPoint;
 		updateSaleDiff();
 		updateDisplayArr();
 	}
+	*/
 
 	public String getName() {
 		return this.name;
@@ -194,6 +226,7 @@ public class Recipe {
 
 	public void update() {
 		updateCostToMake();
+		updateSellPointAfterVat();
 		updateSaleDiff();
 		updateDisplayArr();
 	}

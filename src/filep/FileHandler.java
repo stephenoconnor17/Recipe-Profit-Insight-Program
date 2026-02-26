@@ -124,7 +124,7 @@ public class FileHandler {
 	}
 
 	// load recipes from file.
-	// they should be in the format of name, sellpoint,packaging,manpower,electricity, ids
+	// they should be in the format of name, markup , vatselection,packaging,manpower,electricity, ids
 	public void loadRecipes() {
 		File myFile = new File(recipeFileName);
 		try (Scanner scanner = new Scanner(myFile)) {
@@ -133,13 +133,14 @@ public class FileHandler {
 				String[] parts = line.split(splitDelimiter);
 
 				String name = parts[0];
-				float cost = Float.parseFloat(parts[1]);
-				float packaging = Float.parseFloat(parts[2]);
-				float manpower = Float.parseFloat(parts[3]);
-				float electricity = Float.parseFloat(parts[4]);
-				Recipe temp = new Recipe(name, cost);
+				float markUp = Float.parseFloat(parts[1]);
+				int vatSelection = Integer.parseInt(parts[2]);
+				float packaging = Float.parseFloat(parts[3]);
+				float manpower = Float.parseFloat(parts[4]);
+				float electricity = Float.parseFloat(parts[5]);
+				Recipe temp = new Recipe(name);
 
-				for (int i = 5; i < parts.length; i++) {
+				for (int i = 6; i < parts.length; i++) {
 					String[] ingredientParts = parts[i].split("/");
 
 					int ingredientId = Integer.parseInt(ingredientParts[0]);
@@ -152,6 +153,8 @@ public class FileHandler {
 					}
 				}
 				
+				temp.setMarkUp(markUp);
+				temp.setVatSelection(vatSelection);
 				temp.setElectricityCost(electricity);
 				temp.setManPowerCost(manpower);
 				temp.setPackagingCost(packaging);
@@ -170,7 +173,7 @@ public class FileHandler {
 		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
 			Recipe current = RecipeHandler.recipes.get(i);
 
-			myfw.write(current.getName() + delimiter + current.getSellPoint() + delimiter + current.getPackagingCost() + delimiter + current.getManPowerCost() + delimiter + current.getElectricityCost());
+			myfw.write(current.getName() + delimiter + current.getMarkUp() + delimiter + current.getVatSelection() + delimiter + current.getPackagingCost() + delimiter + current.getManPowerCost() + delimiter + current.getElectricityCost());
 			for (int j = 0; j < current.returnIngredientListSize(); j++) {
 				Ingredient myI = current.getIngredientFromList(j);
 				myfw.write(delimiter + myI.getID() + "/" + current.getGramsUsedOfIngredient(myI));
