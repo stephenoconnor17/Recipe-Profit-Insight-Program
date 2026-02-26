@@ -4,13 +4,15 @@ public class Ingredient {
 	private String name;
 	private String supplier;
 	private float costPer100g;
+	private float costAfterVAT;
+	private int vatSelection;
 	private float grams;
 	private int id;
 
 	public static final int NEW_ID_SENTINEL = 0;
 
 	// PASS THROUGH THE COST AND GRAMS.
-	public Ingredient(String name, String supplier, float cost, float grams, int id) {
+	public Ingredient(String name, String supplier, float cost, float grams, int id, int newVatSelection) {
 		this.name = name;
 		this.supplier = supplier.toLowerCase();
 		this.grams = grams;
@@ -29,6 +31,29 @@ public class Ingredient {
 		} else {
 			this.id = id;
 		}
+		
+		setVatSelection(newVatSelection);
+		
+	}
+	
+	public float getCostAfterVat() {
+		return this.costAfterVAT;
+	}
+	
+	public void setVatSelection(int selection) {
+		if(selection >= 1 && selection <= 4) { //4 VAT AVAILABLE TO USER.
+			this.vatSelection  = selection;
+			updateCostAfterVat();
+		}
+	}
+	
+	public int getVatSelection() {
+		return this.vatSelection;
+	}
+	
+	public void updateCostAfterVat() {
+		this.costAfterVAT = (getCostPer1g() * grams) * (1 + VATHandler.getVatFromSelection(vatSelection));
+		//COST * (1 + VAT) is how we get value of ingredient after vat
 	}
 
 	public void setSupplierName(String name) {

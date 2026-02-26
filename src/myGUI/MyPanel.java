@@ -36,6 +36,7 @@ public class MyPanel extends JPanel {
 
         // --- data init
         fh = new FileHandler();
+        fh.loadVATFile();
         fh.loadIngredients();
         fh.loadIdFile();
         fh.loadRecipes();

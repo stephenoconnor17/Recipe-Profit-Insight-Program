@@ -283,7 +283,7 @@ public class IngredientFrame extends JFrame {
 			float grams = Float.parseFloat(gramsField.getText());
 
 			if (selected == null) {
-				Ingredient i = new Ingredient(name, supplier, cost, grams, Ingredient.NEW_ID_SENTINEL);
+				Ingredient i = new Ingredient(name, supplier, cost, grams, Ingredient.NEW_ID_SENTINEL, 0);
 				if (RecipeHandler.verifyNoIngredientCopy(i)) {
 					RecipeHandler.addIngredient(i);
 

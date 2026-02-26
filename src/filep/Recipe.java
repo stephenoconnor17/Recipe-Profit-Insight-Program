@@ -86,9 +86,9 @@ public class Recipe {
 	// ingriedient addition
 	public void addIngredient(Ingredient ingredient, float unitsInGrams) {
 		this.recipeIngredients.add(ingredient);
-		this.ingredientUnitCost.put(ingredient, (ingredient.getCostPer1g() * unitsInGrams));
+		this.ingredientUnitCost.put(ingredient, ((ingredient.getCostAfterVat() / ingredient.getGrams() ) * unitsInGrams ));
 		this.ingredientGramsUsed.put(ingredient, unitsInGrams);
-		this.costToMake += (ingredient.getCostPer1g() * unitsInGrams);
+		this.costToMake += unitsInGrams * (ingredient.getCostAfterVat() / ingredient.getGrams());
 
 		updateSaleDiff();
 		updateDisplayArr();
@@ -104,16 +104,10 @@ public class Recipe {
 
 	public void removeIngredient(Ingredient ingredient) {
 		this.recipeIngredients.remove(ingredient);
-		this.costToMake -= this.ingredientUnitCost.get(ingredient);
 		this.ingredientUnitCost.remove(ingredient);
 		this.ingredientGramsUsed.remove(ingredient);
 
-		if (this.costToMake < 0) {
-			this.costToMake = 0;
-		}
-
-		updateSaleDiff();
-		updateDisplayArr();
+		update();
 	}
 
 	// getter/setter
@@ -193,7 +187,8 @@ public class Recipe {
 		costToMake += packagingCost;
 		for (Ingredient i : recipeIngredients) {
 			float gramsUsed = ingredientGramsUsed.get(i);
-			this.costToMake += gramsUsed * i.getCostPer1g();
+			this.costToMake += gramsUsed * (i.getCostAfterVat() / i.getGrams());
+			
 		}
 	}
 
@@ -206,7 +201,7 @@ public class Recipe {
 	public boolean compareToRecipe(Recipe i) {
 		boolean toReturn = false;
 
-		if (i.getName() == this.getName() && this.getSellPoint() == i.getSellPoint()) {
+		if (i.getName().equals(this.getName()) && this.getSellPoint() == i.getSellPoint()) {
 			toReturn = true;
 		}
 

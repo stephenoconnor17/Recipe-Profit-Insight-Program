@@ -11,7 +11,7 @@ public class FileHandler {
 	private String recipeFileName = "recipes.txt";
 	private String ingredientFileName = "ingredients.txt";
 	private String idFileName = "idfile.txt";
-	private String vatFileName = "vatfile.txt";
+	private String vatFileName = "vatFile.txt";
 	private final String delimiter = "|";
 	private final String splitDelimiter = "\\|";
 	
@@ -31,7 +31,7 @@ public class FileHandler {
 		File myFile = new File(vatFileName);
 		try (Scanner scanner = new Scanner(myFile)) {
 			int i = 0;
-			while (scanner.hasNextLine() && i < 4) {
+			while (scanner.hasNextLine() && i < 4) { // only 4 vats . 
 				String line = scanner.nextLine();
 				try {
 					Float nextVat = Float.valueOf(line); //no need for null check!
@@ -80,7 +80,7 @@ public class FileHandler {
 		myFile.write(String.valueOf(RecipeHandler.nextAvailableID));
 		myFile.close();
 	}
-	// ingredients in the form of name suppliername cost grams id
+	// ingredients in the form of name(String) suppliername(String) cost(float) grams(float) id(int) vatselection(int)
 	// read each ingredient
 	public void loadIngredients() {
 		File myFile = new File(ingredientFileName);
@@ -94,8 +94,9 @@ public class FileHandler {
 				float cost = Float.parseFloat(parts[2]);
 				float grams = Float.parseFloat(parts[3]);
 				int id = Integer.parseInt(parts[4]);
+				int vatSelection = Integer.parseInt(parts[5]);
 
-				Ingredient temp = new Ingredient(name, supplier, cost, grams, id);
+				Ingredient temp = new Ingredient(name, supplier, cost, grams, id, vatSelection);
 				RecipeHandler.ingredients.add(temp);
 				RecipeHandler.ingredientIDMap.put(id, temp);
 				RecipeHandler.ingredientByName.put(temp.getName(), temp);
@@ -114,7 +115,7 @@ public class FileHandler {
 
 			myfw.write(current.getName() + delimiter + current.getSupplierName() + delimiter
 					+ (current.getCostPer1g() * current.getGrams()) + delimiter + current.getGrams() + delimiter + current.getID()
-					+ "\n");
+					+ delimiter + current.getVatSelection() + "\n");
 		}
 		myfw.close();
 		
