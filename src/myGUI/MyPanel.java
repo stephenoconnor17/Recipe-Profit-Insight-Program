@@ -26,6 +26,7 @@ public class MyPanel extends JPanel {
     JPanel buttonPanel;
     JButton recipeButton;
     JButton ingredientButton;
+    JButton vatButton;
     JComboBox<RecipeSortType> sortSelect;
 
     String[] tableNames = { "Recipe", "Overall Cost", "Sale", "Difference", "Food Cost Diff", "Profit Margin" };
@@ -67,6 +68,7 @@ public class MyPanel extends JPanel {
 
         recipeButton = new JButton("Edit Recipes");
         ingredientButton = new JButton("Edit Ingredients");
+        vatButton = new JButton("Edit VATs");
 
         recipeButton.addActionListener(e -> {
             Recipe r = grabToPass();
@@ -77,10 +79,15 @@ public class MyPanel extends JPanel {
             new IngredientFrame(fh, this);
         });
 
+        vatButton.addActionListener(e -> {
+            new VATFrame(fh, this);
+        });
+
         // keep similar sizing to your old 200x50 buttons
         Dimension btnSize = new Dimension(200, 50);
         recipeButton.setPreferredSize(btnSize);
         ingredientButton.setPreferredSize(btnSize);
+        vatButton.setPreferredSize(btnSize);
 
         // sort select
         sortSelect = new JComboBox<>();
@@ -129,21 +136,26 @@ public class MyPanel extends JPanel {
         gbc.gridx = 1;
         buttonPanel.add(ingredientButton, gbc);
 
-        // Sort in the middle
+        // Button 3
         gbc.gridx = 2;
+        buttonPanel.add(vatButton, gbc);
+
+        // Sort in the middle
+        gbc.gridx = 3;
         gbc.insets = new Insets(8, 16, 8, 16);
         gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.NONE;
         buttonPanel.add(sortSelect, gbc);
 
         // Spacer that expands to push search to the right
-        gbc.gridx = 3;
+        gbc.gridx = 4;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 0, 0, 0);
         buttonPanel.add(Box.createHorizontalStrut(1), gbc);
 
         // Search label
-        gbc.gridx = 4;
+        gbc.gridx = 5;
         gbc.weightx = 4.0;
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(8, 8, 8, 8);
@@ -151,7 +163,7 @@ public class MyPanel extends JPanel {
         buttonPanel.add(searchLabel, gbc);
 
         // Search field
-        gbc.gridx = 5;
+        gbc.gridx = 6;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(8, 0, 8, 12);
         gbc.ipady = 8; // makes it taller similar to your old 30px

@@ -288,12 +288,12 @@ public class RecipeFrame extends JFrame {
 			model.clear();
 		} else {
 			nameField.setText(tempR.getName());
-			costToMakeField.setText(String.valueOf(tempR.getCostToMake()));
-			markupField.setText(String.valueOf(tempR.getMarkUp()));
-			sellPointField.setText(String.valueOf(tempR.getSellPoint()));
-			electricityField.setText(String.valueOf(tempR.getElectricityCost()));
-			manpowerField.setText(String.valueOf(tempR.getManPowerCost()));
-			packagingField.setText(String.valueOf(tempR.getPackagingCost()));
+			costToMakeField.setText(String.format("%.4f", tempR.getCostToMake()));
+			markupField.setText(String.format("%.4f", tempR.getMarkUp()));
+			sellPointField.setText(String.format("%.4f", tempR.getSellPoint()));
+			electricityField.setText(String.format("%.4f", tempR.getElectricityCost()));
+			manpowerField.setText(String.format("%.4f", tempR.getManPowerCost()));
+			packagingField.setText(String.format("%.4f", tempR.getPackagingCost()));
 
 			showSuggestedPricing(tempR.getVatSelection());
 			loadIngredientsIntoModel(tempR);

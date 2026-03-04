@@ -268,7 +268,7 @@ public class IngredientFrame extends JFrame {
 		} else {
 			nameField.setText(i.getName());
 			supplierField.setText(i.getSupplierName());
-			costField.setText(String.valueOf(i.getCostPer1g() * i.getGrams()));
+			costField.setText(String.format("%.4f", i.getCostPer1g() * i.getGrams()));
 			gramsField.setText(String.valueOf(i.getGrams()));
 		}
 	}
