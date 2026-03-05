@@ -65,7 +65,7 @@ public class RecipeFrame extends JFrame {
 	JTextField electricityField;
 	JTextField manpowerField;
 	JTextField packagingField;
-	JTextField suggestedCost;
+	JTextField priceAfterMarkupAndVat;
 	JTextField markupField;
 
 	JButton vat1;
@@ -77,6 +77,8 @@ public class RecipeFrame extends JFrame {
 	JButton getIngredientsButton;
 	JButton removeIngredientButton;
 	JButton removeButton;
+
+	JLabel saveStatusLabel;
 
 	MyPanel parent;
 	Recipe passed;
@@ -124,6 +126,10 @@ public class RecipeFrame extends JFrame {
 		addToTop(recipeSelect, 0, 0, 2, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(4, 6, 4, 4));
 		addToTop(saveButton, 2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(4, 2, 4, 2));
 		addToTop(removeButton, 3, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(4, 2, 4, 6));
+
+		saveStatusLabel = new JLabel(" ");
+		saveStatusLabel.setPreferredSize(new Dimension(140, 20));
+		addToTop(saveStatusLabel, 0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
 		// Place centre components (recipe fields + ingredient table)
 		addToCenter(nameLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(4, 6, 1, 6));
@@ -269,7 +275,7 @@ public class RecipeFrame extends JFrame {
 	// VAT & Markup
 	// ========================
 
-	/** Creates VAT selection buttons, markup field, and suggested price display on the right panel. */
+	/** Creates VAT selection buttons, markup field, and price after markup & VAT display on the right panel. */
 	public void setUpVatAndMarkup() {
 		vat1 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(1)*100) + "%");
 		vat2 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(2)*100) + "%");
@@ -281,27 +287,27 @@ public class RecipeFrame extends JFrame {
 		vat3.setPreferredSize(new Dimension(80, 35));
 		vat4.setPreferredSize(new Dimension(80, 35));
 
-		vat1.addActionListener(e -> showSuggestedPricing(1));
-		vat2.addActionListener(e -> showSuggestedPricing(2));
-		vat3.addActionListener(e -> showSuggestedPricing(3));
-		vat4.addActionListener(e -> showSuggestedPricing(4));
+		vat1.addActionListener(e -> showPriceAfterMarkupAndVat(1));
+		vat2.addActionListener(e -> showPriceAfterMarkupAndVat(2));
+		vat3.addActionListener(e -> showPriceAfterMarkupAndVat(3));
+		vat4.addActionListener(e -> showPriceAfterMarkupAndVat(4));
 
 		JLabel markupLabel = new JLabel("Markup %");
 		markupField = new JTextField();
 		markupField.setPreferredSize(new Dimension(100, 25));
 
-		JLabel suggestedCostLabel = new JLabel("Suggested Price");
-		suggestedCost = new JTextField();
-		suggestedCost.setPreferredSize(new Dimension(120, 25));
-		suggestedCost.setEditable(false);
+		JLabel priceAfterMarkupAndVatLabel = new JLabel("Price After Markup & VAT");
+		priceAfterMarkupAndVat = new JTextField();
+		priceAfterMarkupAndVat.setPreferredSize(new Dimension(120, 25));
+		priceAfterMarkupAndVat.setEditable(false);
 
 		int baseRow = 6;
 
 		addToRight(markupLabel, 0, baseRow, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
 		addToRight(markupField, 0, baseRow+1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
-		addToRight(suggestedCostLabel, 0, baseRow+2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-		addToRight(suggestedCost, 0, baseRow+3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addToRight(priceAfterMarkupAndVatLabel, 0, baseRow+2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
+		addToRight(priceAfterMarkupAndVat, 0, baseRow+3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
 		// Arrange VAT buttons in a horizontal row
 		JPanel vatRow = new JPanel(new GridBagLayout());
@@ -320,10 +326,10 @@ public class RecipeFrame extends JFrame {
 	}
 
 	/**
-	 * Highlights the selected VAT button, calculates the suggested sell price
-	 * using the markup and VAT rate, and updates the recipe's VAT selection.
+	 * Highlights the selected VAT button, calculates the price after markup & VAT,
+	 * and updates the recipe's VAT selection.
 	 */
-	public void showSuggestedPricing(int selection) {
+	public void showPriceAfterMarkupAndVat(int selection) {
 	    switch(selection) {
 	        case 1:
 	            vat1.setBackground(Color.green);
@@ -369,7 +375,7 @@ public class RecipeFrame extends JFrame {
 	                r.setMarkUp(markup);
 	                r.setVatSelection(selection);
 
-	                suggestedCost.setText(String.format("€ %.2f", r.getSellPoint()));
+	                priceAfterMarkupAndVat.setText(String.format("€ %.2f", r.getSellPoint()));
 	            }
 	        } catch (NumberFormatException e) {
 
@@ -558,7 +564,7 @@ public class RecipeFrame extends JFrame {
 			manpowerField.setText(String.format("%.4f", tempR.getManPowerCost()));
 			packagingField.setText(String.format("%.4f", tempR.getPackagingCost()));
 
-			showSuggestedPricing(tempR.getVatSelection());
+			showPriceAfterMarkupAndVat(tempR.getVatSelection());
 			loadIngredientsIntoModel(tempR);
 
 		}
@@ -572,45 +578,46 @@ public class RecipeFrame extends JFrame {
 
 	/** Saves the current fields as a new recipe or updates the selected existing one. */
 	public void saveRecipesAction() throws IOException {
-		Recipe saveName = grabRecipe();
+		try {
+			Recipe saveName = grabRecipe();
 
-		String name = nameField.getText();
-		String markUpText = markupField.getText().trim();
-		String electricityText = electricityField.getText().trim();
-		String manpowerText = manpowerField.getText().trim();
-		String packagingText = packagingField.getText().trim();
+			String name = nameField.getText();
+			String markUpText = markupField.getText().trim();
+			String electricityText = electricityField.getText().trim();
+			String manpowerText = manpowerField.getText().trim();
+			String packagingText = packagingField.getText().trim();
 
 
-		float markUp = 0;
-		float electricity = 0;
-		float manpower = 0;
-		float packaging = 0;
-		if (!markUpText.isEmpty()) {
-			markUp = getFloatFromString(markUpText);
-		}
-		if (!electricityText.isEmpty()) {
-			electricity = getFloatFromString(electricityText);
-		}
-		if (!manpowerText.isEmpty()) {
-			manpower = getFloatFromString(manpowerText);
-		}
-		if (!packagingText.isEmpty()) {
-			packaging = getFloatFromString(packagingText);
-		}
+			float markUp = 0;
+			float electricity = 0;
+			float manpower = 0;
+			float packaging = 0;
+			if (!markUpText.isEmpty()) {
+				markUp = getFloatFromString(markUpText);
+			}
+			if (!electricityText.isEmpty()) {
+				electricity = getFloatFromString(electricityText);
+			}
+			if (!manpowerText.isEmpty()) {
+				manpower = getFloatFromString(manpowerText);
+			}
+			if (!packagingText.isEmpty()) {
+				packaging = getFloatFromString(packagingText);
+			}
 
-		if (saveName != null) {
-			// Updating an existing recipe
-			saveName.setName(name);
-			saveName.setMarkUp(markUp);
-			saveName.setElectricityCost(electricity);
-			saveName.setManPowerCost(manpower);
-			saveName.setPackagingCost(packaging);
-		} else {
-			// Creating a new recipe
-			if (name.trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Recipe must have a name.");
-
+			if (saveName != null) {
+				// Updating an existing recipe
+				saveName.setName(name);
+				saveName.setMarkUp(markUp);
+				saveName.setElectricityCost(electricity);
+				saveName.setManPowerCost(manpower);
+				saveName.setPackagingCost(packaging);
 			} else {
+				// Creating a new recipe
+				if (name.trim().isEmpty()) {
+					JOptionPane.showMessageDialog(this, "Recipe must have a name.");
+					return;
+				}
 
 				saveName = new Recipe(name);
 
@@ -630,13 +637,19 @@ public class RecipeFrame extends JFrame {
 					RecipeHandler.addRecipe(saveName);
 				}
 			}
+			fh.writeRecipes();
+
+			setUpComboBox();
+
+			parent.fillDataModel();
+			selectByName(name);
+
+			saveStatusLabel.setText("Successfully Saved");
+			saveStatusLabel.setForeground(new Color(0, 153, 0));
+		} catch (Exception e) {
+			saveStatusLabel.setText("Failed to Save");
+			saveStatusLabel.setForeground(Color.RED);
 		}
-		fh.writeRecipes();
-
-		setUpComboBox();
-
-		parent.fillDataModel();
-		selectByName(name);
 	}
 
 	/** Deletes the selected recipe after user confirmation. */

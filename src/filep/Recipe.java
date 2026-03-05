@@ -33,7 +33,7 @@ public class Recipe {
 	private Map<Ingredient, Float> ingredientGramsUsed;
 
 	/** Pre-formatted display data for the main recipe table. */
-	private Object[] displayArr = new Object[6];
+	private Object[] displayArr = new Object[9];
 
 	// ========================
 	// Constructor
@@ -257,11 +257,16 @@ public class Recipe {
 	public void updateDisplayArr() {
 		this.displayArr[0] = this.name;
 		this.displayArr[1] = String.format("€%.2f", this.costToMake);
-		this.displayArr[2] = String.format("€%.2f", this.sellPoint);
+		this.displayArr[2] = String.format("%.2f%%", this.markUp);
+		this.displayArr[3] = String.format("%.2f%%", VATHandler.getVatFromSelection(vatSelection) * 100);
+		float priceBeforeVat = this.costToMake * (1 + (markUp / 100));
+		float vatPaid = this.sellPoint - priceBeforeVat;
+		this.displayArr[4] = String.format("€%.2f", vatPaid);
+		this.displayArr[5] = String.format("€%.2f", this.sellPoint);
 		String prefix = saleDiff > 0 ? "+" : "-";
-		this.displayArr[3] = String.format("%s€%.2f", prefix, Math.abs(this.saleDiff));
-		this.displayArr[4] = String.format("%s%.2f%%", prefix,Math.abs(ingredientCostPercentage));
-		this.displayArr[5] = String.format("%s%.2f%%", prefix,Math.abs(profitMargin));
+		this.displayArr[6] = String.format("%s€%.2f", prefix, Math.abs(this.saleDiff));
+		this.displayArr[7] = String.format("%s%.2f%%", prefix,Math.abs(profitMargin));
+		this.displayArr[8] = String.format("%s%.2f%%", prefix,Math.abs(ingredientCostPercentage));
 
 	}
 

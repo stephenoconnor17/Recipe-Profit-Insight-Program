@@ -88,6 +88,13 @@ public class RecipeHandler {
 	// Batch Update
 	// ========================
 
+	/** Recalculates all ingredient costs after VAT (e.g. after a VAT rate change). */
+	public static void updateIngredients() {
+		for (int i = 0; i < ingredients.size(); i++) {
+			ingredients.get(i).updateCostAfterVat();
+		}
+	}
+
 	/** Recalculates all recipe costs/prices (e.g. after an ingredient or VAT change). */
 	public static void updateRecipes() {
 		for (int i = 0; i < recipes.size(); i++) {

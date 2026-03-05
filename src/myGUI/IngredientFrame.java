@@ -44,6 +44,8 @@ public class IngredientFrame extends JFrame {
 	JButton saveButton;
 	JButton deleteButton;
 
+	JLabel saveStatusLabel;
+
 	JButton vat1;
 	JButton vat2;
 	JButton vat3;
@@ -332,6 +334,16 @@ public class IngredientFrame extends JFrame {
 
 		gbc.gridy = 4;
 		leftPanel.add(deleteButton, gbc);
+
+		saveStatusLabel = new JLabel(" ");
+		saveStatusLabel.setPreferredSize(new Dimension(120, 20));
+		gbc.gridy = 3;
+		gbc.gridx = 1;
+		gbc.gridwidth = 1;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.insets = new Insets(0, 0, 0, 10);
+		leftPanel.add(saveStatusLabel, gbc);
 	}
 
 	// ========================
@@ -485,7 +497,10 @@ public class IngredientFrame extends JFrame {
 
 					selectByName(name);
 				} else {
-						JOptionPane.showMessageDialog(this, "Error writing Ingredient");
+					JOptionPane.showMessageDialog(this, "Error writing Ingredient");
+					saveStatusLabel.setText("Failed to Save");
+					saveStatusLabel.setForeground(Color.RED);
+					return;
 				}
 			} else {
 				// Updating an existing ingredient
@@ -504,8 +519,12 @@ public class IngredientFrame extends JFrame {
 
 				selectByName(name);
 			}
+
+			saveStatusLabel.setText("Successfully Saved");
+			saveStatusLabel.setForeground(new Color(0, 153, 0));
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this, "Invalid input, Make sure all Fields inputted correctly.");
+			saveStatusLabel.setText("Failed to Save");
+			saveStatusLabel.setForeground(Color.RED);
 		}
 	}
 

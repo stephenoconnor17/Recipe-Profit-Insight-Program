@@ -8,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import filep.FileHandler;
+import filep.RecipeHandler;
 import filep.VATHandler;
 
 /**
@@ -140,6 +141,8 @@ public class VATFrame extends JFrame {
             VATHandler.vats[3] = v4;
 
             fh.writeVATFile();
+            RecipeHandler.updateIngredients();
+            RecipeHandler.updateRecipes();
             parent.fillDataModel();
 
             JOptionPane.showMessageDialog(this, "VATs saved successfully.");

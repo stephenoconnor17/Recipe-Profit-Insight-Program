@@ -37,7 +37,7 @@ public class MyPanel extends JPanel {
     JButton vatButton;
     JComboBox<RecipeSortType> sortSelect;
 
-    String[] tableNames = { "Recipe", "Overall Cost", "Sale", "Difference", "Food Cost Diff", "Profit Margin" };
+    String[] tableNames = { "Recipe", "Overall Cost", "Markup", "VAT Type", "VAT Paid", "Sale", "Difference", "Profit Margin", "Food Cost Diff" };
 
     // ========================
     // Constructor
@@ -83,10 +83,10 @@ public class MyPanel extends JPanel {
         fillDataModel();
         jt = new JTable(dtm);
 
-        // Colour-code the difference, food cost, and profit margin columns
-        jt.getColumnModel().getColumn(3).setCellRenderer(new CellRenderer("€"));
-        jt.getColumnModel().getColumn(5).setCellRenderer(new CellRenderer("%"));
-        jt.getColumnModel().getColumn(4).setCellRenderer(new CellRenderer("%"));
+        // Colour-code the difference, profit margin, and food cost diff columns
+        jt.getColumnModel().getColumn(6).setCellRenderer(new CellRenderer("€"));
+        jt.getColumnModel().getColumn(7).setCellRenderer(new CellRenderer("%"));
+        jt.getColumnModel().getColumn(8).setCellRenderer(new CellRenderer("%"));
     }
 
     /** Reloads all recipes into the table model. */
