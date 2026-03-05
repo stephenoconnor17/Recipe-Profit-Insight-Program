@@ -33,7 +33,7 @@ public class VATFrame extends JFrame {
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setResizable(false);
+        util.MinSizeEnforcer.apply(this, 300, 280);
 
         mainPanel = new JPanel(new GridBagLayout());
         add(mainPanel, BorderLayout.CENTER);

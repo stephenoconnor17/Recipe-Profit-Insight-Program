@@ -5,6 +5,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import filep.Ingredient;
 import filep.IngredientSortType;
 import filep.RecipeHandler;
+import filep.VATHandler;
 import filep.FileHandler;
 
 public class IngredientFrame extends JFrame {
@@ -27,11 +29,19 @@ public class IngredientFrame extends JFrame {
 	JTextField costField;
 	JTextField gramsField;
 
+	JTextField costAfterVatField;
+
 	JTextField searchBar;
 	JTextField supplierSearchBar;
 
 	JButton saveButton;
 	JButton deleteButton;
+
+	JButton vat1;
+	JButton vat2;
+	JButton vat3;
+	JButton vat4;
+	int vatSelect = 1;
 
 	FileHandler fh;
 	MyPanel parent;
@@ -47,12 +57,12 @@ public class IngredientFrame extends JFrame {
 		this.parent = mf;
 
 		setTitle("Ingredient Editor");
-		setSize(600, 400);
+		setSize(650, 420);
 		// setLayout(null);
 		setLayout(new BorderLayout());
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setResizable(false);
+		util.MinSizeEnforcer.apply(this, 650, 420);
 
 		// --- NEW: create panels (layout-only change)
 		mainPanel = new JPanel(new BorderLayout());
@@ -151,22 +161,36 @@ public class IngredientFrame extends JFrame {
 	private void setUpFields() {
 		JLabel nameLabel = new JLabel("Name");
 		JLabel supplierLabel = new JLabel("Supplier");
-		JLabel costLabel = new JLabel("Total Cost");
+		JLabel costLabel = new JLabel("Cost Before VAT");
 		JLabel gramsLabel = new JLabel("Grams Bought");
+		JLabel vatLabel = new JLabel("VAT Selection");
+		JLabel costAfterVatLabel = new JLabel("Cost After VAT");
 
 		nameField = new JTextField();
 		supplierField = new JTextField();
 		costField = new JTextField();
 		gramsField = new JTextField();
+		costAfterVatField = new JTextField();
+		costAfterVatField.setEditable(false);
 
-		// nameLabel.setBounds(10, 60, 120, 20);
-		// nameField.setBounds(10, 80, 200, 30);
-		// supplierLabel.setBounds(10, 115, 120, 20);
-		// supplierField.setBounds(10, 135, 200, 30);
-		// costLabel.setBounds(10, 170, 120, 20);
-		// costField.setBounds(10, 190, 200, 30);
-		// gramsLabel.setBounds(10, 225, 120, 20);
-		// gramsField.setBounds(10, 245, 200, 30);
+		// VAT buttons
+		vat1 = new JButton(String.format("%.2f", VATHandler.getVatFromSelection(1) * 100) + "%");
+		vat2 = new JButton(String.format("%.2f", VATHandler.getVatFromSelection(2) * 100) + "%");
+		vat3 = new JButton(String.format("%.2f", VATHandler.getVatFromSelection(3) * 100) + "%");
+		vat4 = new JButton(String.format("%.2f", VATHandler.getVatFromSelection(4) * 100) + "%");
+
+		Dimension vatBtnSize = new Dimension(70, 30);
+		vat1.setPreferredSize(vatBtnSize);
+		vat2.setPreferredSize(vatBtnSize);
+		vat3.setPreferredSize(vatBtnSize);
+		vat4.setPreferredSize(vatBtnSize);
+
+		vat1.addActionListener(e -> selectVat(1));
+		vat2.addActionListener(e -> selectVat(2));
+		vat3.addActionListener(e -> selectVat(3));
+		vat4.addActionListener(e -> selectVat(4));
+
+		highlightVatButton(vatSelect);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.WEST;
@@ -189,7 +213,7 @@ public class IngredientFrame extends JFrame {
 		gbc.insets = new Insets(0, 10, 6, 10);
 		leftPanel.add(supplierField, gbc);
 
-		// Row 3: Total Cost
+		// Row 3: Cost Before VAT
 		gbc.insets = new Insets(6, 10, 2, 10);
 		gbc.gridx = 0; gbc.gridy = 5; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
 		leftPanel.add(costLabel, gbc);
@@ -204,8 +228,59 @@ public class IngredientFrame extends JFrame {
 		leftPanel.add(gramsLabel, gbc);
 
 		gbc.gridx = 0; gbc.gridy = 8; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.insets = new Insets(0, 10, 10, 10);
+		gbc.insets = new Insets(0, 10, 6, 10);
 		leftPanel.add(gramsField, gbc);
+
+		// Row 5: VAT Selection
+		gbc.insets = new Insets(6, 10, 2, 10);
+		gbc.gridx = 0; gbc.gridy = 9; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
+		leftPanel.add(vatLabel, gbc);
+
+		JPanel vatRow = new JPanel(new GridBagLayout());
+		GridBagConstraints v = new GridBagConstraints();
+		v.gridy = 0;
+		v.insets = new Insets(0, 0, 0, 4);
+		v.gridx = 0; vatRow.add(vat1, v);
+		v.gridx = 1; vatRow.add(vat2, v);
+		v.gridx = 2; vatRow.add(vat3, v);
+		v.gridx = 3; v.insets = new Insets(0, 0, 0, 0); vatRow.add(vat4, v);
+
+		gbc.gridx = 0; gbc.gridy = 10; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 10, 6, 10);
+		leftPanel.add(vatRow, gbc);
+
+		// Row 6: Cost After VAT
+		gbc.insets = new Insets(6, 10, 2, 10);
+		gbc.gridx = 0; gbc.gridy = 11; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
+		leftPanel.add(costAfterVatLabel, gbc);
+
+		gbc.gridx = 0; gbc.gridy = 12; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 10, 10, 10);
+		leftPanel.add(costAfterVatField, gbc);
+	}
+
+	private void selectVat(int selection) {
+		vatSelect = selection;
+		highlightVatButton(selection);
+		updateCostAfterVatField();
+	}
+
+	private void highlightVatButton(int selection) {
+		vat1.setBackground(selection == 1 ? Color.green : null);
+		vat2.setBackground(selection == 2 ? Color.green : null);
+		vat3.setBackground(selection == 3 ? Color.green : null);
+		vat4.setBackground(selection == 4 ? Color.green : null);
+	}
+
+	private void updateCostAfterVatField() {
+		try {
+			float cost = Float.parseFloat(costField.getText());
+			float vatRate = VATHandler.getVatFromSelection(vatSelect);
+			float costAfterVat = cost * (1 + vatRate);
+			costAfterVatField.setText(String.format("%.4f", costAfterVat));
+		} catch (NumberFormatException e) {
+			costAfterVatField.setText("");
+		}
 	}
 
 	private void setUpButtons() {
@@ -265,11 +340,17 @@ public class IngredientFrame extends JFrame {
 			supplierField.setText("");
 			costField.setText("");
 			gramsField.setText("");
+			costAfterVatField.setText("");
+			vatSelect = 1;
+			highlightVatButton(vatSelect);
 		} else {
 			nameField.setText(i.getName());
 			supplierField.setText(i.getSupplierName());
 			costField.setText(String.format("%.4f", i.getCostPer1g() * i.getGrams()));
 			gramsField.setText(String.valueOf(i.getGrams()));
+			vatSelect = i.getVatSelection();
+			highlightVatButton(vatSelect);
+			costAfterVatField.setText(String.format("%.4f", i.getCostAfterVat()));
 		}
 	}
 
@@ -283,7 +364,7 @@ public class IngredientFrame extends JFrame {
 			float grams = Float.parseFloat(gramsField.getText());
 
 			if (selected == null) {
-				Ingredient i = new Ingredient(name, supplier, cost, grams, Ingredient.NEW_ID_SENTINEL, 0);
+				Ingredient i = new Ingredient(name, supplier, cost, grams, Ingredient.NEW_ID_SENTINEL, vatSelect);
 				if (RecipeHandler.verifyNoIngredientCopy(i)) {
 					RecipeHandler.addIngredient(i);
 
@@ -304,6 +385,7 @@ public class IngredientFrame extends JFrame {
 				selected.setSupplierName(supplier);
 				selected.setCost(cost);
 				selected.setGrams(grams);
+				selected.setVatSelection(vatSelect);
 				RecipeHandler.ingredientByName.put(selected.getName(), selected);
 				fh.writeIngredients();
 				reloadComboBox();

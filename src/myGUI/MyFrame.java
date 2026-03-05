@@ -10,7 +10,7 @@ public class MyFrame extends JFrame {
 		this.setSize(1000, 550);
 		this.setDefaultCloseOperation(this.EXIT_ON_CLOSE);
 		this.setTitle("Recipe Book");
-		//this.setResizable(false);
+		util.MinSizeEnforcer.apply(this, 1000, 550);
 
 		mp = new MyPanel(this);
 
