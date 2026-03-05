@@ -1,23 +1,23 @@
 package myGUI;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.text.DecimalFormat;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
 
 import filep.Ingredient;
 import filep.Recipe;
@@ -27,8 +27,8 @@ public class AddIngredientDialog extends JDialog {
 
 	Recipe recipe;
 
-	JList<Ingredient> ingredientList;
-	DefaultListModel<Ingredient> model;
+	JTable ingredientTable;
+	DefaultTableModel model;
 	JScrollPane jsp;
 
 	JTextField searchBar;
@@ -67,45 +67,62 @@ public class AddIngredientDialog extends JDialog {
 	}
 
 	public void setUpList() {
-		model = new DefaultListModel<Ingredient>();
-
-		ingredientList = new JList<>(model);
-		// ingredientList.setBounds(10, 10, 960, 200);
-		ingredientList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		String[] cols = {"ID", "Name", "Supplier", "Grams/Unit", "Cost/Unit", "Cost/100g", "Cost/1g"};
+		model = new DefaultTableModel(cols, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		ingredientTable = new JTable(model);
+		ingredientTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		loadList();
 
-		ingredientList.setFixedCellHeight(30);
-		ingredientList.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		jsp = new JScrollPane(ingredientTable);
 
-		jsp = new JScrollPane(ingredientList);
-		// jsp.setBounds(10, 10, 960, 200);
-
-		// --- NEW: list panel (layout-only change)
 		listPanel = new JPanel(new BorderLayout());
 		listPanel.add(jsp, BorderLayout.CENTER);
 	}
 
 	public void loadListFiltered() {
-		model.clear();
+		model.setRowCount(0);
 		String nameInput = searchBar.getText().toLowerCase().trim();
 		String supplierInput = supplierSearchBar.getText().toLowerCase().trim();
 
+		DecimalFormat df = new DecimalFormat("0.0000");
 		for (Ingredient i : RecipeHandler.ingredients) {
 			boolean matchesName = nameInput.isEmpty() || i.getName().toLowerCase().contains(nameInput);
 			boolean matchesSupplier = supplierInput.isEmpty() || i.getSupplierName().toLowerCase().contains(supplierInput);
 
 			if (matchesName && matchesSupplier) {
-				model.addElement(i);
+				model.addRow(new Object[]{
+					i.getID(),
+					i.getName(),
+					i.getSupplierName(),
+					i.getGrams(),
+					"€" + df.format(i.getCost()),
+					"€" + df.format(i.getCostPer100g()),
+					"€" + df.format(i.getCostPer1g())
+				});
 			}
 		}
 	}
 
 	public void loadList() {
-		model.clear();
+		model.setRowCount(0);
 
+		DecimalFormat df = new DecimalFormat("0.0000");
 		for (Ingredient i : RecipeHandler.ingredients) {
-			model.addElement(i);
+			model.addRow(new Object[]{
+				i.getID(),
+				i.getName(),
+				i.getSupplierName(),
+				i.getGrams(),
+				"€" + df.format(i.getCost()),
+				"€" + df.format(i.getCostPer100g()),
+				"€" + df.format(i.getCostPer1g())
+			});
 		}
 	}
 
@@ -140,10 +157,12 @@ public class AddIngredientDialog extends JDialog {
 	}
 
 	public void addIngredient() {
-		Ingredient selected = ingredientList.getSelectedValue();
-		if (selected == null) {
-			return;
-		}
+		int selectedRow = ingredientTable.getSelectedRow();
+		if (selectedRow < 0) return;
+
+		int id = (int) model.getValueAt(selectedRow, 0);
+		Ingredient selected = RecipeHandler.ingredientIDMap.get(id);
+		if (selected == null) return;
 
 		try {
 			float grams = Float.parseFloat(gramsField.getText());

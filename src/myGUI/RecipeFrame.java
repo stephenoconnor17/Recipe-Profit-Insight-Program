@@ -12,20 +12,20 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
 
 import filep.Ingredient;
 import filep.Recipe;
@@ -48,8 +48,8 @@ public class RecipeFrame extends JFrame {
 
 	// ingredient display
 	JLabel ingredientLabel;
-	JList<String> ingredientList;
-	DefaultListModel<String> model;
+	JTable ingredientTable;
+	DefaultTableModel ingredientModel;
 
 	// text fields for user input.
 	JTextField nameField;
@@ -117,9 +117,6 @@ public class RecipeFrame extends JFrame {
 		selectPassed();        // last, since it triggers grabRecipeAndFill which needs all fields ready
 		
 
-		// --- OLD: mp.add(...) calls were here, but those relied on null layout + bounds.
-		// --- NEW: add everything into the correct panels (layout-only change)
-
 		// Top bar
 		addToTop(recipeSelect, 0, 0, 2, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(8, 8, 4, 8));
 		addToTop(saveButton, 2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(8, 4, 4, 4));
@@ -144,10 +141,7 @@ public class RecipeFrame extends JFrame {
 		addToCenter(ingredientScroll, 0, 7, 2, 1, 1.0, 1.0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, new Insets(0, 8, 8, 8));
 
 		// Ingredient buttons to the right of the fields/list
-		/*
-		addToCenter(getIngredientsButton, 2, 7, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTH, new Insets(0, 8, 8, 8));
-		addToCenter(removeIngredientButton, 2, 8, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTH, new Insets(0, 8, 8, 8));
-	*/
+		
 		JPanel ingBtns = new JPanel(new GridBagLayout());
 		GridBagConstraints b = new GridBagConstraints();
 		b.gridx = 0; b.gridy = 0;
@@ -252,17 +246,13 @@ public class RecipeFrame extends JFrame {
 				RecipeHandler.sortRecipes(rst);
 				String input = (String) searchBar.getText();
 				if (!input.trim().isEmpty()) {
-					// fillDataModelSearch(input);
 					setUpComboBoxSearch(input);
 				} else {
-					// fillDataModel();
 					setUpComboBox();
 				}
 			}
 		});
 
-		// sortSelect.setSize(200, 50);
-		// sortSelect.setLocation(500, 70);
 		sortSelect.setPreferredSize(new Dimension(200, 35));
 
 		JLabel sortLabel = new JLabel("Sort By");
@@ -285,7 +275,7 @@ public class RecipeFrame extends JFrame {
 			electricityField.setText("");
 			manpowerField.setText("");
 			packagingField.setText("");
-			model.clear();
+			ingredientModel.setRowCount(0);
 		} else {
 			nameField.setText(tempR.getName());
 			costToMakeField.setText(String.format("%.4f", tempR.getCostToMake()));
@@ -327,20 +317,9 @@ public class RecipeFrame extends JFrame {
 		nameField = new JTextField();
 		costToMakeField = new JTextField();
 		sellPointField = new JTextField();
-
-		// nameLabel.setBounds(10, 55, 300, 20);
-		// nameField.setBounds(10, 75, 300, 35);
-
-		// costToMakeLabel.setBounds(10, 110, 300, 20);
-		// costToMakeField.setBounds(10, 130, 300, 35);
 		costToMakeField.setEditable(false);
 
-		// sellPointLabel.setBounds(10, 165, 300, 20);
-		// sellPointField.setBounds(10, 185, 300, 35);
-
-		// ingredientLabel.setBounds(10, 220, 300, 20);
-
-		// keep roughly your sizing vibe
+		
 		Dimension fieldSize = new Dimension(300, 35);
 		nameField.setPreferredSize(fieldSize);
 		costToMakeField.setPreferredSize(fieldSize);
@@ -349,42 +328,32 @@ public class RecipeFrame extends JFrame {
 	}
 
 	public void setUpIngredientList() {
-		model = new DefaultListModel<String>();
-		ingredientList = new JList<String>(model);
+		String[] cols = {"ID", "Name", "Supplier", "Grams Used", "Cost in Recipe"};
+		ingredientModel = new DefaultTableModel(cols, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		ingredientTable = new JTable(ingredientModel);
+		ingredientTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		// ingredientList.setBounds(10, 240, 750, 280);
-		ingredientList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-		ingredientScroll = new JScrollPane(ingredientList);
+		ingredientScroll = new JScrollPane(ingredientTable);
 		ingredientScroll.setPreferredSize(new Dimension(750, 280));
 	}
 
 	public void loadIngredientsIntoModel(Recipe r) {
-		model.clear();
+		ingredientModel.setRowCount(0);
 
-		int i = 0;
+		DecimalFormat df = new DecimalFormat("0.0000");
 		for (Ingredient t : r.getIngredients()) {
-
-			DecimalFormat df = new DecimalFormat("0.0000");
-
-			String toAdd = "ID: " + t.getID() + "| NAME: " + t.getName() + "| SUPPLIER: " + t.getSupplierName()
-					+ "| GRAMS: " + r.getGramsUsedOfIngredient(t) + "| COST IN RECIPE: €"
-					+ df.format(r.getCostOfIngredientInRecipe(t));
-
-			/*
-			 *
-			 * String toAdd = "ID: " + t.getID() + "| NAME: " + t.getName() + "| SUPPLIER: "
-			 * + t.getSupplierName() + "| GRAMS: " + r.getGramsUsedOfIngredient(t) +
-			 * "| COST IN RECIPE: €" + (r.getCostOfIngredientInRecipe(t));
-			 */
-			model.addElement(toAdd); // each elements display in the Model is the element's toString();
-			// there was certain values which I couldnt get from passing through an
-			// Ingredient object and making my own toString();
-			// because the ingredient object stores its name, cost, supplier, amount BOUGHT
-			// IN, never amount used in each recipe
-			// that information belongs to the recipe itself.
-
-			i++;
+			ingredientModel.addRow(new Object[]{
+				t.getID(),
+				t.getName(),
+				t.getSupplierName(),
+				r.getGramsUsedOfIngredient(t),
+				"€" + df.format(r.getCostOfIngredientInRecipe(t))
+			});
 		}
 	}
 
@@ -393,11 +362,6 @@ public class RecipeFrame extends JFrame {
 		getIngredientsButton = new JButton("Add Ingredient");
 		removeIngredientButton = new JButton("Remove Ingredient");
 		removeButton = new JButton("Delete Recipe");
-
-		// saveButton.setBounds(320, 10, 160, 50);
-		// getIngredientsButton.setBounds(320, 130, 160, 50);
-		// removeIngredientButton.setBounds(320, 190, 160, 50);
-		// removeButton.setBounds(320, 70, 160, 50);
 
 		Dimension btn = new Dimension(160, 40);
 		saveButton.setPreferredSize(btn);
@@ -488,7 +452,6 @@ public class RecipeFrame extends JFrame {
 		Recipe saveName = grabRecipe();
 
 		String name = nameField.getText();
-		//String sellPointText = sellPointField.getText().trim();
 		String markUpText = markupField.getText().trim();
 		String electricityText = electricityField.getText().trim();
 		String manpowerText = manpowerField.getText().trim();
@@ -533,20 +496,10 @@ public class RecipeFrame extends JFrame {
 				saveName.setManPowerCost(manpower);
 				saveName.setPackagingCost(packaging);
 
-				DefaultListModel<String> model = (DefaultListModel<String>) ingredientList.getModel();
-
-				for (int i = 0; i < model.getSize(); i++) {
-					String ingEntry = model.getElementAt(i);
-
-					String[] parts = ingEntry.split("\\|"); // because | is a special character.
-					String idPart = parts[0].replace("ID:", "").trim();
-					int ingId = Integer.parseInt(idPart);
-
+				for (int i = 0; i < ingredientModel.getRowCount(); i++) {
+					int ingId = (int) ingredientModel.getValueAt(i, 0);
 					Ingredient ing = RecipeHandler.ingredientIDMap.get(ingId);
-
-					String gramsPart = parts[3].replace("GRAMS:", "").trim();
-					float gramsUsed = Float.parseFloat(gramsPart);
-
+					float gramsUsed = (float) ingredientModel.getValueAt(i, 3);
 					saveName.addIngredient(ing, gramsUsed);
 				}
 
@@ -573,21 +526,12 @@ public class RecipeFrame extends JFrame {
 	    JLabel manpowerLabel = new JLabel("Manpower Cost");
 	    JLabel packagingLabel = new JLabel("Packaging Cost");
 
-	    // electricityLabel.setBounds(720, 0, 150, 20);
-	    // electricityField.setBounds(720, 20, 150, 25);
-
-	    // manpowerLabel.setBounds(720, 50, 150, 20);
-	    // manpowerField.setBounds(720, 70, 150, 25);
-
-	    // packagingLabel.setBounds(720, 100, 150, 20);
-	    // packagingField.setBounds(720, 120, 150, 25);
-
 	    Dimension util = new Dimension(150, 25);
 	    electricityField.setPreferredSize(util);
 	    manpowerField.setPreferredSize(util);
 	    packagingField.setPreferredSize(util);
 
-	    // --- NEW: add to rightPanel using layout
+	    //add to rightPanel using layout
 	    addToRight(electricityLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(8, 8, 2, 8));
 	    addToRight(electricityField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 8, 8, 8));
 
@@ -628,22 +572,18 @@ public class RecipeFrame extends JFrame {
 		grabRecipeAndFill();
 	}
 
-	// remove ingredient from recipe based on JList GUI selection.
+	// remove ingredient from recipe based on JTable GUI selection.
 	public void removeIngredientAction() {
-		String ingEntry = ingredientList.getSelectedValue();
-		if (ingEntry != null) {
-			String[] seperated = ingEntry.split("\\|");
-			String idPart = seperated[0].replace("ID:", "").trim();
-			Integer ingEntryId = Integer.valueOf(idPart);
-			// System.out.println(mr);
-			Recipe selectedRecipe = grabRecipe();
-			Ingredient selectedIngredient = selectedRecipe.getIngredient(RecipeHandler.ingredientIDMap.get(ingEntryId));
+		int selectedRow = ingredientTable.getSelectedRow();
+		if (selectedRow < 0) return;
 
-			selectedRecipe.removeIngredient(selectedIngredient);
-			loadIngredientsIntoModel(selectedRecipe);
-			grabRecipeAndFill();
-			// selectedRecipe.getIngredientFromList()
-		}
+		int ingEntryId = (int) ingredientModel.getValueAt(selectedRow, 0);
+		Recipe selectedRecipe = grabRecipe();
+		Ingredient selectedIngredient = selectedRecipe.getIngredient(RecipeHandler.ingredientIDMap.get(ingEntryId));
+
+		selectedRecipe.removeIngredient(selectedIngredient);
+		loadIngredientsIntoModel(selectedRecipe);
+		grabRecipeAndFill();
 	}
 
 	public void setUpSearchSelect() {
