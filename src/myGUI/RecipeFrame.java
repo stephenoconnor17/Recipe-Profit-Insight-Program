@@ -34,7 +34,16 @@ import filep.FileHandler;
 import util.ComboBoxUtil;
 import util.TextChangeListener;
 
+/**
+ * Editor window for creating, editing, and deleting recipes.
+ * Layout: top bar (recipe selector, save/delete buttons, search, sort),
+ * centre (name/cost/sell fields + ingredient table), right (overhead costs, markup, VAT).
+ */
 public class RecipeFrame extends JFrame {
+
+	// ========================
+	// Fields
+	// ========================
 
 	JComboBox<String> recipeSelect;
 	JComboBox<RecipeSortType> sortSelect;
@@ -44,8 +53,8 @@ public class RecipeFrame extends JFrame {
 	JLabel nameLabel;
 	JLabel costToMakeLabel;
 	JLabel sellPointLabel;
-
 	JLabel ingredientLabel;
+
 	JTable ingredientTable;
 	DefaultTableModel ingredientModel;
 
@@ -56,9 +65,9 @@ public class RecipeFrame extends JFrame {
 	JTextField electricityField;
 	JTextField manpowerField;
 	JTextField packagingField;
-
 	JTextField suggestedCost;
 	JTextField markupField;
+
 	JButton vat1;
 	JButton vat2;
 	JButton vat3;
@@ -70,14 +79,19 @@ public class RecipeFrame extends JFrame {
 	JButton removeButton;
 
 	MyPanel parent;
-
 	Recipe passed;
 
 	private JPanel topPanel;
 	private JPanel centerPanel;
 	private JPanel rightPanel;
-
 	private JScrollPane ingredientScroll;
+
+	boolean isUpdating = false;
+	int vatSelect = 1;
+
+	// ========================
+	// Constructor
+	// ========================
 
 	public RecipeFrame(FileHandler fh, MyPanel parent, Recipe r) {
 		this.parent = parent;
@@ -93,23 +107,25 @@ public class RecipeFrame extends JFrame {
 
 		this.fh = fh;
 
-		setUpPanel();          // creates mp first, everything else needs it
+		// Build UI components (order matters: some depend on others being initialised)
+		setUpPanel();
 		setUpField();
 		setUpIngredientList();
-		setUpUtilFields();     // must be before selectPassed since grabRecipeAndFill uses these fields
+		setUpUtilFields();       // must be before selectPassed since grabRecipeAndFill uses these fields
 		setUpVatAndMarkup();
 		comboBoxInit();
 		setUpComboBox();
 		setUpButtons();
 		setUpSearchSelect();
 		setUpSortSelect();
-		selectPassed();        // last, since it triggers grabRecipeAndFill which needs all fields ready
-		
+		selectPassed();          // last, since it triggers grabRecipeAndFill which needs all fields ready
 
+		// Place top-bar components
 		addToTop(recipeSelect, 0, 0, 2, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(4, 6, 4, 4));
 		addToTop(saveButton, 2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(4, 2, 4, 2));
 		addToTop(removeButton, 3, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(4, 2, 4, 6));
 
+		// Place centre components (recipe fields + ingredient table)
 		addToCenter(nameLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(4, 6, 1, 6));
 		addToCenter(nameField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
@@ -122,8 +138,7 @@ public class RecipeFrame extends JFrame {
 		addToCenter(ingredientLabel, 0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
 		addToCenter(ingredientScroll, 0, 7, 2, 1, 1.0, 1.0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, new Insets(0, 6, 6, 6));
 
-		// Ingredient buttons to the right of the fields/list
-		
+		// Add/remove ingredient buttons beside the ingredient list
 		JPanel ingBtns = new JPanel(new GridBagLayout());
 		GridBagConstraints b = new GridBagConstraints();
 		b.gridx = 0; b.gridy = 0;
@@ -135,22 +150,20 @@ public class RecipeFrame extends JFrame {
 		b.insets = new Insets(0, 0, 0, 0);
 		ingBtns.add(removeIngredientButton, b);
 
-		// put the button panel beside the list, aligned to top of the list row
 		addToCenter(ingBtns, 2, 7, 1, 1,
 		        0.0, 1.0,
 		        GridBagConstraints.VERTICAL, GridBagConstraints.NORTH,
 		        new Insets(0, 4, 6, 6));
-		
+
 		this.add(mp);
 		this.setVisible(true);
 	}
 
-	public void selectPassed() {
-		if (passed != null) {
-			selectByName(passed.getName());
-		}
-	}
+	// ========================
+	// Panel Layout Setup
+	// ========================
 
+	/** Creates the three-region BorderLayout (top, centre, right). */
 	public void setUpPanel() {
 		mp = new JPanel();
 		mp.setLayout(new BorderLayout());
@@ -166,116 +179,11 @@ public class RecipeFrame extends JFrame {
 		this.setVisible(true);
 	}
 
-	boolean isUpdating = false;
+	// ========================
+	// Recipe Fields
+	// ========================
 
-	public void comboBoxInit() {
-		recipeSelect = new JComboBox<String>();
-		recipeSelect.setPreferredSize(new Dimension(300, 35));
-		recipeSelect.setEditable(false);
-		recipeSelect.addActionListener(e -> {
-			if (!isUpdating) {
-				grabRecipeAndFill();
-			}
-		});
-
-	}
-
-	public void setUpComboBox() {
-		// Load options for recipe select.
-		isUpdating = true;
-		recipeSelect.removeAllItems();
-		recipeSelect.addItem("New recipe");
-
-		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
-			recipeSelect.addItem((i + 1) + ". " + RecipeHandler.recipes.get(i).getName());
-		}
-		isUpdating = false;
-		grabRecipeAndFill();
-	}
-
-	public void setUpComboBoxSearch(String s) {
-		// Load options for recipe select.
-		isUpdating = true;
-		recipeSelect.removeAllItems();
-		recipeSelect.addItem("New recipe");
-
-		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
-			String name = RecipeHandler.recipes.get(i).getName();
-
-			if (name.toLowerCase().contains(s.toLowerCase())) {
-				recipeSelect.addItem((i + 1) + ". " + RecipeHandler.recipes.get(i).getName());
-			}
-		}
-		isUpdating = false;
-		grabRecipeAndFill();
-	}
-
-	public void setUpSortSelect() {
-		sortSelect = new JComboBox<RecipeSortType>();
-		RecipeSortType[] recipeSorts = RecipeSortType.values();
-		for (int i = 0; i < recipeSorts.length; i++) {
-			sortSelect.addItem(recipeSorts[i]);
-		}
-
-		sortSelect.addActionListener(e -> {
-			RecipeSortType rst = (RecipeSortType) sortSelect.getSelectedItem();
-			if (rst != null) {
-				RecipeHandler.sortRecipes(rst);
-				String input = (String) searchBar.getText();
-				if (!input.trim().isEmpty()) {
-					setUpComboBoxSearch(input);
-				} else {
-					setUpComboBox();
-				}
-			}
-		});
-
-		sortSelect.setPreferredSize(new Dimension(200, 35));
-
-		JLabel sortLabel = new JLabel("Sort By");
-
-		addToTop(sortLabel, 6, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(4, 6, 0, 6));
-		addToTop(sortSelect, 6, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 6, 4, 6));
-	}
-
-	public void grabRecipeAndFill() {
-		Recipe tempR = grabRecipe();
-
-		isUpdating = true;
-		if (tempR == null) {
-			nameField.setText("");
-			costToMakeField.setText("");
-			sellPointField.setText("");
-			electricityField.setText("");
-			manpowerField.setText("");
-			packagingField.setText("");
-			ingredientModel.setRowCount(0);
-		} else {
-			nameField.setText(tempR.getName());
-			costToMakeField.setText(String.format("%.4f", tempR.getCostToMake()));
-			markupField.setText(String.format("%.4f", tempR.getMarkUp()));
-			sellPointField.setText(String.format("%.4f", tempR.getSellPoint()));
-			electricityField.setText(String.format("%.4f", tempR.getElectricityCost()));
-			manpowerField.setText(String.format("%.4f", tempR.getManPowerCost()));
-			packagingField.setText(String.format("%.4f", tempR.getPackagingCost()));
-
-			showSuggestedPricing(tempR.getVatSelection());
-			loadIngredientsIntoModel(tempR);
-			
-		}
-
-		isUpdating = false;
-	}
-
-	public Recipe grabRecipe() {
-		String trimmed = (String) recipeSelect.getSelectedItem();
-		if (trimmed == null || trimmed.equals("New recipe")) {
-			return null;
-		}
-		String myRecipe = ComboBoxUtil.stripPrefix(trimmed);
-		return RecipeHandler.recipeByName.get(myRecipe);
-	}
-
+	/** Initialises the recipe name, cost, and sell point fields and labels. */
 	public void setUpField() {
 
 		nameLabel = new JLabel("Recipe Name");
@@ -296,169 +204,7 @@ public class RecipeFrame extends JFrame {
 
 	}
 
-	public void setUpIngredientList() {
-		String[] cols = {"ID", "Name", "Supplier", "Grams Used", "Cost in Recipe"};
-		ingredientModel = new DefaultTableModel(cols, 0) {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
-		ingredientTable = new JTable(ingredientModel);
-		ingredientTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-		ingredientScroll = new JScrollPane(ingredientTable);
-		ingredientScroll.setPreferredSize(new Dimension(750, 280));
-	}
-
-	public void loadIngredientsIntoModel(Recipe r) {
-		ingredientModel.setRowCount(0);
-
-		DecimalFormat df = new DecimalFormat("0.0000");
-		for (Ingredient t : r.getIngredients()) {
-			ingredientModel.addRow(new Object[]{
-				t.getID(),
-				t.getName(),
-				t.getSupplierName(),
-				r.getGramsUsedOfIngredient(t),
-				"€" + df.format(r.getCostOfIngredientInRecipe(t))
-			});
-		}
-	}
-
-	public void setUpButtons() {
-		saveButton = new JButton("Save Recipes");
-		getIngredientsButton = new JButton("Add Ingredient");
-		removeIngredientButton = new JButton("Remove Ingredient");
-		removeButton = new JButton("Delete Recipe");
-
-		Dimension btn = new Dimension(160, 40);
-		saveButton.setPreferredSize(btn);
-		removeButton.setPreferredSize(btn);
-		getIngredientsButton.setPreferredSize(btn);
-		removeIngredientButton.setPreferredSize(btn);
-
-		removeButton.addActionListener(e -> {
-			try {
-				removeRecipeAction();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		});
-
-		getIngredientsButton.addActionListener(e -> addIngredientAction());
-		removeIngredientButton.addActionListener(e -> removeIngredientAction());
-
-		saveButton.addActionListener(e -> {
-			try {
-				saveRecipesAction();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		});
-	}
-
-	public void removeRecipeAction() throws IOException {
-		Recipe toRemove = grabRecipe();
-		if (toRemove == null) {
-			return;
-		}
-
-		int result = JOptionPane.showConfirmDialog(this, // parent component
-				"Do you want to delete this recipe?", // message
-				"Confirmation", // title
-				JOptionPane.YES_NO_CANCEL_OPTION);
-
-		if (result == JOptionPane.YES_OPTION) {
-			RecipeHandler.recipes.remove(toRemove);
-			RecipeHandler.recipeByName.remove(toRemove.getName());
-
-			fh.writeRecipes();
-
-			setUpComboBox();
-
-			parent.fillDataModel();
-		} else if (result == JOptionPane.NO_OPTION) {
-			return;
-		} else {
-			return;
-		}
-	}
-
-	public float getFloatFromString(String input) {
-		float toReturn = 0;
-		try {
-			toReturn = Float.valueOf(input);
-		} catch (NumberFormatException e) {}
-
-		return toReturn;
-	}
-
-	public void saveRecipesAction() throws IOException {
-		Recipe saveName = grabRecipe();
-
-		String name = nameField.getText();
-		String markUpText = markupField.getText().trim();
-		String electricityText = electricityField.getText().trim();
-		String manpowerText = manpowerField.getText().trim();
-		String packagingText = packagingField.getText().trim();
-
-
-		float markUp = 0;
-		float electricity = 0;
-		float manpower = 0;
-		float packaging = 0;
-		if (!markUpText.isEmpty()) {
-			markUp = getFloatFromString(markUpText);
-		}
-		if (!electricityText.isEmpty()) {
-			electricity = getFloatFromString(electricityText);
-		}
-		if (!manpowerText.isEmpty()) {
-			manpower = getFloatFromString(manpowerText);
-		}
-		if (!packagingText.isEmpty()) {
-			packaging = getFloatFromString(packagingText);
-		}
-
-		if (saveName != null) {
-			saveName.setName(name);
-			saveName.setMarkUp(markUp);
-			saveName.setElectricityCost(electricity);
-			saveName.setManPowerCost(manpower);
-			saveName.setPackagingCost(packaging);
-		} else {
-			if (name.trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Recipe must have a name.");
-
-			} else {
-
-				saveName = new Recipe(name);
-
-				saveName.setElectricityCost(electricity);
-				saveName.setManPowerCost(manpower);
-				saveName.setPackagingCost(packaging);
-
-				for (int i = 0; i < ingredientModel.getRowCount(); i++) {
-					int ingId = (int) ingredientModel.getValueAt(i, 0);
-					Ingredient ing = RecipeHandler.ingredientIDMap.get(ingId);
-					float gramsUsed = (float) ingredientModel.getValueAt(i, 3);
-					saveName.addIngredient(ing, gramsUsed);
-				}
-
-				if (RecipeHandler.verifyNoRecipeCopy(saveName)) {
-					RecipeHandler.addRecipe(saveName);
-				}
-			}
-		}
-		fh.writeRecipes();
-
-		setUpComboBox();
-
-		parent.fillDataModel();
-		selectByName(name);
-	}
-
+	/** Creates overhead cost fields (electricity, manpower, packaging) on the right panel. */
 	public void setUpUtilFields() {
 	    electricityField = new JTextField();
 	    manpowerField = new JTextField();
@@ -483,59 +229,47 @@ public class RecipeFrame extends JFrame {
 	    addToRight(packagingField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 6, 6));
 	}
 
-	public void selectByName(String name) {
-		ComboBoxUtil.selectByName(recipeSelect, name, "New recipe");
-	}
+	// ========================
+	// Ingredient Table
+	// ========================
 
-	public void addIngredientAction() {
-		Recipe recipe = grabRecipe();
-		if (recipe == null) {
-			recipe = new Recipe("Unfinished Recipe");
-			RecipeHandler.addRecipe(recipe);
-			recipeSelect.addItem("Unfinished Recipe");
-			recipeSelect.setSelectedItem("Unfinished Recipe");
-
-		}
-
-		new AddIngredientDialog(this, recipe);
-
-		loadIngredientsIntoModel(recipe);
-		grabRecipeAndFill();
-	}
-
-	public void removeIngredientAction() {
-		int selectedRow = ingredientTable.getSelectedRow();
-		if (selectedRow < 0) return;
-
-		int ingEntryId = (int) ingredientModel.getValueAt(selectedRow, 0);
-		Recipe selectedRecipe = grabRecipe();
-		Ingredient selectedIngredient = selectedRecipe.getIngredient(RecipeHandler.ingredientIDMap.get(ingEntryId));
-
-		selectedRecipe.removeIngredient(selectedIngredient);
-		loadIngredientsIntoModel(selectedRecipe);
-		grabRecipeAndFill();
-	}
-
-	public void setUpSearchSelect() {
-		searchBar = new JTextField();
-		searchBar.setPreferredSize(new Dimension(200, 30));
-
-		TextChangeListener.attach(searchBar, () -> {
-			String input = searchBar.getText();
-			if (!input.trim().isEmpty()) {
-				setUpComboBoxSearch(input);
-			} else {
-				setUpComboBox();
+	/** Creates the ingredient table (non-editable, single selection) with a scroll pane. */
+	public void setUpIngredientList() {
+		String[] cols = {"ID", "Name", "Supplier", "Grams Used", "Cost in Recipe"};
+		ingredientModel = new DefaultTableModel(cols, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
 			}
-		});
+		};
+		ingredientTable = new JTable(ingredientModel);
+		ingredientTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		JLabel searchLabel = new JLabel("Keyword Search");
-
-		addToTop(searchLabel, 5, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(4, 6, 0, 6));
-		addToTop(searchBar, 5, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 6, 4, 6));
+		ingredientScroll = new JScrollPane(ingredientTable);
+		ingredientScroll.setPreferredSize(new Dimension(750, 280));
 	}
 
-	int vatSelect = 1;
+	/** Refreshes the ingredient table from the given recipe's ingredient list. */
+	public void loadIngredientsIntoModel(Recipe r) {
+		ingredientModel.setRowCount(0);
+
+		DecimalFormat df = new DecimalFormat("0.0000");
+		for (Ingredient t : r.getIngredients()) {
+			ingredientModel.addRow(new Object[]{
+				t.getID(),
+				t.getName(),
+				t.getSupplierName(),
+				r.getGramsUsedOfIngredient(t),
+				"€" + df.format(r.getCostOfIngredientInRecipe(t))
+			});
+		}
+	}
+
+	// ========================
+	// VAT & Markup
+	// ========================
+
+	/** Creates VAT selection buttons, markup field, and suggested price display on the right panel. */
 	public void setUpVatAndMarkup() {
 		vat1 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(1)*100) + "%");
 		vat2 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(2)*100) + "%");
@@ -569,6 +303,7 @@ public class RecipeFrame extends JFrame {
 		addToRight(suggestedCostLabel, 0, baseRow+2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
 		addToRight(suggestedCost, 0, baseRow+3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
+		// Arrange VAT buttons in a horizontal row
 		JPanel vatRow = new JPanel(new GridBagLayout());
 		GridBagConstraints v = new GridBagConstraints();
 		v.gridy = 0;
@@ -578,12 +313,16 @@ public class RecipeFrame extends JFrame {
 		v.gridx = 2; vatRow.add(vat3, v);
 		v.gridx = 3; v.insets = new Insets(0, 0, 0, 0); vatRow.add(vat4, v);
 
-		// remove individually-added VAT buttons from rightPanel and add vatRow instead
 		rightPanel.remove(vat1);
 		rightPanel.remove(vat2);
 		rightPanel.remove(vat3);
 		addToRight(vatRow, 0, baseRow+4, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 6, 6));
 	}
+
+	/**
+	 * Highlights the selected VAT button, calculates the suggested sell price
+	 * using the markup and VAT rate, and updates the recipe's VAT selection.
+	 */
 	public void showSuggestedPricing(int selection) {
 	    switch(selection) {
 	        case 1:
@@ -637,6 +376,345 @@ public class RecipeFrame extends JFrame {
 	        }
 	    }
 	}
+
+	// ========================
+	// ComboBox (Recipe Selector)
+	// ========================
+
+	/** Initialises the recipe selector combo box with its action listener. */
+	public void comboBoxInit() {
+		recipeSelect = new JComboBox<String>();
+		recipeSelect.setPreferredSize(new Dimension(300, 35));
+		recipeSelect.setEditable(false);
+		recipeSelect.addActionListener(e -> {
+			if (!isUpdating) {
+				grabRecipeAndFill();
+			}
+		});
+
+	}
+
+	/** Populates the recipe selector with all recipes (unfiltered). */
+	public void setUpComboBox() {
+		isUpdating = true;
+		recipeSelect.removeAllItems();
+		recipeSelect.addItem("New recipe");
+
+		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
+			recipeSelect.addItem((i + 1) + ". " + RecipeHandler.recipes.get(i).getName());
+		}
+		isUpdating = false;
+		grabRecipeAndFill();
+	}
+
+	/** Populates the recipe selector filtered by the given search string. */
+	public void setUpComboBoxSearch(String s) {
+		isUpdating = true;
+		recipeSelect.removeAllItems();
+		recipeSelect.addItem("New recipe");
+
+		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
+			String name = RecipeHandler.recipes.get(i).getName();
+
+			if (name.toLowerCase().contains(s.toLowerCase())) {
+				recipeSelect.addItem((i + 1) + ". " + RecipeHandler.recipes.get(i).getName());
+			}
+		}
+		isUpdating = false;
+		grabRecipeAndFill();
+	}
+
+	/** If a recipe was passed from the main panel, selects it in the combo box. */
+	public void selectPassed() {
+		if (passed != null) {
+			selectByName(passed.getName());
+		}
+	}
+
+	public void selectByName(String name) {
+		ComboBoxUtil.selectByName(recipeSelect, name, "New recipe");
+	}
+
+	// ========================
+	// Search & Sort
+	// ========================
+
+	public void setUpSearchSelect() {
+		searchBar = new JTextField();
+		searchBar.setPreferredSize(new Dimension(200, 30));
+
+		TextChangeListener.attach(searchBar, () -> {
+			String input = searchBar.getText();
+			if (!input.trim().isEmpty()) {
+				setUpComboBoxSearch(input);
+			} else {
+				setUpComboBox();
+			}
+		});
+
+		JLabel searchLabel = new JLabel("Keyword Search");
+
+		addToTop(searchLabel, 5, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(4, 6, 0, 6));
+		addToTop(searchBar, 5, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 6, 4, 6));
+	}
+
+	public void setUpSortSelect() {
+		sortSelect = new JComboBox<RecipeSortType>();
+		RecipeSortType[] recipeSorts = RecipeSortType.values();
+		for (int i = 0; i < recipeSorts.length; i++) {
+			sortSelect.addItem(recipeSorts[i]);
+		}
+
+		sortSelect.addActionListener(e -> {
+			RecipeSortType rst = (RecipeSortType) sortSelect.getSelectedItem();
+			if (rst != null) {
+				RecipeHandler.sortRecipes(rst);
+				String input = (String) searchBar.getText();
+				if (!input.trim().isEmpty()) {
+					setUpComboBoxSearch(input);
+				} else {
+					setUpComboBox();
+				}
+			}
+		});
+
+		sortSelect.setPreferredSize(new Dimension(200, 35));
+
+		JLabel sortLabel = new JLabel("Sort By");
+
+		addToTop(sortLabel, 6, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(4, 6, 0, 6));
+		addToTop(sortSelect, 6, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 6, 4, 6));
+	}
+
+	// ========================
+	// Buttons
+	// ========================
+
+	public void setUpButtons() {
+		saveButton = new JButton("Save Recipes");
+		getIngredientsButton = new JButton("Add Ingredient");
+		removeIngredientButton = new JButton("Remove Ingredient");
+		removeButton = new JButton("Delete Recipe");
+
+		Dimension btn = new Dimension(160, 40);
+		saveButton.setPreferredSize(btn);
+		removeButton.setPreferredSize(btn);
+		getIngredientsButton.setPreferredSize(btn);
+		removeIngredientButton.setPreferredSize(btn);
+
+		removeButton.addActionListener(e -> {
+			try {
+				removeRecipeAction();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		});
+
+		getIngredientsButton.addActionListener(e -> addIngredientAction());
+		removeIngredientButton.addActionListener(e -> removeIngredientAction());
+
+		saveButton.addActionListener(e -> {
+			try {
+				saveRecipesAction();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		});
+	}
+
+	// ========================
+	// Data Loading & Retrieval
+	// ========================
+
+	/** Returns the Recipe selected in the combo box, or null if "New recipe". */
+	public Recipe grabRecipe() {
+		String trimmed = (String) recipeSelect.getSelectedItem();
+		if (trimmed == null || trimmed.equals("New recipe")) {
+			return null;
+		}
+		String myRecipe = ComboBoxUtil.stripPrefix(trimmed);
+		return RecipeHandler.recipeByName.get(myRecipe);
+	}
+
+	/** Loads the selected recipe's data into all input fields, or clears them if none selected. */
+	public void grabRecipeAndFill() {
+		Recipe tempR = grabRecipe();
+
+		isUpdating = true;
+		if (tempR == null) {
+			nameField.setText("");
+			costToMakeField.setText("");
+			sellPointField.setText("");
+			electricityField.setText("");
+			manpowerField.setText("");
+			packagingField.setText("");
+			ingredientModel.setRowCount(0);
+		} else {
+			nameField.setText(tempR.getName());
+			costToMakeField.setText(String.format("%.4f", tempR.getCostToMake()));
+			markupField.setText(String.format("%.4f", tempR.getMarkUp()));
+			sellPointField.setText(String.format("%.4f", tempR.getSellPoint()));
+			electricityField.setText(String.format("%.4f", tempR.getElectricityCost()));
+			manpowerField.setText(String.format("%.4f", tempR.getManPowerCost()));
+			packagingField.setText(String.format("%.4f", tempR.getPackagingCost()));
+
+			showSuggestedPricing(tempR.getVatSelection());
+			loadIngredientsIntoModel(tempR);
+
+		}
+
+		isUpdating = false;
+	}
+
+	// ========================
+	// Actions (Save, Delete, Add/Remove Ingredient)
+	// ========================
+
+	/** Saves the current fields as a new recipe or updates the selected existing one. */
+	public void saveRecipesAction() throws IOException {
+		Recipe saveName = grabRecipe();
+
+		String name = nameField.getText();
+		String markUpText = markupField.getText().trim();
+		String electricityText = electricityField.getText().trim();
+		String manpowerText = manpowerField.getText().trim();
+		String packagingText = packagingField.getText().trim();
+
+
+		float markUp = 0;
+		float electricity = 0;
+		float manpower = 0;
+		float packaging = 0;
+		if (!markUpText.isEmpty()) {
+			markUp = getFloatFromString(markUpText);
+		}
+		if (!electricityText.isEmpty()) {
+			electricity = getFloatFromString(electricityText);
+		}
+		if (!manpowerText.isEmpty()) {
+			manpower = getFloatFromString(manpowerText);
+		}
+		if (!packagingText.isEmpty()) {
+			packaging = getFloatFromString(packagingText);
+		}
+
+		if (saveName != null) {
+			// Updating an existing recipe
+			saveName.setName(name);
+			saveName.setMarkUp(markUp);
+			saveName.setElectricityCost(electricity);
+			saveName.setManPowerCost(manpower);
+			saveName.setPackagingCost(packaging);
+		} else {
+			// Creating a new recipe
+			if (name.trim().isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Recipe must have a name.");
+
+			} else {
+
+				saveName = new Recipe(name);
+
+				saveName.setElectricityCost(electricity);
+				saveName.setManPowerCost(manpower);
+				saveName.setPackagingCost(packaging);
+
+				// Transfer ingredients from the table model to the new recipe
+				for (int i = 0; i < ingredientModel.getRowCount(); i++) {
+					int ingId = (int) ingredientModel.getValueAt(i, 0);
+					Ingredient ing = RecipeHandler.ingredientIDMap.get(ingId);
+					float gramsUsed = (float) ingredientModel.getValueAt(i, 3);
+					saveName.addIngredient(ing, gramsUsed);
+				}
+
+				if (RecipeHandler.verifyNoRecipeCopy(saveName)) {
+					RecipeHandler.addRecipe(saveName);
+				}
+			}
+		}
+		fh.writeRecipes();
+
+		setUpComboBox();
+
+		parent.fillDataModel();
+		selectByName(name);
+	}
+
+	/** Deletes the selected recipe after user confirmation. */
+	public void removeRecipeAction() throws IOException {
+		Recipe toRemove = grabRecipe();
+		if (toRemove == null) {
+			return;
+		}
+
+		int result = JOptionPane.showConfirmDialog(this,
+				"Do you want to delete this recipe?",
+				"Confirmation",
+				JOptionPane.YES_NO_CANCEL_OPTION);
+
+		if (result == JOptionPane.YES_OPTION) {
+			RecipeHandler.recipes.remove(toRemove);
+			RecipeHandler.recipeByName.remove(toRemove.getName());
+
+			fh.writeRecipes();
+
+			setUpComboBox();
+
+			parent.fillDataModel();
+		} else if (result == JOptionPane.NO_OPTION) {
+			return;
+		} else {
+			return;
+		}
+	}
+
+	/** Opens the AddIngredientDialog to add an ingredient to the current recipe. */
+	public void addIngredientAction() {
+		Recipe recipe = grabRecipe();
+		if (recipe == null) {
+			recipe = new Recipe("Unfinished Recipe");
+			RecipeHandler.addRecipe(recipe);
+			recipeSelect.addItem("Unfinished Recipe");
+			recipeSelect.setSelectedItem("Unfinished Recipe");
+
+		}
+
+		new AddIngredientDialog(this, recipe);
+
+		loadIngredientsIntoModel(recipe);
+		grabRecipeAndFill();
+	}
+
+	/** Removes the selected ingredient from the current recipe. */
+	public void removeIngredientAction() {
+		int selectedRow = ingredientTable.getSelectedRow();
+		if (selectedRow < 0) return;
+
+		int ingEntryId = (int) ingredientModel.getValueAt(selectedRow, 0);
+		Recipe selectedRecipe = grabRecipe();
+		Ingredient selectedIngredient = selectedRecipe.getIngredient(RecipeHandler.ingredientIDMap.get(ingEntryId));
+
+		selectedRecipe.removeIngredient(selectedIngredient);
+		loadIngredientsIntoModel(selectedRecipe);
+		grabRecipeAndFill();
+	}
+
+	// ========================
+	// Utility Methods
+	// ========================
+
+	/** Safely parses a float from a string, returning 0 on failure. */
+	public float getFloatFromString(String input) {
+		float toReturn = 0;
+		try {
+			toReturn = Float.valueOf(input);
+		} catch (NumberFormatException e) {}
+
+		return toReturn;
+	}
+
+	// ========================
+	// GridBag Layout Helpers
+	// ========================
 
 	private void addToTop(JComponent c, int x, int y, int w, int h,
 			double wx, double wy, int fill, int anchor, Insets insets) {

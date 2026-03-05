@@ -6,14 +6,19 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+/**
+ * Custom table cell renderer that colour-codes cells based on their numeric value.
+ * Green for positive, red for negative, yellow for zero.
+ * Strips a configurable character (e.g. "€" or "%") before parsing the value.
+ */
 public class CellRenderer extends DefaultTableCellRenderer {
-    
+
     private String stripChar;
-    
+
     public CellRenderer(String stripChar) {
         this.stripChar = stripChar;
     }
-    
+
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
             boolean hasFocus, int row, int column) {

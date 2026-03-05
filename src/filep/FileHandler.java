@@ -7,26 +7,29 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Handles reading and writing of all persistent data files:
+ * VAT rates, ingredient ID counter, ingredients, and recipes.
+ * All files use a pipe (|) delimiter.
+ */
 public class FileHandler {
+
+	// ========================
+	// File Names & Delimiters
+	// ========================
+
 	private String recipeFileName = "recipes.txt";
 	private String ingredientFileName = "ingredients.txt";
 	private String idFileName = "idfile.txt";
 	private String vatFileName = "vatFile.txt";
 	private final String delimiter = "|";
 	private final String splitDelimiter = "\\|";
-	
-	public void writeVATFile() throws IOException {
-		try (FileWriter myFile = new FileWriter(vatFileName)) {
-			for (int i = 0; i < 4; i++) {
-				if (VATHandler.vats[i] >= 0 && VATHandler.vats[i] <= 1) {
-					myFile.write(String.valueOf(VATHandler.vats[i]) + "\n");
-				} else {
-					myFile.write("0\n");
-				}
-			}
-		}
-	}
-	
+
+	// ========================
+	// VAT File
+	// ========================
+
+	/** Loads 4 VAT rates from file into VATHandler.vats. Values must be between 0 and 1. */
 	public void loadVATFile() {
 		File myFile = new File(vatFileName);
 		try (Scanner scanner = new Scanner(myFile)) {
@@ -40,11 +43,11 @@ public class FileHandler {
 					}else {
 						VATHandler.vats[i] = 0f;
 					}
-					
+
 				}catch(Exception e) {
-					
+
 				}
-				
+
 				i++;
 			}
 
@@ -52,7 +55,25 @@ public class FileHandler {
 
 		}
 	}
-	
+
+	/** Writes the current 4 VAT rates from VATHandler.vats to file. */
+	public void writeVATFile() throws IOException {
+		try (FileWriter myFile = new FileWriter(vatFileName)) {
+			for (int i = 0; i < 4; i++) {
+				if (VATHandler.vats[i] >= 0 && VATHandler.vats[i] <= 1) {
+					myFile.write(String.valueOf(VATHandler.vats[i]) + "\n");
+				} else {
+					myFile.write("0\n");
+				}
+			}
+		}
+	}
+
+	// ========================
+	// ID File
+	// ========================
+
+	/** Loads the next available ingredient ID from file into RecipeHandler. */
 	public void loadIdFile() {
 		File myFile = new File(idFileName);
 		try (Scanner scanner = new Scanner(myFile)) {
@@ -66,7 +87,7 @@ public class FileHandler {
 						RecipeHandler.nextAvailableID = RecipeHandler.ingredients.size() + 1;
 					}
 				}catch(Exception e) {
-					
+
 				}
 			}
 
@@ -74,12 +95,22 @@ public class FileHandler {
 
 		}
 	}
-	
+
+	/** Writes the current next-available ID to file. */
 	public void writeIdFile() throws IOException {
 		try (FileWriter myFile = new FileWriter(idFileName)) {
 			myFile.write(String.valueOf(RecipeHandler.nextAvailableID));
 		}
 	}
+
+	// ========================
+	// Ingredients File
+	// ========================
+
+	/**
+	 * Loads ingredients from file. Each line format:
+	 * name|supplier|cost|grams|id|vatSelection
+	 */
 	public void loadIngredients() {
 		File myFile = new File(ingredientFileName);
 		try (Scanner scanner = new Scanner(myFile)) {
@@ -105,6 +136,7 @@ public class FileHandler {
 		}
 	}
 
+	/** Writes all ingredients to file and increments the ID counter. */
 	public void writeIngredients() throws IOException {
 		try (FileWriter myfw = new FileWriter(ingredientFileName)) {
 			for (int i = 0; i < RecipeHandler.ingredients.size(); i++) {
@@ -120,6 +152,15 @@ public class FileHandler {
 		writeIdFile();
 	}
 
+	// ========================
+	// Recipes File
+	// ========================
+
+	/**
+	 * Loads recipes from file. Each line format:
+	 * name|markup|vatSelection|packaging|manpower|electricity|ingredientId/grams|...
+	 * Ingredient references are resolved by ID from RecipeHandler.ingredientIDMap.
+	 */
 	public void loadRecipes() {
 		File myFile = new File(recipeFileName);
 		try (Scanner scanner = new Scanner(myFile)) {
@@ -135,6 +176,7 @@ public class FileHandler {
 				float electricity = Float.parseFloat(parts[5]);
 				Recipe temp = new Recipe(name);
 
+				// Each remaining part is an ingredient reference: id/gramsUsed
 				for (int i = 6; i < parts.length; i++) {
 					String[] ingredientParts = parts[i].split("/");
 
@@ -147,7 +189,7 @@ public class FileHandler {
 						temp.addIngredient(ing, grams);
 					}
 				}
-				
+
 				temp.setMarkUp(markUp);
 				temp.setVatSelection(vatSelection);
 				temp.setElectricityCost(electricity);
@@ -163,6 +205,7 @@ public class FileHandler {
 		}
 	}
 
+	/** Writes all recipes to file, including their ingredient references. */
 	public void writeRecipes() throws IOException {
 		try (FileWriter myfw = new FileWriter(recipeFileName)) {
 			for (int i = 0; i < RecipeHandler.recipes.size(); i++) {

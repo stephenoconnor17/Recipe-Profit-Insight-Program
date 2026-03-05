@@ -6,6 +6,10 @@ import java.awt.event.ComponentEvent;
 
 import javax.swing.JFrame;
 
+/**
+ * ComponentAdapter that prevents a JFrame from being resized below a minimum dimension.
+ * Use the static {@link #apply} method for convenience.
+ */
 public class MinSizeEnforcer extends ComponentAdapter {
 
 	private final Dimension minSize;
@@ -24,6 +28,7 @@ public class MinSizeEnforcer extends ComponentAdapter {
 		}
 	}
 
+	/** Sets the minimum size on the frame and attaches a resize listener to enforce it. */
 	public static void apply(JFrame frame, int width, int height) {
 		Dimension min = new Dimension(width, height);
 		frame.setMinimumSize(min);

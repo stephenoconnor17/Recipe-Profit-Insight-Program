@@ -6,19 +6,23 @@ import filep.RecipeSortType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 import filep.Ingredient;
 import filep.IngredientSortType;
 
+/**
+ * Sorting utilities for recipe and ingredient lists.
+ * Sorts the given list in-place based on the specified sort type.
+ */
 public class SortUtil {
-	
-	public static ArrayList<Recipe> sortRecipes(ArrayList<Recipe> toSort,RecipeSortType rst){
-		ArrayList<Recipe> sorted = toSort; 
+
+	/** Sorts a recipe list in-place by the given sort type. Returns the same list reference. */
+	public static ArrayList<Recipe> sortRecipes(ArrayList<Recipe> toSort, RecipeSortType rst) {
+		ArrayList<Recipe> sorted = toSort;
 		switch (rst) {
         case DEFAULT:
         	break;
-        	
+
         case BY_COST_ASC:
         	Collections.sort(sorted,Comparator.comparingDouble(Recipe::getCostToMake));
             break;
@@ -59,13 +63,14 @@ public class SortUtil {
         	Collections.sort(sorted, Comparator.comparingInt(Recipe::getIngredientAmount).reversed());
             break;
 		}
-		
+
 		return sorted;
 	}
-	
-	public static ArrayList<Ingredient> sortIngredients(ArrayList<Ingredient> toSort,IngredientSortType rst) {
+
+	/** Sorts an ingredient list in-place by the given sort type. Returns the same list reference. */
+	public static ArrayList<Ingredient> sortIngredients(ArrayList<Ingredient> toSort, IngredientSortType rst) {
 		ArrayList<Ingredient> sorted = toSort;
-		
+
         switch (rst) {
                 case DEFAULT:
                 break;
@@ -84,7 +89,6 @@ public class SortUtil {
             	Collections.sort(sorted, Comparator.comparing(Ingredient::getName, String.CASE_INSENSITIVE_ORDER).reversed());
                 break;
 
-            // ID-related
             case BY_ID_ASC:
             	Collections.sort(sorted,Comparator.comparingInt(Ingredient::getID));
                 break;
@@ -92,7 +96,7 @@ public class SortUtil {
             	Collections.sort(sorted,Comparator.comparingInt(Ingredient::getID).reversed());
                 break;
         }
-        
+
         return sorted;
     }
 }

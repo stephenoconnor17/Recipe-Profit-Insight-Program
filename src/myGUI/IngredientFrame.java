@@ -19,7 +19,16 @@ import filep.FileHandler;
 import util.ComboBoxUtil;
 import util.TextChangeListener;
 
+/**
+ * Editor window for creating, editing, and deleting ingredients.
+ * Left side: ingredient fields, VAT buttons, save/delete buttons.
+ * Right side: sort dropdown, keyword search, supplier search.
+ */
 public class IngredientFrame extends JFrame {
+
+	// ========================
+	// Fields
+	// ========================
 
 	JComboBox<String> ingredientSelect;
 	JComboBox<IngredientSortType> sortSelect;
@@ -28,9 +37,7 @@ public class IngredientFrame extends JFrame {
 	JTextField supplierField;
 	JTextField costField;
 	JTextField gramsField;
-
 	JTextField costAfterVatField;
-
 	JTextField searchBar;
 	JTextField supplierSearchBar;
 
@@ -50,6 +57,10 @@ public class IngredientFrame extends JFrame {
 	private JPanel mainPanel;
 	private JPanel leftPanel;
 	private JPanel rightPanel;
+
+	// ========================
+	// Constructor
+	// ========================
 
 	public IngredientFrame(FileHandler fh, MyPanel mf) {
 		this.fh = fh;
@@ -80,6 +91,11 @@ public class IngredientFrame extends JFrame {
 		setVisible(true);
 	}
 
+	// ========================
+	// ComboBox Setup
+	// ========================
+
+	/** Creates the ingredient selector combo box and places it in the left panel. */
 	private void setUpComboBox() {
 		ingredientSelect = new JComboBox<>();
 		ingredientSelect.setPreferredSize(new Dimension(300, 35));
@@ -103,10 +119,11 @@ public class IngredientFrame extends JFrame {
 		leftPanel.add(ingredientSelect, gbc);
 	}
 
+	/** Repopulates the combo box with all ingredients (unfiltered). */
 	private void reloadComboBox() {
 		isUpdating = true;
 		ingredientSelect.removeAllItems();
-		ingredientSelect.addItem("New Ingredient"); // New ingredient
+		ingredientSelect.addItem("New Ingredient");
 
 		int j = 1;
 		for (Ingredient i : RecipeHandler.ingredients) {
@@ -116,17 +133,14 @@ public class IngredientFrame extends JFrame {
 		isUpdating = false;
 	}
 
-	public void selectByName(String name) {
-		ComboBoxUtil.selectByName(ingredientSelect, name, "New Ingredient");
-	}
-
+	/** Repopulates the combo box filtered by current name and supplier search text. */
 	public void reloadComboBoxFiltered() {
 		isUpdating = true;
 		ingredientSelect.removeAllItems();
 		String nameInput = searchBar.getText().toLowerCase().trim();
 		String supplierInput = supplierSearchBar.getText().toLowerCase().trim();
 
-		ingredientSelect.addItem("New Ingredient"); // New ingredient
+		ingredientSelect.addItem("New Ingredient");
 
 		int j = 1;
 		for (Ingredient i : RecipeHandler.ingredients) {
@@ -143,6 +157,16 @@ public class IngredientFrame extends JFrame {
 		isUpdating = false;
 	}
 
+	/** Selects the combo box item matching the given ingredient name. */
+	public void selectByName(String name) {
+		ComboBoxUtil.selectByName(ingredientSelect, name, "New Ingredient");
+	}
+
+	// ========================
+	// Input Fields & VAT Buttons
+	// ========================
+
+	/** Creates all input fields (name, supplier, cost, grams) and VAT selection buttons. */
 	private void setUpFields() {
 		JLabel nameLabel = new JLabel("Name");
 		JLabel supplierLabel = new JLabel("Supplier");
@@ -158,7 +182,7 @@ public class IngredientFrame extends JFrame {
 		costAfterVatField = new JTextField();
 		costAfterVatField.setEditable(false);
 
-		// VAT buttons
+		// VAT buttons showing the rate as a percentage
 		vat1 = new JButton(String.format("%.2f", VATHandler.getVatFromSelection(1) * 100) + "%");
 		vat2 = new JButton(String.format("%.2f", VATHandler.getVatFromSelection(2) * 100) + "%");
 		vat3 = new JButton(String.format("%.2f", VATHandler.getVatFromSelection(3) * 100) + "%");
@@ -176,6 +200,8 @@ public class IngredientFrame extends JFrame {
 		vat4.addActionListener(e -> selectVat(4));
 
 		highlightVatButton(vatSelect);
+
+		// --- Layout all fields onto leftPanel ---
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.WEST;
@@ -216,7 +242,7 @@ public class IngredientFrame extends JFrame {
 		gbc.insets = new Insets(0, 10, 6, 10);
 		leftPanel.add(gramsField, gbc);
 
-		// Row 5: VAT Selection
+		// Row 5: VAT Selection buttons
 		gbc.insets = new Insets(6, 10, 2, 10);
 		gbc.gridx = 0; gbc.gridy = 9; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
 		leftPanel.add(vatLabel, gbc);
@@ -234,7 +260,7 @@ public class IngredientFrame extends JFrame {
 		gbc.insets = new Insets(0, 10, 6, 10);
 		leftPanel.add(vatRow, gbc);
 
-		// Row 6: Cost After VAT
+		// Row 6: Cost After VAT (read-only)
 		gbc.insets = new Insets(6, 10, 2, 10);
 		gbc.gridx = 0; gbc.gridy = 11; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
 		leftPanel.add(costAfterVatLabel, gbc);
@@ -244,12 +270,17 @@ public class IngredientFrame extends JFrame {
 		leftPanel.add(costAfterVatField, gbc);
 	}
 
+	// ========================
+	// VAT Selection Helpers
+	// ========================
+
 	private void selectVat(int selection) {
 		vatSelect = selection;
 		highlightVatButton(selection);
 		updateCostAfterVatField();
 	}
 
+	/** Highlights the selected VAT button green and resets the others. */
 	private void highlightVatButton(int selection) {
 		vat1.setBackground(selection == 1 ? Color.green : null);
 		vat2.setBackground(selection == 2 ? Color.green : null);
@@ -257,6 +288,7 @@ public class IngredientFrame extends JFrame {
 		vat4.setBackground(selection == 4 ? Color.green : null);
 	}
 
+	/** Recalculates and displays the cost-after-VAT based on current cost field and VAT selection. */
 	private void updateCostAfterVatField() {
 		try {
 			float cost = Float.parseFloat(costField.getText());
@@ -267,6 +299,10 @@ public class IngredientFrame extends JFrame {
 			costAfterVatField.setText("");
 		}
 	}
+
+	// ========================
+	// Buttons
+	// ========================
 
 	private void setUpButtons() {
 		saveButton = new JButton("Save");
@@ -298,107 +334,9 @@ public class IngredientFrame extends JFrame {
 		leftPanel.add(deleteButton, gbc);
 	}
 
-	public Ingredient grabIngredient() {
-		String select = (String) ingredientSelect.getSelectedItem();
-		if (select == null || select.equals("New Ingredient")) {
-			return null;
-		}
-		String selection = ComboBoxUtil.stripPrefix(select);
-		return RecipeHandler.ingredientByName.get(selection);
-	}
-
-	private void loadIngredient() {
-		Ingredient i = grabIngredient();
-
-		if (i == null) {
-			nameField.setText("");
-			supplierField.setText("");
-			costField.setText("");
-			gramsField.setText("");
-			costAfterVatField.setText("");
-			vatSelect = 1;
-			highlightVatButton(vatSelect);
-		} else {
-			nameField.setText(i.getName());
-			supplierField.setText(i.getSupplierName());
-			costField.setText(String.format("%.4f", i.getCostPer1g() * i.getGrams()));
-			gramsField.setText(String.valueOf(i.getGrams()));
-			vatSelect = i.getVatSelection();
-			highlightVatButton(vatSelect);
-			costAfterVatField.setText(String.format("%.4f", i.getCostAfterVat()));
-		}
-	}
-
-	private void saveIngredient() {
-		try {
-			Ingredient selected = grabIngredient();
-
-			String name = nameField.getText();
-			String supplier = supplierField.getText();
-			float cost = Float.parseFloat(costField.getText());
-			float grams = Float.parseFloat(gramsField.getText());
-
-			if (selected == null) {
-				Ingredient i = new Ingredient(name, supplier, cost, grams, Ingredient.NEW_ID_SENTINEL, vatSelect);
-				if (RecipeHandler.verifyNoIngredientCopy(i)) {
-					RecipeHandler.addIngredient(i);
-
-					fh.writeIngredients();
-					reloadComboBox();
-
-					updateParent();
-
-					selectByName(name);
-				} else {
-						JOptionPane.showMessageDialog(this, "Error writing Ingredient");
-				}
-			} else {
-				RecipeHandler.ingredientByName.remove(selected.getName());
-
-				selected.setName(name);
-				selected.setSupplierName(supplier);
-				selected.setCost(cost);
-				selected.setGrams(grams);
-				selected.setVatSelection(vatSelect);
-				RecipeHandler.ingredientByName.put(selected.getName(), selected);
-				fh.writeIngredients();
-				reloadComboBox();
-
-				updateParent();
-
-				selectByName(name);
-			}
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this, "Invalid input, Make sure all Fields inputted correctly.");
-		}
-	}
-
-	private void deleteIngredient() throws IOException {
-		Ingredient selected = grabIngredient();
-		if (selected == null) {
-			JOptionPane.showMessageDialog(this, "No ingredient selected");
-			return;
-		}
-
-		int result = JOptionPane.showConfirmDialog(this, "Delete this ingredient?", "Confirm",
-				JOptionPane.YES_NO_OPTION);
-
-		if (result == JOptionPane.YES_OPTION) {
-			RecipeHandler.ingredients.remove(selected);
-			RecipeHandler.ingredientIDMap.remove(selected.getID());
-			RecipeHandler.ingredientByName.remove(selected.getName());
-
-			reloadComboBox();
-			ingredientSelect.setSelectedIndex(0);
-			fh.writeIngredients();
-			updateParent();
-		}
-	}
-
-	private void updateParent() {
-		RecipeHandler.updateRecipes();
-		parent.fillDataModel();
-	}
+	// ========================
+	// Sort & Search Setup
+	// ========================
 
 	public void setUpSortSelect() {
 		sortSelect = new JComboBox<IngredientSortType>();
@@ -481,5 +419,122 @@ public class IngredientFrame extends JFrame {
 		gbc.gridy = 5;
 		gbc.insets = new Insets(0, 10, 10, 10);
 		rightPanel.add(supplierSearchBar, gbc);
+	}
+
+	// ========================
+	// Data Loading & Retrieval
+	// ========================
+
+	/** Returns the currently selected ingredient from the combo box, or null if "New Ingredient". */
+	public Ingredient grabIngredient() {
+		String select = (String) ingredientSelect.getSelectedItem();
+		if (select == null || select.equals("New Ingredient")) {
+			return null;
+		}
+		String selection = ComboBoxUtil.stripPrefix(select);
+		return RecipeHandler.ingredientByName.get(selection);
+	}
+
+	/** Populates input fields from the currently selected ingredient (or clears them if none). */
+	private void loadIngredient() {
+		Ingredient i = grabIngredient();
+
+		if (i == null) {
+			nameField.setText("");
+			supplierField.setText("");
+			costField.setText("");
+			gramsField.setText("");
+			costAfterVatField.setText("");
+			vatSelect = 1;
+			highlightVatButton(vatSelect);
+		} else {
+			nameField.setText(i.getName());
+			supplierField.setText(i.getSupplierName());
+			costField.setText(String.format("%.4f", i.getCostPer1g() * i.getGrams()));
+			gramsField.setText(String.valueOf(i.getGrams()));
+			vatSelect = i.getVatSelection();
+			highlightVatButton(vatSelect);
+			costAfterVatField.setText(String.format("%.4f", i.getCostAfterVat()));
+		}
+	}
+
+	// ========================
+	// CRUD Actions
+	// ========================
+
+	/** Saves the current fields as a new ingredient or updates the selected existing one. */
+	private void saveIngredient() {
+		try {
+			Ingredient selected = grabIngredient();
+
+			String name = nameField.getText();
+			String supplier = supplierField.getText();
+			float cost = Float.parseFloat(costField.getText());
+			float grams = Float.parseFloat(gramsField.getText());
+
+			if (selected == null) {
+				// Creating a new ingredient
+				Ingredient i = new Ingredient(name, supplier, cost, grams, Ingredient.NEW_ID_SENTINEL, vatSelect);
+				if (RecipeHandler.verifyNoIngredientCopy(i)) {
+					RecipeHandler.addIngredient(i);
+
+					fh.writeIngredients();
+					reloadComboBox();
+
+					updateParent();
+
+					selectByName(name);
+				} else {
+						JOptionPane.showMessageDialog(this, "Error writing Ingredient");
+				}
+			} else {
+				// Updating an existing ingredient
+				RecipeHandler.ingredientByName.remove(selected.getName());
+
+				selected.setName(name);
+				selected.setSupplierName(supplier);
+				selected.setCost(cost);
+				selected.setGrams(grams);
+				selected.setVatSelection(vatSelect);
+				RecipeHandler.ingredientByName.put(selected.getName(), selected);
+				fh.writeIngredients();
+				reloadComboBox();
+
+				updateParent();
+
+				selectByName(name);
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, "Invalid input, Make sure all Fields inputted correctly.");
+		}
+	}
+
+	/** Deletes the currently selected ingredient after user confirmation. */
+	private void deleteIngredient() throws IOException {
+		Ingredient selected = grabIngredient();
+		if (selected == null) {
+			JOptionPane.showMessageDialog(this, "No ingredient selected");
+			return;
+		}
+
+		int result = JOptionPane.showConfirmDialog(this, "Delete this ingredient?", "Confirm",
+				JOptionPane.YES_NO_OPTION);
+
+		if (result == JOptionPane.YES_OPTION) {
+			RecipeHandler.ingredients.remove(selected);
+			RecipeHandler.ingredientIDMap.remove(selected.getID());
+			RecipeHandler.ingredientByName.remove(selected.getName());
+
+			reloadComboBox();
+			ingredientSelect.setSelectedIndex(0);
+			fh.writeIngredients();
+			updateParent();
+		}
+	}
+
+	/** Refreshes all recipe calculations and the parent panel's table after an ingredient change. */
+	private void updateParent() {
+		RecipeHandler.updateRecipes();
+		parent.fillDataModel();
 	}
 }

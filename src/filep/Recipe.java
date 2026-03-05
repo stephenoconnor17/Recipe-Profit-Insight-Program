@@ -4,7 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents a recipe consisting of ingredients and overhead costs.
+ * Tracks cost-to-make, sell point (with VAT + markup), profit margin, and display data.
+ */
 public class Recipe {
+
+	// ========================
+	// Fields
+	// ========================
+
 	private String name;
 	private float costToMake;
 	private float sellPoint;
@@ -12,9 +21,9 @@ public class Recipe {
 	private float markUp;
 	private float ingredientCostPercentage;
 	private float profitMargin;
-	
+
 	private int vatSelection;
-	
+
 	private float manPowerCost;
 	private float electricityCost;
 	private float packagingCost;
@@ -23,7 +32,12 @@ public class Recipe {
 	private Map<Ingredient, Float> ingredientUnitCost;
 	private Map<Ingredient, Float> ingredientGramsUsed;
 
+	/** Pre-formatted display data for the main recipe table. */
 	private Object[] displayArr = new Object[6];
+
+	// ========================
+	// Constructor
+	// ========================
 
 	public Recipe(String name) {
 		this.name = name;
@@ -32,9 +46,9 @@ public class Recipe {
 		this.ingredientCostPercentage = 0;
 		this.profitMargin = 0;
 		this.markUp = 0;
-		
+
 		this.vatSelection = 1;
-		
+
 		this.packagingCost = 0;
 		this.electricityCost = 0;
 		this.manPowerCost = 0;
@@ -48,87 +62,15 @@ public class Recipe {
 
 	}
 
-	public Object[] getDisplayArr() {
-		return this.displayArr;
+	// ========================
+	// Name
+	// ========================
+
+	public String getName() {
+		return this.name;
 	}
 
-	public void updateDisplayArr() {
-		this.displayArr[0] = this.name;
-		this.displayArr[1] = String.format("€%.2f", this.costToMake);
-		this.displayArr[2] = String.format("€%.2f", this.sellPoint);
-		String prefix = saleDiff > 0 ? "+" : "-";
-		this.displayArr[3] = String.format("%s€%.2f", prefix, Math.abs(this.saleDiff));
-		this.displayArr[4] = String.format("%s%.2f%%", prefix,Math.abs(ingredientCostPercentage));
-		this.displayArr[5] = String.format("%s%.2f%%", prefix,Math.abs(profitMargin));
-	
-	}
-	
-	public void setMarkUp(float markup) {
-		this.markUp = markup;
-		update();
-	}
-	
-	public float getMarkUp() {
-		return this.markUp;
-	}
-	
-	public void setVatSelection(int selection) {
-		if(selection >= 1 && selection <= 4) {
-			this.vatSelection  = selection;
-			update();
-		}
-	}
-	
-	public int getVatSelection() {
-		return this.vatSelection;
-	}
-	
-	public void updateSellPointAfterVat() {
-		this.sellPoint = (this.costToMake * (1 + (markUp / 100))) * (1 + VATHandler.getVatFromSelection(vatSelection));
-	}
-	
-	public float getIngredientCostPercentage() {
-		return this.ingredientCostPercentage;
-	}
-
-	public void updateSaleDiff() {
-		this.saleDiff = this.sellPoint - this.costToMake;
-		this.ingredientCostPercentage = (costToMake / sellPoint) * 100;
-		this.profitMargin = (sellPoint - costToMake) / sellPoint * 100;
-	}
-	
-	public double getProfitMargin() {
-		return this.profitMargin;
-	}
-	
-	public double getSaleDiff() {
-		return this.saleDiff;
-	}
-
-	public void addIngredient(Ingredient ingredient, float unitsInGrams) {
-		this.recipeIngredients.add(ingredient);
-		this.ingredientUnitCost.put(ingredient, ((ingredient.getCostAfterVat() / ingredient.getGrams() ) * unitsInGrams ));
-		this.ingredientGramsUsed.put(ingredient, unitsInGrams);
-		this.costToMake += unitsInGrams * (ingredient.getCostAfterVat() / ingredient.getGrams());
-		update();
-	}
-
-	public int returnIngredientListSize() {
-		return this.recipeIngredients.size();
-	}
-
-	public Ingredient getIngredientFromList(int i) {
-		return this.recipeIngredients.get(i);
-	}
-
-	public void removeIngredient(Ingredient ingredient) {
-		this.recipeIngredients.remove(ingredient);
-		this.ingredientUnitCost.remove(ingredient);
-		this.ingredientGramsUsed.remove(ingredient);
-
-		update();
-	}
-
+	/** Updates the name and re-keys this recipe in RecipeHandler's lookup map. */
 	public void setName(String name) {
 		RecipeHandler.recipeByName.remove(this.name);
 		this.name = name;
@@ -136,9 +78,33 @@ public class Recipe {
 		updateDisplayArr();
 	}
 
-	public String getName() {
-		return this.name;
+	// ========================
+	// VAT & Markup
+	// ========================
+
+	public int getVatSelection() {
+		return this.vatSelection;
 	}
+
+	public void setVatSelection(int selection) {
+		if(selection >= 1 && selection <= 4) {
+			this.vatSelection  = selection;
+			update();
+		}
+	}
+
+	public float getMarkUp() {
+		return this.markUp;
+	}
+
+	public void setMarkUp(float markup) {
+		this.markUp = markup;
+		update();
+	}
+
+	// ========================
+	// Cost & Pricing
+	// ========================
 
 	public float getCostToMake() {
 		return this.costToMake;
@@ -147,36 +113,68 @@ public class Recipe {
 	public float getSellPoint() {
 		return this.sellPoint;
 	}
-	
+
+	public double getSaleDiff() {
+		return this.saleDiff;
+	}
+
+	public float getIngredientCostPercentage() {
+		return this.ingredientCostPercentage;
+	}
+
+	public double getProfitMargin() {
+		return this.profitMargin;
+	}
+
+	// ========================
+	// Overhead Costs
+	// ========================
+
 	public float getElectricityCost() {
 		return this.electricityCost;
 	}
-	
-	public float getManPowerCost() {
-		return this.manPowerCost;
-	}
-	
-	public float getPackagingCost() {
-		return this.packagingCost;
-	}
-	
+
 	public void setElectricityCost(float electricityCost) {
 		this.electricityCost = electricityCost;
 		update();
 	}
-	
+
+	public float getManPowerCost() {
+		return this.manPowerCost;
+	}
+
 	public void setManPowerCost(float manPowerCost) {
 		this.manPowerCost = manPowerCost;
 		update();
 	}
-	
+
+	public float getPackagingCost() {
+		return this.packagingCost;
+	}
+
 	public void setPackagingCost(float packagingCost) {
 		this.packagingCost = packagingCost;
 		update();
 	}
 
+	// ========================
+	// Ingredient Management
+	// ========================
+
 	public ArrayList<Ingredient> getIngredients() {
 		return this.recipeIngredients;
+	}
+
+	public int getIngredientAmount() {
+		return this.recipeIngredients.size();
+	}
+
+	public int returnIngredientListSize() {
+		return this.recipeIngredients.size();
+	}
+
+	public Ingredient getIngredientFromList(int i) {
+		return this.recipeIngredients.get(i);
 	}
 
 	public Ingredient getIngredient(Ingredient temp) {
@@ -192,6 +190,37 @@ public class Recipe {
 		return ingredientGramsUsed.get(i);
 	}
 
+	/** Adds an ingredient with the specified grams used, updates cost maps, and recalculates totals. */
+	public void addIngredient(Ingredient ingredient, float unitsInGrams) {
+		this.recipeIngredients.add(ingredient);
+		this.ingredientUnitCost.put(ingredient, ((ingredient.getCostAfterVat() / ingredient.getGrams() ) * unitsInGrams ));
+		this.ingredientGramsUsed.put(ingredient, unitsInGrams);
+		this.costToMake += unitsInGrams * (ingredient.getCostAfterVat() / ingredient.getGrams());
+		update();
+	}
+
+	/** Removes an ingredient and its cost/grams entries, then recalculates totals. */
+	public void removeIngredient(Ingredient ingredient) {
+		this.recipeIngredients.remove(ingredient);
+		this.ingredientUnitCost.remove(ingredient);
+		this.ingredientGramsUsed.remove(ingredient);
+
+		update();
+	}
+
+	// ========================
+	// Recalculation Methods
+	// ========================
+
+	/** Master update: recalculates cost, sell point, sale diff, and display data. */
+	public void update() {
+		updateCostToMake();
+		updateSellPointAfterVat();
+		updateSaleDiff();
+		updateDisplayArr();
+	}
+
+	/** Sums overhead costs + ingredient costs to derive total costToMake. */
 	public void updateCostToMake() {
 		this.costToMake = 0;
 		costToMake += electricityCost;
@@ -200,17 +229,47 @@ public class Recipe {
 		for (Ingredient i : recipeIngredients) {
 			float gramsUsed = ingredientGramsUsed.get(i);
 			this.costToMake += gramsUsed * (i.getCostAfterVat() / i.getGrams());
-			
+
 		}
 	}
 
-	public void update() {
-		updateCostToMake();
-		updateSellPointAfterVat();
-		updateSaleDiff();
-		updateDisplayArr();
+	/** Calculates sell point from costToMake, markup percentage, and VAT rate. */
+	public void updateSellPointAfterVat() {
+		this.sellPoint = (this.costToMake * (1 + (markUp / 100))) * (1 + VATHandler.getVatFromSelection(vatSelection));
 	}
 
+	/** Derives saleDiff, ingredientCostPercentage, and profitMargin from cost and sell point. */
+	public void updateSaleDiff() {
+		this.saleDiff = this.sellPoint - this.costToMake;
+		this.ingredientCostPercentage = (costToMake / sellPoint) * 100;
+		this.profitMargin = (sellPoint - costToMake) / sellPoint * 100;
+	}
+
+	// ========================
+	// Display
+	// ========================
+
+	public Object[] getDisplayArr() {
+		return this.displayArr;
+	}
+
+	/** Formats recipe data into displayArr for the main table view. */
+	public void updateDisplayArr() {
+		this.displayArr[0] = this.name;
+		this.displayArr[1] = String.format("€%.2f", this.costToMake);
+		this.displayArr[2] = String.format("€%.2f", this.sellPoint);
+		String prefix = saleDiff > 0 ? "+" : "-";
+		this.displayArr[3] = String.format("%s€%.2f", prefix, Math.abs(this.saleDiff));
+		this.displayArr[4] = String.format("%s%.2f%%", prefix,Math.abs(ingredientCostPercentage));
+		this.displayArr[5] = String.format("%s%.2f%%", prefix,Math.abs(profitMargin));
+
+	}
+
+	// ========================
+	// Comparison
+	// ========================
+
+	/** Checks if this recipe matches another by name and sell point. Used to prevent duplicates. */
 	public boolean compareToRecipe(Recipe i) {
 		boolean toReturn = false;
 
@@ -219,9 +278,5 @@ public class Recipe {
 		}
 
 		return toReturn;
-	}
-	
-	public int getIngredientAmount() {
-		return this.recipeIngredients.size();
 	}
 }

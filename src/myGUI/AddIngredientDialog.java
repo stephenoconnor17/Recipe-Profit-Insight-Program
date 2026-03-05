@@ -23,7 +23,15 @@ import filep.Ingredient;
 import filep.Recipe;
 import filep.RecipeHandler;
 
+/**
+ * Modal dialog for adding an ingredient to a recipe.
+ * Shows a searchable/filterable table of all available ingredients and a grams input field.
+ */
 public class AddIngredientDialog extends JDialog {
+
+	// ========================
+	// Fields
+	// ========================
 
 	Recipe recipe;
 
@@ -33,13 +41,17 @@ public class AddIngredientDialog extends JDialog {
 
 	JTextField searchBar;
 	JTextField supplierSearchBar;
-
 	JTextField gramsField;
+
 	JButton addButton;
 	JButton cancelButton;
 
 	private JPanel listPanel;
 	private JPanel controlsPanel;
+
+	// ========================
+	// Constructor
+	// ========================
 
 	public AddIngredientDialog(RecipeFrame parent, Recipe recipe) {
 		super(parent, "Add Ingredient", true);
@@ -61,6 +73,11 @@ public class AddIngredientDialog extends JDialog {
 		this.setVisible(true);
 	}
 
+	// ========================
+	// Ingredient List (Table)
+	// ========================
+
+	/** Creates the ingredient table with a non-editable model and populates it. */
 	public void setUpList() {
 		String[] cols = {"ID", "Name", "Supplier", "Grams/Unit", "Cost/Unit", "Cost/100g", "Cost/1g"};
 		model = new DefaultTableModel(cols, 0) {
@@ -80,6 +97,25 @@ public class AddIngredientDialog extends JDialog {
 		listPanel.add(jsp, BorderLayout.CENTER);
 	}
 
+	/** Loads all ingredients into the table. */
+	public void loadList() {
+		model.setRowCount(0);
+
+		DecimalFormat df = new DecimalFormat("0.0000");
+		for (Ingredient i : RecipeHandler.ingredients) {
+			model.addRow(new Object[]{
+				i.getID(),
+				i.getName(),
+				i.getSupplierName(),
+				i.getGrams(),
+				"€" + df.format(i.getCost()),
+				"€" + df.format(i.getCostPer100g()),
+				"€" + df.format(i.getCostPer1g())
+			});
+		}
+	}
+
+	/** Loads only ingredients matching the current name and supplier search filters. */
 	public void loadListFiltered() {
 		model.setRowCount(0);
 		String nameInput = searchBar.getText().toLowerCase().trim();
@@ -104,22 +140,9 @@ public class AddIngredientDialog extends JDialog {
 		}
 	}
 
-	public void loadList() {
-		model.setRowCount(0);
-
-		DecimalFormat df = new DecimalFormat("0.0000");
-		for (Ingredient i : RecipeHandler.ingredients) {
-			model.addRow(new Object[]{
-				i.getID(),
-				i.getName(),
-				i.getSupplierName(),
-				i.getGrams(),
-				"€" + df.format(i.getCost()),
-				"€" + df.format(i.getCostPer100g()),
-				"€" + df.format(i.getCostPer1g())
-			});
-		}
-	}
+	// ========================
+	// Input Fields
+	// ========================
 
 	public void setUpFields() {
 		if (controlsPanel == null) {
@@ -145,25 +168,9 @@ public class AddIngredientDialog extends JDialog {
 		controlsPanel.add(gramsField, gbc);
 	}
 
-	public void addIngredient() {
-		int selectedRow = ingredientTable.getSelectedRow();
-		if (selectedRow < 0) return;
-
-		int id = (int) model.getValueAt(selectedRow, 0);
-		Ingredient selected = RecipeHandler.ingredientIDMap.get(id);
-		if (selected == null) return;
-
-		try {
-			float grams = Float.parseFloat(gramsField.getText());
-			if (grams <= 0) {
-				throw new NumberFormatException();
-			}
-			recipe.addIngredient(selected, grams);
-			dispose();
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "Enter a valid number");
-		}
-	}
+	// ========================
+	// Buttons
+	// ========================
 
 	public void setUpButtons() {
 		addButton = new JButton("Add");
@@ -184,6 +191,10 @@ public class AddIngredientDialog extends JDialog {
 		gbc.gridx = 1;
 		controlsPanel.add(cancelButton, gbc);
 	}
+
+	// ========================
+	// Search Fields
+	// ========================
 
 	public void setUpSearchSelect() {
 		searchBar = new JTextField();
@@ -231,5 +242,30 @@ public class AddIngredientDialog extends JDialog {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 0.5;
 		controlsPanel.add(supplierSearchBar, gbc);
+	}
+
+	// ========================
+	// Actions
+	// ========================
+
+	/** Validates selection and grams input, adds the ingredient to the recipe, then closes the dialog. */
+	public void addIngredient() {
+		int selectedRow = ingredientTable.getSelectedRow();
+		if (selectedRow < 0) return;
+
+		int id = (int) model.getValueAt(selectedRow, 0);
+		Ingredient selected = RecipeHandler.ingredientIDMap.get(id);
+		if (selected == null) return;
+
+		try {
+			float grams = Float.parseFloat(gramsField.getText());
+			if (grams <= 0) {
+				throw new NumberFormatException();
+			}
+			recipe.addIngredient(selected, grams);
+			dispose();
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Enter a valid number");
+		}
 	}
 }

@@ -10,7 +10,15 @@ import java.awt.Insets;
 import filep.FileHandler;
 import filep.VATHandler;
 
+/**
+ * Editor window for the four configurable VAT rates.
+ * Values are entered as percentages (0-100) and stored as decimals (0-1).
+ */
 public class VATFrame extends JFrame {
+
+    // ========================
+    // Fields
+    // ========================
 
     JTextField vat1Field;
     JTextField vat2Field;
@@ -23,6 +31,10 @@ public class VATFrame extends JFrame {
     MyPanel parent;
 
     private JPanel mainPanel;
+
+    // ========================
+    // Constructor
+    // ========================
 
     public VATFrame(FileHandler fh, MyPanel parent) {
         this.fh = fh;
@@ -40,11 +52,14 @@ public class VATFrame extends JFrame {
 
         setUpFields();
         setUpSaveButton();
-
         loadVats();
 
         setVisible(true);
     }
+
+    // ========================
+    // UI Setup
+    // ========================
 
     private void setUpFields() {
         vat1Field = new JTextField();
@@ -63,6 +78,7 @@ public class VATFrame extends JFrame {
         addLabelAndField("VAT 4 (%)", vat4Field, 6, gbc);
     }
 
+    /** Helper to add a label + text field pair to the main panel at the given grid row. */
     private void addLabelAndField(String labelText, JTextField field, int gridy, GridBagConstraints gbc) {
         JLabel label = new JLabel(labelText);
 
@@ -93,6 +109,11 @@ public class VATFrame extends JFrame {
         mainPanel.add(saveButton, gbc);
     }
 
+    // ========================
+    // Load & Save
+    // ========================
+
+    /** Populates text fields with current VAT rates (displayed as percentages). */
     private void loadVats() {
         vat1Field.setText(String.format("%.4f", VATHandler.vats[0] * 100));
         vat2Field.setText(String.format("%.4f", VATHandler.vats[1] * 100));
@@ -100,6 +121,7 @@ public class VATFrame extends JFrame {
         vat4Field.setText(String.format("%.4f", VATHandler.vats[3] * 100));
     }
 
+    /** Parses fields, validates range, saves to VATHandler and file, then refreshes parent. */
     private void saveVats() {
         try {
             float v1 = Float.parseFloat(vat1Field.getText()) / 100f;
