@@ -15,7 +15,6 @@ public class Recipe {
 	
 	private int vatSelection;
 	
-	//util variables
 	private float manPowerCost;
 	private float electricityCost;
 	private float packagingCost;
@@ -54,19 +53,12 @@ public class Recipe {
 	}
 
 	public void updateDisplayArr() {
-		// 0 name
-		// 1 cost to make
-		// 2 selling point
-		// 3 the difference of selling point to making cost
-		// 4 food cost percentage which is cost of making over selling cost i.e what
-		//   percent of recipe sell point returns the value gone into it.
-		// 5 profit margin.
 		this.displayArr[0] = this.name;
 		this.displayArr[1] = String.format("€%.2f", this.costToMake);
 		this.displayArr[2] = String.format("€%.2f", this.sellPoint);
 		String prefix = saleDiff > 0 ? "+" : "-";
 		this.displayArr[3] = String.format("%s€%.2f", prefix, Math.abs(this.saleDiff));
-		this.displayArr[4] = String.format("%s%.2f%%", prefix,Math.abs(ingredientCostPercentage));// to show as a percentage
+		this.displayArr[4] = String.format("%s%.2f%%", prefix,Math.abs(ingredientCostPercentage));
 		this.displayArr[5] = String.format("%s%.2f%%", prefix,Math.abs(profitMargin));
 	
 	}
@@ -81,7 +73,7 @@ public class Recipe {
 	}
 	
 	public void setVatSelection(int selection) {
-		if(selection >= 1 && selection <= 4) { //4 VAT AVAILABLE TO USER.
+		if(selection >= 1 && selection <= 4) {
 			this.vatSelection  = selection;
 			update();
 		}
@@ -93,7 +85,6 @@ public class Recipe {
 	
 	public void updateSellPointAfterVat() {
 		this.sellPoint = (this.costToMake * (1 + (markUp / 100))) * (1 + VATHandler.getVatFromSelection(vatSelection));
-		//COST * (1 + VAT) is how we get value of ingredient after vat
 	}
 	
 	public float getIngredientCostPercentage() {
@@ -114,7 +105,6 @@ public class Recipe {
 		return this.saleDiff;
 	}
 
-	// ingriedient addition
 	public void addIngredient(Ingredient ingredient, float unitsInGrams) {
 		this.recipeIngredients.add(ingredient);
 		this.ingredientUnitCost.put(ingredient, ((ingredient.getCostAfterVat() / ingredient.getGrams() ) * unitsInGrams ));
@@ -139,22 +129,12 @@ public class Recipe {
 		update();
 	}
 
-	// getter/setter
 	public void setName(String name) {
 		RecipeHandler.recipeByName.remove(this.name);
 		this.name = name;
 		RecipeHandler.recipeByName.put(this.name, this);
 		updateDisplayArr();
 	}
-
-	
-	/*
-	public void setSellPoint(float sellPoint) {
-		this.sellPoint = sellPoint;
-		updateSaleDiff();
-		updateDisplayArr();
-	}
-	*/
 
 	public String getName() {
 		return this.name;

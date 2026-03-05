@@ -1,8 +1,6 @@
 package myGUI;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -18,6 +16,8 @@ import filep.IngredientSortType;
 import filep.RecipeHandler;
 import filep.VATHandler;
 import filep.FileHandler;
+import util.ComboBoxUtil;
+import util.TextChangeListener;
 
 public class IngredientFrame extends JFrame {
 
@@ -47,7 +47,6 @@ public class IngredientFrame extends JFrame {
 	MyPanel parent;
 	boolean isUpdating = false;
 
-	// --- NEW: layout panels (layout-only change)
 	private JPanel mainPanel;
 	private JPanel leftPanel;
 	private JPanel rightPanel;
@@ -58,13 +57,11 @@ public class IngredientFrame extends JFrame {
 
 		setTitle("Ingredient Editor");
 		setSize(650, 420);
-		// setLayout(null);
 		setLayout(new BorderLayout());
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		util.MinSizeEnforcer.apply(this, 650, 420);
 
-		// --- NEW: create panels (layout-only change)
 		mainPanel = new JPanel(new BorderLayout());
 		leftPanel = new JPanel(new GridBagLayout());
 		rightPanel = new JPanel(new GridBagLayout());
@@ -85,7 +82,6 @@ public class IngredientFrame extends JFrame {
 
 	private void setUpComboBox() {
 		ingredientSelect = new JComboBox<>();
-		// ingredientSelect.setBounds(10, 10, 300, 35);
 		ingredientSelect.setPreferredSize(new Dimension(300, 35));
 
 		reloadComboBox();
@@ -96,8 +92,6 @@ public class IngredientFrame extends JFrame {
 			}
 		});
 
-		// add(ingredientSelect);
-		// --- NEW: add to leftPanel using layout (layout-only change)
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
@@ -123,16 +117,7 @@ public class IngredientFrame extends JFrame {
 	}
 
 	public void selectByName(String name) {
-		for (int i = 0; i < ingredientSelect.getItemCount(); i++) {
-			String item = ingredientSelect.getItemAt(i);
-			if (item.equals("New Ingredient"))
-				continue;
-			String stripped = item.substring(item.indexOf(".") + 1).trim();
-			if (stripped.equals(name)) {
-				ingredientSelect.setSelectedItem(item);
-				return;
-			}
-		}
+		ComboBoxUtil.selectByName(ingredientSelect, name, "New Ingredient");
 	}
 
 	public void reloadComboBoxFiltered() {
@@ -287,8 +272,6 @@ public class IngredientFrame extends JFrame {
 		saveButton = new JButton("Save");
 		deleteButton = new JButton("Delete");
 
-		// saveButton.setBounds(225, 80, 120, 40);
-		// deleteButton.setBounds(225, 140, 120, 40);
 		saveButton.setPreferredSize(new Dimension(120, 40));
 		deleteButton.setPreferredSize(new Dimension(120, 40));
 
@@ -297,15 +280,10 @@ public class IngredientFrame extends JFrame {
 			try {
 				deleteIngredient();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		});
 
-		// add(saveButton);
-		// add(deleteButton);
-
-		// --- NEW: place beside fields, similar to your old position (layout-only change)
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 1;
 		gbc.weightx = 0.0;
@@ -322,14 +300,11 @@ public class IngredientFrame extends JFrame {
 
 	public Ingredient grabIngredient() {
 		String select = (String) ingredientSelect.getSelectedItem();
-		if (select == null)
+		if (select == null || select.equals("New Ingredient")) {
 			return null;
-		if (select.equals("New Ingredient"))
-			return null;
-		String selection = select.substring(select.indexOf(".") + 1).trim();
-		Ingredient i = RecipeHandler.ingredientByName.get(selection);
-
-		return i;
+		}
+		String selection = ComboBoxUtil.stripPrefix(select);
+		return RecipeHandler.ingredientByName.get(selection);
 	}
 
 	private void loadIngredient() {
@@ -375,8 +350,7 @@ public class IngredientFrame extends JFrame {
 
 					selectByName(name);
 				} else {
-					// CANNOT SAVE DUPLICATE INGREDIENT RESPONSE
-					JOptionPane.showMessageDialog(this, "Error writing Ingredient");
+						JOptionPane.showMessageDialog(this, "Error writing Ingredient");
 				}
 			} else {
 				RecipeHandler.ingredientByName.remove(selected.getName());
@@ -395,7 +369,6 @@ public class IngredientFrame extends JFrame {
 				selectByName(name);
 			}
 		} catch (Exception e) {
-			//e.printStackTrace();
 			JOptionPane.showMessageDialog(this, "Invalid input, Make sure all Fields inputted correctly.");
 		}
 	}
@@ -415,11 +388,9 @@ public class IngredientFrame extends JFrame {
 			RecipeHandler.ingredientIDMap.remove(selected.getID());
 			RecipeHandler.ingredientByName.remove(selected.getName());
 
-			// ingredientSelect.setSelectedIndex(0); // select “New Ingredient”
-
 			reloadComboBox();
-			ingredientSelect.setSelectedIndex(0); // select “New Ingredient”
-			fh.writeIngredients();// save ingredients after deleting.
+			ingredientSelect.setSelectedIndex(0);
+			fh.writeIngredients();
 			updateParent();
 		}
 	}
@@ -446,15 +417,9 @@ public class IngredientFrame extends JFrame {
 			}
 		});
 
-		// sortSelect.setSize(200, 50);
-		// sortSelect.setLocation(350, 10);
 		sortSelect.setPreferredSize(new Dimension(200, 35));
 
 		JLabel sortLabel = new JLabel("Sort Type");
-		// sortLabel.setBounds(400, 60, 200, 20);
-
-		// this.add(sortLabel);
-		// this.add(sortSelect);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -472,37 +437,13 @@ public class IngredientFrame extends JFrame {
 
 	public void setUpSearchSelect() {
 		searchBar = new JTextField();
-		// searchBar.setBounds(350, 90, 200, 30);
 
-		searchBar.getDocument().addDocumentListener(new DocumentListener() {
-
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				reloadComboBoxFiltered();
-				loadIngredient();
-			}
-
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				reloadComboBoxFiltered();
-				loadIngredient();
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				reloadComboBoxFiltered();
-				loadIngredient();
-			}
+		TextChangeListener.attach(searchBar, () -> {
+			reloadComboBoxFiltered();
+			loadIngredient();
 		});
 
 		JLabel searchLabel = new JLabel("Keyword Search");
-		// searchLabel.setBounds(400, 70, 200, 115);
-
-		// this.add(searchBar);
-		// this.add(searchLabel);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -520,37 +461,13 @@ public class IngredientFrame extends JFrame {
 
 	public void setUpSupplierSearchSelect() {
 		supplierSearchBar = new JTextField();
-		// supplierSearchBar.setBounds(350, 150, 200, 30);
 
-		supplierSearchBar.getDocument().addDocumentListener(new DocumentListener() {
-
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				reloadComboBoxFiltered();
-				loadIngredient();
-			}
-
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				reloadComboBoxFiltered();
-				loadIngredient();
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				reloadComboBoxFiltered();
-				loadIngredient();
-			}
+		TextChangeListener.attach(supplierSearchBar, () -> {
+			reloadComboBoxFiltered();
+			loadIngredient();
 		});
 
 		JLabel supplierSearchLabel = new JLabel("Supplier Search");
-		// supplierSearchLabel.setBounds(400, 130, 200, 115);
-
-		// this.add(supplierSearchBar);
-		// this.add(supplierSearchLabel);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;

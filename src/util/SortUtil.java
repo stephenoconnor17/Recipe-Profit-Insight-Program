@@ -11,18 +11,14 @@ import java.util.List;
 import filep.Ingredient;
 import filep.IngredientSortType;
 
-//Because n is small, We can use Collections.sort as it wont impact running time too much.
 public class SortUtil {
 	
 	public static ArrayList<Recipe> sortRecipes(ArrayList<Recipe> toSort,RecipeSortType rst){
 		ArrayList<Recipe> sorted = toSort; 
 		switch (rst) {
-        // Default / fallback
         case DEFAULT:
-        	//do nothing lol.
         	break;
         	
-        // Cost-related
         case BY_COST_ASC:
         	Collections.sort(sorted,Comparator.comparingDouble(Recipe::getCostToMake));
             break;
@@ -36,7 +32,6 @@ public class SortUtil {
         	Collections.sort(sorted,Comparator.comparingDouble(Recipe::getSellPoint).reversed());
             break;
 
-        // Name-related
         case BY_NAME_ASC:
         	Collections.sort(sorted, Comparator.comparing(Recipe::getName, String.CASE_INSENSITIVE_ORDER));
             break;
@@ -44,7 +39,6 @@ public class SortUtil {
         	Collections.sort(sorted, Comparator.comparing(Recipe::getName, String.CASE_INSENSITIVE_ORDER).reversed());
             break;
 
-        // Profit / margin
         case BY_PROFIT_ASC:
         	Collections.sort(sorted, Comparator.comparingDouble(Recipe::getSaleDiff));
             break;
@@ -58,7 +52,6 @@ public class SortUtil {
         	Collections.sort(sorted, Comparator.comparingDouble(Recipe::getProfitMargin).reversed());
             break;
 
-        // Ingredient count
         case BY_INGREDIENT_COUNT_ASC:
         	Collections.sort(sorted, Comparator.comparingInt(Recipe::getIngredientAmount));
             break;
@@ -74,20 +67,17 @@ public class SortUtil {
 		ArrayList<Ingredient> sorted = toSort;
 		
         switch (rst) {
-            // Default / fallback
-            case DEFAULT:
+                case DEFAULT:
                 break;
 
-            // Cost-related
-            case BY_COST_ASC:
+                case BY_COST_ASC:
             	Collections.sort(sorted,Comparator.comparingDouble(Ingredient::getCost));
                 break;
             case BY_COST_DESC:
             	Collections.sort(sorted,Comparator.comparingDouble(Ingredient::getCost).reversed());
                 break;
 
-            // Name-related
-            case BY_NAME_ASC:
+                case BY_NAME_ASC:
             	Collections.sort(sorted, Comparator.comparing(Ingredient::getName, String.CASE_INSENSITIVE_ORDER));
                 break;
             case BY_NAME_DESC:

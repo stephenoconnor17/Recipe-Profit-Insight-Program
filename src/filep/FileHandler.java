@@ -16,25 +16,25 @@ public class FileHandler {
 	private final String splitDelimiter = "\\|";
 	
 	public void writeVATFile() throws IOException {
-		FileWriter myFile = new FileWriter(vatFileName);
-		for(int i = 0; i < 4; i++) {
-			if(VATHandler.vats[i] >= 0 &&VATHandler.vats[i] <= 1) { // must be in range of 0 to 1 because of 0 to 100%
-				myFile.write(String.valueOf(VATHandler.vats[i]) + "\n");
-			}else {
-				myFile.write("0\n");
+		try (FileWriter myFile = new FileWriter(vatFileName)) {
+			for (int i = 0; i < 4; i++) {
+				if (VATHandler.vats[i] >= 0 && VATHandler.vats[i] <= 1) {
+					myFile.write(String.valueOf(VATHandler.vats[i]) + "\n");
+				} else {
+					myFile.write("0\n");
+				}
 			}
 		}
-		myFile.close();
 	}
 	
 	public void loadVATFile() {
 		File myFile = new File(vatFileName);
 		try (Scanner scanner = new Scanner(myFile)) {
 			int i = 0;
-			while (scanner.hasNextLine() && i < 4) { // only 4 vats . 
+			while (scanner.hasNextLine() && i < 4) {
 				String line = scanner.nextLine();
 				try {
-					Float nextVat = Float.valueOf(line); //no need for null check!
+					Float nextVat = Float.valueOf(line);
 					if(nextVat >= 0 && nextVat <= 1) {
 						VATHandler.vats[i] = nextVat;
 					}else {
@@ -76,12 +76,10 @@ public class FileHandler {
 	}
 	
 	public void writeIdFile() throws IOException {
-		FileWriter myFile = new FileWriter(idFileName);
-		myFile.write(String.valueOf(RecipeHandler.nextAvailableID));
-		myFile.close();
+		try (FileWriter myFile = new FileWriter(idFileName)) {
+			myFile.write(String.valueOf(RecipeHandler.nextAvailableID));
+		}
 	}
-	// ingredients in the form of name(String) suppliername(String) cost(float) grams(float) id(int) vatselection(int)
-	// read each ingredient
 	public void loadIngredients() {
 		File myFile = new File(ingredientFileName);
 		try (Scanner scanner = new Scanner(myFile)) {
@@ -107,24 +105,21 @@ public class FileHandler {
 		}
 	}
 
-	// write ingredient list back down to file
 	public void writeIngredients() throws IOException {
-		FileWriter myfw = new FileWriter(ingredientFileName);
-		for (int i = 0; i < RecipeHandler.ingredients.size(); i++) {
-			Ingredient current = RecipeHandler.ingredients.get(i);
+		try (FileWriter myfw = new FileWriter(ingredientFileName)) {
+			for (int i = 0; i < RecipeHandler.ingredients.size(); i++) {
+				Ingredient current = RecipeHandler.ingredients.get(i);
 
-			myfw.write(current.getName() + delimiter + current.getSupplierName() + delimiter
-					+ (current.getCostPer1g() * current.getGrams()) + delimiter + current.getGrams() + delimiter + current.getID()
-					+ delimiter + current.getVatSelection() + "\n");
+				myfw.write(current.getName() + delimiter + current.getSupplierName() + delimiter
+						+ (current.getCostPer1g() * current.getGrams()) + delimiter + current.getGrams() + delimiter + current.getID()
+						+ delimiter + current.getVatSelection() + "\n");
+			}
 		}
-		myfw.close();
-		
+
 		RecipeHandler.nextAvailableID++;
 		writeIdFile();
 	}
 
-	// load recipes from file.
-	// they should be in the format of name, markup , vatselection,packaging,manpower,electricity, ids
 	public void loadRecipes() {
 		File myFile = new File(recipeFileName);
 		try (Scanner scanner = new Scanner(myFile)) {
@@ -169,18 +164,17 @@ public class FileHandler {
 	}
 
 	public void writeRecipes() throws IOException {
-		FileWriter myfw = new FileWriter(recipeFileName);
-		for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
-			Recipe current = RecipeHandler.recipes.get(i);
+		try (FileWriter myfw = new FileWriter(recipeFileName)) {
+			for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
+				Recipe current = RecipeHandler.recipes.get(i);
 
-			myfw.write(current.getName() + delimiter + current.getMarkUp() + delimiter + current.getVatSelection() + delimiter + current.getPackagingCost() + delimiter + current.getManPowerCost() + delimiter + current.getElectricityCost());
-			for (int j = 0; j < current.returnIngredientListSize(); j++) {
-				Ingredient myI = current.getIngredientFromList(j);
-				myfw.write(delimiter + myI.getID() + "/" + current.getGramsUsedOfIngredient(myI));
+				myfw.write(current.getName() + delimiter + current.getMarkUp() + delimiter + current.getVatSelection() + delimiter + current.getPackagingCost() + delimiter + current.getManPowerCost() + delimiter + current.getElectricityCost());
+				for (int j = 0; j < current.returnIngredientListSize(); j++) {
+					Ingredient myI = current.getIngredientFromList(j);
+					myfw.write(delimiter + myI.getID() + "/" + current.getGramsUsedOfIngredient(myI));
+				}
+				myfw.write("\n");
 			}
-			myfw.write("\n");
-
 		}
-		myfw.close();
 	}
 }

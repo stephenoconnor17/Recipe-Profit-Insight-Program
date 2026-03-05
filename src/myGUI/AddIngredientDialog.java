@@ -15,9 +15,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+
+import util.TextChangeListener;
 
 import filep.Ingredient;
 import filep.Recipe;
@@ -38,7 +38,6 @@ public class AddIngredientDialog extends JDialog {
 	JButton addButton;
 	JButton cancelButton;
 
-	// --- NEW: layout panels (layout-only change)
 	private JPanel listPanel;
 	private JPanel controlsPanel;
 
@@ -48,8 +47,6 @@ public class AddIngredientDialog extends JDialog {
 
 		this.setSize(1000, 400);
 		this.setLocationRelativeTo(parent);
-		// this.setLayout(null);
-		// --- NEW: normal layout manager
 		this.setLayout(new BorderLayout());
 
 		setUpList();
@@ -58,8 +55,6 @@ public class AddIngredientDialog extends JDialog {
 		setUpSearchSelect();
 		setUpSupplierSearchSelect();
 
-		// this.add(jsp);
-		// --- NEW: add panels instead (layout-only change)
 		this.add(listPanel, BorderLayout.CENTER);
 		this.add(controlsPanel, BorderLayout.SOUTH);
 
@@ -127,18 +122,12 @@ public class AddIngredientDialog extends JDialog {
 	}
 
 	public void setUpFields() {
-		// --- NEW: controls panel (layout-only change)
 		if (controlsPanel == null) {
 			controlsPanel = new JPanel(new GridBagLayout());
 		}
 
 		JLabel gramsLabel = new JLabel("Grams used: ");
-		// gramsLabel.setBounds(10, 220, 100, 25);
-		// this.add(gramsLabel);
-
 		gramsField = new JTextField();
-		// gramsField.setBounds(120, 220, 100, 25);
-		// this.add(gramsField);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = 0;
@@ -180,14 +169,8 @@ public class AddIngredientDialog extends JDialog {
 		addButton = new JButton("Add");
 		cancelButton = new JButton("Cancel");
 
-		// addButton.setBounds(20, 270, 100, 40);
-		// cancelButton.setBounds(120, 270, 100, 40);
-
 		addButton.addActionListener(e -> addIngredient());
 		cancelButton.addActionListener(e -> dispose());
-
-		// this.add(addButton);
-		// this.add(cancelButton);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = 1;
@@ -204,31 +187,10 @@ public class AddIngredientDialog extends JDialog {
 
 	public void setUpSearchSelect() {
 		searchBar = new JTextField();
-		// searchBar.setBounds(240,220,200,30);
 
-		searchBar.getDocument().addDocumentListener(new DocumentListener(){
-
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				loadListFiltered();
-			}
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				loadListFiltered();
-			}
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				loadListFiltered();
-			}
-		});
+		TextChangeListener.attach(searchBar, () -> loadListFiltered());
 
 		JLabel searchLabel = new JLabel("Keyword Search");
-		// searchLabel.setBounds(240,210,200,115);
-
-		// this.add(searchBar);
-		// this.add(searchLabel);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = 0;
@@ -249,32 +211,10 @@ public class AddIngredientDialog extends JDialog {
 
 	public void setUpSupplierSearchSelect() {
 		supplierSearchBar = new JTextField();
-		// supplierSearchBar.setBounds(460,220,200,30);
 
-		supplierSearchBar.getDocument().addDocumentListener(new DocumentListener(){
-
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				loadListFiltered();
-			}
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				loadListFiltered();
-			}
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				loadListFiltered();
-			}
-		});
+		TextChangeListener.attach(supplierSearchBar, () -> loadListFiltered());
 
 		JLabel supplierSearchLabel = new JLabel("Supplier Search");
-		// supplierSearchLabel.setBounds(460,210,200,115);
-
-		// this.add(supplierSearchBar);
-		// this.add(supplierSearchLabel);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = 0;

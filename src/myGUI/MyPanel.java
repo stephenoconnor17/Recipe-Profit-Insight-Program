@@ -8,12 +8,12 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 import filep.*;
 import util.CellRenderer;
+import util.ComboBoxUtil;
+import util.TextChangeListener;
 
 public class MyPanel extends JPanel {
 
@@ -109,16 +109,10 @@ public class MyPanel extends JPanel {
         JLabel searchLabel = new JLabel("Keyword Search");
         searchBar = new JTextField(16); // columns, better than pixel bounds
 
-        searchBar.getDocument().addDocumentListener(new DocumentListener() {
-            @Override public void insertUpdate(DocumentEvent e) { run(); }
-            @Override public void removeUpdate(DocumentEvent e) { run(); }
-            @Override public void changedUpdate(DocumentEvent e) { run(); }
-
-            private void run() {
-                String input = searchBar.getText();
-                if (!input.trim().isEmpty()) fillDataModelSearch(input);
-                else fillDataModel();
-            }
+        TextChangeListener.attach(searchBar, () -> {
+            String input = searchBar.getText();
+            if (!input.trim().isEmpty()) fillDataModelSearch(input);
+            else fillDataModel();
         });
 
         // ---- Layout placements (same “left buttons, middle sort, right search”)
@@ -216,7 +210,7 @@ public class MyPanel extends JPanel {
         String recipeName = (String) dtm.getValueAt(toPass, 0);
         if (recipeName == null || recipeName.trim().isEmpty()) return null;
 
-        recipeName = recipeName.substring(recipeName.indexOf(".") + 1).trim();
+        recipeName = ComboBoxUtil.stripPrefix(recipeName);
         return RecipeHandler.recipeByName.get(recipeName);
     }
 }

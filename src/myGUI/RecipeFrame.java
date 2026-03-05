@@ -23,8 +23,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 import filep.Ingredient;
@@ -33,6 +31,8 @@ import filep.RecipeHandler;
 import filep.RecipeSortType;
 import filep.VATHandler;
 import filep.FileHandler;
+import util.ComboBoxUtil;
+import util.TextChangeListener;
 
 public class RecipeFrame extends JFrame {
 
@@ -41,17 +41,14 @@ public class RecipeFrame extends JFrame {
 	JPanel mp;
 	FileHandler fh;
 
-	// text tags over input fields
 	JLabel nameLabel;
 	JLabel costToMakeLabel;
 	JLabel sellPointLabel;
 
-	// ingredient display
 	JLabel ingredientLabel;
 	JTable ingredientTable;
 	DefaultTableModel ingredientModel;
 
-	// text fields for user input.
 	JTextField nameField;
 	JTextField costToMakeField;
 	JTextField sellPointField;
@@ -60,19 +57,13 @@ public class RecipeFrame extends JFrame {
 	JTextField manpowerField;
 	JTextField packagingField;
 
-	//FIELDs WHERE FINAL COST IS SUGGEST BY TAKING IN
-	//DESIRED MARKUP PERCENTAGE, APPLYING TO COST OF RECIPE FROM INGREDIENTS, MANPOWER, PACKAGING AND ELECTRICITY
-	//THEN APPLYING VAT ASWELL.
-
 	JTextField suggestedCost;
 	JTextField markupField;
 	JButton vat1;
 	JButton vat2;
 	JButton vat3;
 	JButton vat4;
-	// JTextField nameField;
 
-	// Buttons for save, remove and add ingredient.
 	JButton saveButton;
 	JButton getIngredientsButton;
 	JButton removeIngredientButton;
@@ -82,12 +73,10 @@ public class RecipeFrame extends JFrame {
 
 	Recipe passed;
 
-	// --- NEW: layout panels (layout-only change)
 	private JPanel topPanel;
 	private JPanel centerPanel;
 	private JPanel rightPanel;
 
-	// ingredient list scroll (layout-only improvement)
 	private JScrollPane ingredientScroll;
 
 	public RecipeFrame(FileHandler fh, MyPanel parent, Recipe r) {
@@ -117,17 +106,10 @@ public class RecipeFrame extends JFrame {
 		selectPassed();        // last, since it triggers grabRecipeAndFill which needs all fields ready
 		
 
-		// Top bar
 		addToTop(recipeSelect, 0, 0, 2, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(4, 6, 4, 4));
 		addToTop(saveButton, 2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(4, 2, 4, 2));
 		addToTop(removeButton, 3, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(4, 2, 4, 6));
 
-		// Search + sort row in top bar
-		// (label added inside setUpSearchSelect / setUpSortSelect into topPanel)
-		// keep them right-aligned
-		// NOTE: searchBar / sortSelect are already added by their setup methods.
-
-		// Center content (fields + list + ingredient buttons)
 		addToCenter(nameLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(4, 6, 1, 6));
 		addToCenter(nameField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
@@ -167,14 +149,10 @@ public class RecipeFrame extends JFrame {
 		if (passed != null) {
 			selectByName(passed.getName());
 		}
-		// implicit functionality from actionlistener updating every time an action
-		// occurs.
 	}
 
 	public void setUpPanel() {
 		mp = new JPanel();
-		// mp.setLayout(null);
-		// --- NEW: normal layout manager
 		mp.setLayout(new BorderLayout());
 
 		topPanel = new JPanel(new GridBagLayout());
@@ -192,7 +170,6 @@ public class RecipeFrame extends JFrame {
 
 	public void comboBoxInit() {
 		recipeSelect = new JComboBox<String>();
-		// recipeSelect.setBounds(10, 10, 300, 35);
 		recipeSelect.setPreferredSize(new Dimension(300, 35));
 		recipeSelect.setEditable(false);
 		recipeSelect.addActionListener(e -> {
@@ -256,9 +233,7 @@ public class RecipeFrame extends JFrame {
 		sortSelect.setPreferredSize(new Dimension(200, 35));
 
 		JLabel sortLabel = new JLabel("Sort By");
-		// sortLabel.setBounds(500,120,200,20);
 
-		// --- NEW: add to topPanel using layout
 		addToTop(sortLabel, 6, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(4, 6, 0, 6));
 		addToTop(sortSelect, 6, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 6, 4, 6));
 	}
@@ -267,7 +242,6 @@ public class RecipeFrame extends JFrame {
 		Recipe tempR = grabRecipe();
 
 		isUpdating = true;
-		// Recipe r = RecipeHandler.recipes.
 		if (tempR == null) {
 			nameField.setText("");
 			costToMakeField.setText("");
@@ -295,16 +269,11 @@ public class RecipeFrame extends JFrame {
 
 	public Recipe grabRecipe() {
 		String trimmed = (String) recipeSelect.getSelectedItem();
-		String myRecipe;
-		if (!trimmed.equals("New recipe")) {
-			myRecipe = trimmed.substring(trimmed.indexOf(".") + 1).trim();
-		} else {
-			myRecipe = null;
+		if (trimmed == null || trimmed.equals("New recipe")) {
+			return null;
 		}
-
-		Recipe tempR = RecipeHandler.recipeByName.get(myRecipe);
-
-		return tempR;
+		String myRecipe = ComboBoxUtil.stripPrefix(trimmed);
+		return RecipeHandler.recipeByName.get(myRecipe);
 	}
 
 	public void setUpField() {
@@ -318,8 +287,8 @@ public class RecipeFrame extends JFrame {
 		costToMakeField = new JTextField();
 		sellPointField = new JTextField();
 		costToMakeField.setEditable(false);
+		sellPointField.setEditable(false);
 
-		
 		Dimension fieldSize = new Dimension(300, 35);
 		nameField.setPreferredSize(fieldSize);
 		costToMakeField.setPreferredSize(fieldSize);
@@ -369,48 +338,26 @@ public class RecipeFrame extends JFrame {
 		getIngredientsButton.setPreferredSize(btn);
 		removeIngredientButton.setPreferredSize(btn);
 
-		removeButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				try {
-					removeRecipeAction();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+		removeButton.addActionListener(e -> {
+			try {
+				removeRecipeAction();
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 		});
 
-		getIngredientsButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				addIngredientAction();
-			}
-		});
-		removeIngredientButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				removeIngredientAction();
-			}
-		});
-		saveButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				try {
-					saveRecipesAction();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+		getIngredientsButton.addActionListener(e -> addIngredientAction());
+		removeIngredientButton.addActionListener(e -> removeIngredientAction());
+
+		saveButton.addActionListener(e -> {
+			try {
+				saveRecipesAction();
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 		});
 	}
 
-	// remove selected recipe
 	public void removeRecipeAction() throws IOException {
 		Recipe toRemove = grabRecipe();
 		if (toRemove == null) {
@@ -447,7 +394,6 @@ public class RecipeFrame extends JFrame {
 		return toReturn;
 	}
 
-	// save all recipes
 	public void saveRecipesAction() throws IOException {
 		Recipe saveName = grabRecipe();
 
@@ -476,15 +422,12 @@ public class RecipeFrame extends JFrame {
 		}
 
 		if (saveName != null) {
-			// RECIPE ALREADY EXISTS, JUST UPDATE
-			// INGREDIENTS ALREADY ADDED FROM ADDINGREDIENT, NO NEED TO DO ANYTHING,
-			// AS SAVING THEM WILL THEN FINALISE THEIR ADDITION TO RECIPE
 			saveName.setName(name);
 			saveName.setMarkUp(markUp);
 			saveName.setElectricityCost(electricity);
 			saveName.setManPowerCost(manpower);
 			saveName.setPackagingCost(packaging);
-		} else {// if null then is new recipe, save.
+		} else {
 			if (name.trim().isEmpty()) {
 				JOptionPane.showMessageDialog(this, "Recipe must have a name.");
 
@@ -513,7 +456,6 @@ public class RecipeFrame extends JFrame {
 		setUpComboBox();
 
 		parent.fillDataModel();
-		// recipeSelect.setSelectedItem(name);
 		selectByName(name);
 	}
 
@@ -531,7 +473,6 @@ public class RecipeFrame extends JFrame {
 	    manpowerField.setPreferredSize(util);
 	    packagingField.setPreferredSize(util);
 
-	    //add to rightPanel using layout
 	    addToRight(electricityLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(4, 6, 1, 6));
 	    addToRight(electricityField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
@@ -543,19 +484,9 @@ public class RecipeFrame extends JFrame {
 	}
 
 	public void selectByName(String name) {
-		for (int i = 0; i < recipeSelect.getItemCount(); i++) {
-			String item = recipeSelect.getItemAt(i);
-			if (item.equals("New recipe"))
-				continue;
-			String trimmed = item.substring(item.indexOf(".") + 1).trim();
-			if (trimmed.equals(name)) {
-				recipeSelect.setSelectedItem(item);
-				return;
-			}
-		}
+		ComboBoxUtil.selectByName(recipeSelect, name, "New recipe");
 	}
 
-	// add ingredient to recipe via popup list of all available ingredients
 	public void addIngredientAction() {
 		Recipe recipe = grabRecipe();
 		if (recipe == null) {
@@ -572,7 +503,6 @@ public class RecipeFrame extends JFrame {
 		grabRecipeAndFill();
 	}
 
-	// remove ingredient from recipe based on JTable GUI selection.
 	public void removeIngredientAction() {
 		int selectedRow = ingredientTable.getSelectedRow();
 		if (selectedRow < 0) return;
@@ -588,50 +518,19 @@ public class RecipeFrame extends JFrame {
 
 	public void setUpSearchSelect() {
 		searchBar = new JTextField();
-		// searchBar.setBounds(500, 15, 200, 30);
 		searchBar.setPreferredSize(new Dimension(200, 30));
 
-		searchBar.getDocument().addDocumentListener(new DocumentListener() {
-
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				String input = (String) searchBar.getText();
-				if (!input.trim().isEmpty()) {
-					setUpComboBoxSearch(input);
-				} else {
-					setUpComboBox();
-				}
-			}
-
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				String input = (String) searchBar.getText();
-				if (!input.trim().isEmpty()) {
-					setUpComboBoxSearch(input);
-				} else {
-					setUpComboBox();
-				}
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				String input = (String) searchBar.getText();
-				if (!input.trim().isEmpty()) {
-					setUpComboBoxSearch(input);
-				} else {
-					setUpComboBox();
-				}
-
+		TextChangeListener.attach(searchBar, () -> {
+			String input = searchBar.getText();
+			if (!input.trim().isEmpty()) {
+				setUpComboBoxSearch(input);
+			} else {
+				setUpComboBox();
 			}
 		});
 
 		JLabel searchLabel = new JLabel("Keyword Search");
-		// searchLabel.setBounds(500, 0, 200, 115);
 
-		// --- NEW: add to topPanel using layout (right side)
 		addToTop(searchLabel, 5, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(4, 6, 0, 6));
 		addToTop(searchBar, 5, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 6, 4, 6));
 	}
@@ -642,10 +541,6 @@ public class RecipeFrame extends JFrame {
 		vat2 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(2)*100) + "%");
 		vat3 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(3)*100) + "%");
 		vat4 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(4)*100) + "%");
-
-		// vat1.setBounds(500,200,80,40);
-		// vat2.setBounds(580,200,80,40);
-		// vat3.setBounds(660,200,80,40);
 
 		vat1.setPreferredSize(new Dimension(80, 35));
 		vat2.setPreferredSize(new Dimension(80, 35));
@@ -658,19 +553,14 @@ public class RecipeFrame extends JFrame {
 		vat4.addActionListener(e -> showSuggestedPricing(4));
 
 		JLabel markupLabel = new JLabel("Markup %");
-		// markupLabel.setBounds(500, 150, 100, 20);
 		markupField = new JTextField();
-		// markupField.setBounds(500, 170, 100, 25);
 		markupField.setPreferredSize(new Dimension(100, 25));
 
 		JLabel suggestedCostLabel = new JLabel("Suggested Price");
-		// suggestedCostLabel.setBounds(610, 150, 120, 20);
 		suggestedCost = new JTextField();
-		// suggestedCost.setBounds(610, 170, 120, 25);
 		suggestedCost.setPreferredSize(new Dimension(120, 25));
 		suggestedCost.setEditable(false);
 
-		// --- NEW: add to rightPanel using layout
 		int baseRow = 6;
 
 		addToRight(markupLabel, 0, baseRow, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
@@ -679,13 +569,6 @@ public class RecipeFrame extends JFrame {
 		addToRight(suggestedCostLabel, 0, baseRow+2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
 		addToRight(suggestedCost, 0, baseRow+3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
-		// VAT row
-	//	addToRight(vat1, 0, baseRow+4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 8, 8, 4));
-	//	addToRight(vat2, 0, baseRow+4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(0, 0, 8, 4));
-		//addToRight(vat3, 0, baseRow+4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(0, 0, 8, 8));
-
-		// Make those three VAT buttons sit in a single row nicely:
-		// (layout-only trick: put them into a sub-panel)
 		JPanel vatRow = new JPanel(new GridBagLayout());
 		GridBagConstraints v = new GridBagConstraints();
 		v.gridy = 0;
@@ -755,9 +638,6 @@ public class RecipeFrame extends JFrame {
 	    }
 	}
 
-	// -------------------------
-	// Layout helpers (layout-only)
-	// -------------------------
 	private void addToTop(JComponent c, int x, int y, int w, int h,
 			double wx, double wy, int fill, int anchor, Insets insets) {
 		GridBagConstraints gbc = new GridBagConstraints();
