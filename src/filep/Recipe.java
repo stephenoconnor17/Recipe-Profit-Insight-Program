@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a recipe consisting of ingredients and overhead costs.
- * Tracks cost-to-make, sell point (with VAT + markup), profit margin, and display data.
+ * Represents a recipe consisting of ingredients and overhead costs. Tracks
+ * cost-to-make, sell point (with VAT + markup), profit margin, and display
+ * data.
  */
 public class Recipe {
 
@@ -87,8 +88,8 @@ public class Recipe {
 	}
 
 	public void setVatSelection(int selection) {
-		if(selection >= 1 && selection <= 4) {
-			this.vatSelection  = selection;
+		if (selection >= 1 && selection <= 4) {
+			this.vatSelection = selection;
 			update();
 		}
 	}
@@ -190,16 +191,22 @@ public class Recipe {
 		return ingredientGramsUsed.get(i);
 	}
 
-	/** Adds an ingredient with the specified grams used, updates cost maps, and recalculates totals. */
+	/**
+	 * Adds an ingredient with the specified grams used, updates cost maps, and
+	 * recalculates totals.
+	 */
 	public void addIngredient(Ingredient ingredient, float unitsInGrams) {
 		this.recipeIngredients.add(ingredient);
-		this.ingredientUnitCost.put(ingredient, ((ingredient.getCostAfterVat() / ingredient.getGrams() ) * unitsInGrams ));
+		this.ingredientUnitCost.put(ingredient,
+				((ingredient.getCostAfterVat() / ingredient.getGrams()) * unitsInGrams));
 		this.ingredientGramsUsed.put(ingredient, unitsInGrams);
 		this.costToMake += unitsInGrams * (ingredient.getCostAfterVat() / ingredient.getGrams());
 		update();
 	}
 
-	/** Removes an ingredient and its cost/grams entries, then recalculates totals. */
+	/**
+	 * Removes an ingredient and its cost/grams entries, then recalculates totals.
+	 */
 	public void removeIngredient(Ingredient ingredient) {
 		this.recipeIngredients.remove(ingredient);
 		this.ingredientUnitCost.remove(ingredient);
@@ -212,7 +219,9 @@ public class Recipe {
 	// Recalculation Methods
 	// ========================
 
-	/** Master update: recalculates cost, sell point, sale diff, and display data. */
+	/**
+	 * Master update: recalculates cost, sell point, sale diff, and display data.
+	 */
 	public void update() {
 		updateCostToMake();
 		updateSellPointAfterVat();
@@ -238,7 +247,10 @@ public class Recipe {
 		this.sellPoint = (this.costToMake * (1 + (markUp / 100))) * (1 + VATHandler.getVatFromSelection(vatSelection));
 	}
 
-	/** Derives saleDiff, ingredientCostPercentage, and profitMargin from cost and sell point. */
+	/**
+	 * Derives saleDiff, ingredientCostPercentage, and profitMargin from cost and
+	 * sell point.
+	 */
 	public void updateSaleDiff() {
 		this.saleDiff = this.sellPoint - this.costToMake;
 		this.ingredientCostPercentage = (costToMake / sellPoint) * 100;
@@ -265,8 +277,8 @@ public class Recipe {
 		this.displayArr[5] = String.format("€%.2f", this.sellPoint);
 		String prefix = saleDiff > 0 ? "+" : "-";
 		this.displayArr[6] = String.format("%s€%.2f", prefix, Math.abs(this.saleDiff));
-		this.displayArr[7] = String.format("%s%.2f%%", prefix,Math.abs(profitMargin));
-		this.displayArr[8] = String.format("%s%.2f%%", prefix,Math.abs(ingredientCostPercentage));
+		this.displayArr[7] = String.format("%s%.2f%%", prefix, Math.abs(profitMargin));
+		this.displayArr[8] = String.format("%s%.2f%%", prefix, Math.abs(ingredientCostPercentage));
 
 	}
 
@@ -274,7 +286,9 @@ public class Recipe {
 	// Comparison
 	// ========================
 
-	/** Checks if this recipe matches another by name. Used to prevent duplicates. */
+	/**
+	 * Checks if this recipe matches another by name. Used to prevent duplicates.
+	 */
 	public boolean compareToRecipe(Recipe i) {
 		return i.getName().equals(this.getName());
 	}

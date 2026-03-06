@@ -35,9 +35,9 @@ import util.ComboBoxUtil;
 import util.TextChangeListener;
 
 /**
- * Editor window for creating, editing, and deleting recipes.
- * Layout: top bar (recipe selector, save/delete buttons, search, sort),
- * centre (name/cost/sell fields + ingredient table), right (overhead costs, markup, VAT).
+ * Editor window for creating, editing, and deleting recipes. Layout: top bar
+ * (recipe selector, save/delete buttons, search, sort), centre (name/cost/sell
+ * fields + ingredient table), right (overhead costs, markup, VAT).
  */
 public class RecipeFrame extends JFrame {
 
@@ -113,41 +113,54 @@ public class RecipeFrame extends JFrame {
 		setUpPanel();
 		setUpField();
 		setUpIngredientList();
-		setUpUtilFields();       // must be before selectPassed since grabRecipeAndFill uses these fields
+		setUpUtilFields(); // must be before selectPassed since grabRecipeAndFill uses these fields
 		setUpVatAndMarkup();
 		comboBoxInit();
 		setUpComboBox();
 		setUpButtons();
 		setUpSearchSelect();
 		setUpSortSelect();
-		selectPassed();          // last, since it triggers grabRecipeAndFill which needs all fields ready
+		selectPassed(); // last, since it triggers grabRecipeAndFill which needs all fields ready
 
 		// Place top-bar components
-		addTo(topPanel,recipeSelect, 0, 0, 2, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(4, 6, 4, 4));
-		addTo(topPanel,saveButton, 2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(4, 2, 4, 2));
-		addTo(topPanel,removeButton, 3, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(4, 2, 4, 6));
+		addTo(topPanel, recipeSelect, 0, 0, 2, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST,
+				new Insets(4, 6, 4, 4));
+		addTo(topPanel, saveButton, 2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER,
+				new Insets(4, 2, 4, 2));
+		addTo(topPanel, removeButton, 3, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER,
+				new Insets(4, 2, 4, 6));
 
 		saveStatusLabel = new JLabel(" ");
 		saveStatusLabel.setPreferredSize(new Dimension(140, 20));
-		addTo(topPanel,saveStatusLabel, 0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(topPanel, saveStatusLabel, 0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
+				new Insets(0, 6, 4, 6));
 
 		// Place centre components (recipe fields + ingredient table)
-		addTo(centerPanel,nameLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(4, 6, 1, 6));
-		addTo(centerPanel,nameField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(centerPanel, nameLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
+				new Insets(4, 6, 1, 6));
+		addTo(centerPanel, nameField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST,
+				new Insets(0, 6, 4, 6));
 
-		addTo(centerPanel,costToMakeLabel, 0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-		addTo(centerPanel,costToMakeField, 0, 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(centerPanel, costToMakeLabel, 0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
+				new Insets(0, 6, 1, 6));
+		addTo(centerPanel, costToMakeField, 0, 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
+				GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
-		addTo(centerPanel,sellPointLabel, 0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-		addTo(centerPanel,sellPointField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(centerPanel, sellPointLabel, 0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
+				new Insets(0, 6, 1, 6));
+		addTo(centerPanel, sellPointField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST,
+				new Insets(0, 6, 4, 6));
 
-		addTo(centerPanel,ingredientLabel, 0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-		addTo(centerPanel,ingredientScroll, 0, 7, 2, 1, 1.0, 1.0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, new Insets(0, 6, 6, 6));
+		addTo(centerPanel, ingredientLabel, 0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
+				new Insets(0, 6, 1, 6));
+		addTo(centerPanel, ingredientScroll, 0, 7, 2, 1, 1.0, 1.0, GridBagConstraints.BOTH, GridBagConstraints.CENTER,
+				new Insets(0, 6, 6, 6));
 
 		// Add/remove ingredient buttons beside the ingredient list
 		JPanel ingBtns = new JPanel(new GridBagLayout());
 		GridBagConstraints b = new GridBagConstraints();
-		b.gridx = 0; b.gridy = 0;
+		b.gridx = 0;
+		b.gridy = 0;
 		b.fill = GridBagConstraints.HORIZONTAL;
 		b.insets = new Insets(0, 0, 8, 0);
 		ingBtns.add(getIngredientsButton, b);
@@ -156,10 +169,8 @@ public class RecipeFrame extends JFrame {
 		b.insets = new Insets(0, 0, 0, 0);
 		ingBtns.add(removeIngredientButton, b);
 
-		addTo(centerPanel,ingBtns, 2, 7, 1, 1,
-		        0.0, 1.0,
-		        GridBagConstraints.VERTICAL, GridBagConstraints.NORTH,
-		        new Insets(0, 4, 6, 6));
+		addTo(centerPanel, ingBtns, 2, 7, 1, 1, 0.0, 1.0, GridBagConstraints.VERTICAL, GridBagConstraints.NORTH,
+				new Insets(0, 4, 6, 6));
 
 		this.add(mp);
 		this.setVisible(true);
@@ -208,38 +219,50 @@ public class RecipeFrame extends JFrame {
 
 	}
 
-	/** Creates overhead cost fields (electricity, manpower, packaging) on the right panel. */
+	/**
+	 * Creates overhead cost fields (electricity, manpower, packaging) on the right
+	 * panel.
+	 */
 	public void setUpUtilFields() {
-	    electricityField = new JTextField();
-	    manpowerField = new JTextField();
-	    packagingField = new JTextField();
+		electricityField = new JTextField();
+		manpowerField = new JTextField();
+		packagingField = new JTextField();
 
-	    JLabel electricityLabel = new JLabel("Electricity Cost");
-	    JLabel manpowerLabel = new JLabel("Manpower Cost");
-	    JLabel packagingLabel = new JLabel("Packaging Cost");
+		JLabel electricityLabel = new JLabel("Electricity Cost");
+		JLabel manpowerLabel = new JLabel("Manpower Cost");
+		JLabel packagingLabel = new JLabel("Packaging Cost");
 
-	    Dimension util = new Dimension(150, 25);
-	    electricityField.setPreferredSize(util);
-	    manpowerField.setPreferredSize(util);
-	    packagingField.setPreferredSize(util);
+		Dimension util = new Dimension(150, 25);
+		electricityField.setPreferredSize(util);
+		manpowerField.setPreferredSize(util);
+		packagingField.setPreferredSize(util);
 
-	    addTo(rightPanel,electricityLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(4, 6, 1, 6));
-	    addTo(rightPanel,electricityField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(rightPanel, electricityLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
+				new Insets(4, 6, 1, 6));
+		addTo(rightPanel, electricityField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
+				GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
-	    addTo(rightPanel,manpowerLabel, 0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-	    addTo(rightPanel,manpowerField, 0, 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(rightPanel, manpowerLabel, 0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
+				new Insets(0, 6, 1, 6));
+		addTo(rightPanel, manpowerField, 0, 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST,
+				new Insets(0, 6, 4, 6));
 
-	    addTo(rightPanel,packagingLabel, 0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-	    addTo(rightPanel,packagingField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 6, 6));
+		addTo(rightPanel, packagingLabel, 0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
+				new Insets(0, 6, 1, 6));
+		addTo(rightPanel, packagingField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST,
+				new Insets(0, 6, 6, 6));
 	}
 
 	// ========================
 	// Ingredient Table
 	// ========================
 
-	/** Creates the ingredient table (non-editable, single selection) with a scroll pane. */
+	/**
+	 * Creates the ingredient table (non-editable, single selection) with a scroll
+	 * pane.
+	 */
 	public void setUpIngredientList() {
-		String[] cols = {"ID", "Name", "Supplier", "Grams Used", "Cost in Recipe"};
+		String[] cols = { "ID", "Name", "Supplier", "Grams Used", "Cost in Recipe" };
 		ingredientModel = new DefaultTableModel(cols, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -259,13 +282,8 @@ public class RecipeFrame extends JFrame {
 
 		DecimalFormat df = new DecimalFormat("0.0000");
 		for (Ingredient t : r.getIngredients()) {
-			ingredientModel.addRow(new Object[]{
-				t.getID(),
-				t.getName(),
-				t.getSupplierName(),
-				r.getGramsUsedOfIngredient(t),
-				"€" + df.format(r.getCostOfIngredientInRecipe(t))
-			});
+			ingredientModel.addRow(new Object[] { t.getID(), t.getName(), t.getSupplierName(),
+					r.getGramsUsedOfIngredient(t), "€" + df.format(r.getCostOfIngredientInRecipe(t)) });
 		}
 	}
 
@@ -273,12 +291,15 @@ public class RecipeFrame extends JFrame {
 	// VAT & Markup
 	// ========================
 
-	/** Creates VAT selection buttons, markup field, and price after markup & VAT display on the right panel. */
+	/**
+	 * Creates VAT selection buttons, markup field, and price after markup & VAT
+	 * display on the right panel.
+	 */
 	public void setUpVatAndMarkup() {
-		vat1 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(1)*100) + "%");
-		vat2 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(2)*100) + "%");
-		vat3 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(3)*100) + "%");
-		vat4 = new JButton(String.format("%.2f",VATHandler.getVatFromSelection(4)*100) + "%");
+		vat1 = new JButton(String.format("%.2f", VATHandler.getVatFromSelection(1) * 100) + "%");
+		vat2 = new JButton(String.format("%.2f", VATHandler.getVatFromSelection(2) * 100) + "%");
+		vat3 = new JButton(String.format("%.2f", VATHandler.getVatFromSelection(3) * 100) + "%");
+		vat4 = new JButton(String.format("%.2f", VATHandler.getVatFromSelection(4) * 100) + "%");
 
 		vat1.setPreferredSize(new Dimension(80, 35));
 		vat2.setPreferredSize(new Dimension(80, 35));
@@ -301,26 +322,36 @@ public class RecipeFrame extends JFrame {
 
 		int baseRow = 6;
 
-		addTo(rightPanel,markupLabel, 0, baseRow, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-		addTo(rightPanel,markupField, 0, baseRow+1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(rightPanel, markupLabel, 0, baseRow, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
+				new Insets(0, 6, 1, 6));
+		addTo(rightPanel, markupField, 0, baseRow + 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
+				GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
-		addTo(rightPanel,priceAfterMarkupAndVatLabel, 0, baseRow+2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-		addTo(rightPanel,priceAfterMarkupAndVat, 0, baseRow+3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(rightPanel, priceAfterMarkupAndVatLabel, 0, baseRow + 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE,
+				GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
+		addTo(rightPanel, priceAfterMarkupAndVat, 0, baseRow + 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
+				GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
 		// Arrange VAT buttons in a horizontal row
 		JPanel vatRow = new JPanel(new GridBagLayout());
 		GridBagConstraints v = new GridBagConstraints();
 		v.gridy = 0;
 		v.insets = new Insets(0, 0, 0, 6);
-		v.gridx = 0; vatRow.add(vat1, v);
-		v.gridx = 1; vatRow.add(vat2, v);
-		v.gridx = 2; vatRow.add(vat3, v);
-		v.gridx = 3; v.insets = new Insets(0, 0, 0, 0); vatRow.add(vat4, v);
+		v.gridx = 0;
+		vatRow.add(vat1, v);
+		v.gridx = 1;
+		vatRow.add(vat2, v);
+		v.gridx = 2;
+		vatRow.add(vat3, v);
+		v.gridx = 3;
+		v.insets = new Insets(0, 0, 0, 0);
+		vatRow.add(vat4, v);
 
 		rightPanel.remove(vat1);
 		rightPanel.remove(vat2);
 		rightPanel.remove(vat3);
-		addTo(rightPanel,vatRow, 0, baseRow+4, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 6, 6));
+		addTo(rightPanel, vatRow, 0, baseRow + 4, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
+				GridBagConstraints.WEST, new Insets(0, 6, 6, 6));
 	}
 
 	/**
@@ -328,57 +359,35 @@ public class RecipeFrame extends JFrame {
 	 * and updates the recipe's VAT selection.
 	 */
 	public void showPriceAfterMarkupAndVat(int selection) {
-	    switch(selection) {
-	        case 1:
-	            vat1.setBackground(Color.green);
-	            vat2.setBackground(null);
-	            vat3.setBackground(null);
-	            vat4.setBackground(null);
-	            break;
-	        case 2:
-	            vat1.setBackground(null);
-	            vat2.setBackground(Color.green);
-	            vat3.setBackground(null);
-	            vat4.setBackground(null);
-	            break;
-	        case 3:
-	            vat1.setBackground(null);
-	            vat2.setBackground(null);
-	            vat3.setBackground(Color.green);
-	            vat4.setBackground(null);
-	            break;
-	        case 4:
-	        	vat1.setBackground(null);
-	            vat2.setBackground(null);
-	            vat3.setBackground(null);
-	            vat4.setBackground(Color.green);
-	            break;
-	        default:
-	            vat1.setBackground(Color.green);
-	            vat2.setBackground(null);
-	            vat3.setBackground(null);
-	            vat4.setBackground(null);
-	            break;
-	    }
 
-	    String markupString = markupField.getText();
+		setVatSelectionColour(selection);
 
-	    if (!markupString.isEmpty()) {
-	        try {
-	            float markup = Float.valueOf(markupString);
-	            if (markup > 0) {
-	                Recipe r = grabRecipe();
-	                if (r == null) return;
+		String markupString = markupField.getText();
 
-	                r.setMarkUp(markup);
-	                r.setVatSelection(selection);
+		if (!markupString.isEmpty()) {
+			try {
+				float markup = Float.valueOf(markupString);
+				if (markup > 0) {
+					Recipe r = grabRecipe();
+					if (r == null)
+						return;
 
-	                priceAfterMarkupAndVat.setText(String.format("€ %.2f", r.getSellPoint()));
-	            }
-	        } catch (NumberFormatException e) {
-	            priceAfterMarkupAndVat.setText("Invalid markup");
-	        }
-	    }
+					r.setMarkUp(markup);
+					r.setVatSelection(selection);
+
+					priceAfterMarkupAndVat.setText(String.format("€ %.2f", r.getSellPoint()));
+				}
+			} catch (NumberFormatException e) {
+				priceAfterMarkupAndVat.setText("Invalid markup");
+			}
+		}
+	}
+
+	public void setVatSelectionColour(int selection) {
+		vat1.setBackground((selection == 1) ? Color.GREEN : null);
+		vat2.setBackground((selection == 2) ? Color.GREEN : null);
+		vat3.setBackground((selection == 3) ? Color.GREEN : null);
+		vat4.setBackground((selection == 4) ? Color.GREEN : null);
 	}
 
 	// ========================
@@ -458,8 +467,10 @@ public class RecipeFrame extends JFrame {
 
 		JLabel searchLabel = new JLabel("Keyword Search");
 
-		addTo(topPanel,searchLabel, 5, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(4, 6, 0, 6));
-		addTo(topPanel,searchBar, 5, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 6, 4, 6));
+		addTo(topPanel, searchLabel, 5, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST,
+				new Insets(4, 6, 0, 6));
+		addTo(topPanel, searchBar, 5, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST,
+				new Insets(0, 6, 4, 6));
 	}
 
 	public void setUpSortSelect() {
@@ -486,8 +497,10 @@ public class RecipeFrame extends JFrame {
 
 		JLabel sortLabel = new JLabel("Sort By");
 
-		addTo(topPanel,sortLabel, 6, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(4, 6, 0, 6));
-		addTo(topPanel,sortSelect, 6, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 6, 4, 6));
+		addTo(topPanel, sortLabel, 6, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST,
+				new Insets(4, 6, 0, 6));
+		addTo(topPanel, sortSelect, 6, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST,
+				new Insets(0, 6, 4, 6));
 	}
 
 	// ========================
@@ -540,7 +553,10 @@ public class RecipeFrame extends JFrame {
 		return RecipeHandler.recipeByName.get(myRecipe);
 	}
 
-	/** Loads the selected recipe's data into all input fields, or clears them if none selected. */
+	/**
+	 * Loads the selected recipe's data into all input fields, or clears them if
+	 * none selected.
+	 */
 	public void grabRecipeAndFill() {
 		Recipe tempR = grabRecipe();
 
@@ -574,7 +590,10 @@ public class RecipeFrame extends JFrame {
 	// Actions (Save, Delete, Add/Remove Ingredient)
 	// ========================
 
-	/** Saves the current fields as a new recipe or updates the selected existing one. */
+	/**
+	 * Saves the current fields as a new recipe or updates the selected existing
+	 * one.
+	 */
 	public void saveRecipesAction() throws IOException {
 		try {
 			Recipe saveName = grabRecipe();
@@ -584,7 +603,6 @@ public class RecipeFrame extends JFrame {
 			String electricityText = electricityField.getText().trim();
 			String manpowerText = manpowerField.getText().trim();
 			String packagingText = packagingField.getText().trim();
-
 
 			float markUp = 0;
 			float electricity = 0;
@@ -657,9 +675,7 @@ public class RecipeFrame extends JFrame {
 			return;
 		}
 
-		int result = JOptionPane.showConfirmDialog(this,
-				"Do you want to delete this recipe?",
-				"Confirmation",
+		int result = JOptionPane.showConfirmDialog(this, "Do you want to delete this recipe?", "Confirmation",
 				JOptionPane.YES_NO_CANCEL_OPTION);
 
 		if (result == JOptionPane.YES_OPTION) {
@@ -698,7 +714,8 @@ public class RecipeFrame extends JFrame {
 	/** Removes the selected ingredient from the current recipe. */
 	public void removeIngredientAction() {
 		int selectedRow = ingredientTable.getSelectedRow();
-		if (selectedRow < 0) return;
+		if (selectedRow < 0)
+			return;
 
 		int ingEntryId = (int) ingredientModel.getValueAt(selectedRow, 0);
 		Recipe selectedRecipe = grabRecipe();
@@ -718,7 +735,8 @@ public class RecipeFrame extends JFrame {
 		float toReturn = 0;
 		try {
 			toReturn = Float.valueOf(input);
-		} catch (NumberFormatException e) {}
+		} catch (NumberFormatException e) {
+		}
 
 		return toReturn;
 	}
@@ -727,8 +745,8 @@ public class RecipeFrame extends JFrame {
 	// GridBag Layout Helpers
 	// ========================
 
-	private void addTo(JPanel panel, JComponent c, int x, int y, int w, int h,
-			double wx, double wy, int fill, int anchor, Insets insets) {
+	private void addTo(JPanel panel, JComponent c, int x, int y, int w, int h, double wx, double wy, int fill,
+			int anchor, Insets insets) {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = x;
 		gbc.gridy = y;

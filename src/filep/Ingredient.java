@@ -1,8 +1,8 @@
 package filep;
 
 /**
- * Represents a single ingredient with its name, supplier, cost, weight, and VAT info.
- * Cost is stored internally as cost-per-100g and converted as needed.
+ * Represents a single ingredient with its name, supplier, cost, weight, and VAT
+ * info. Cost is stored internally as cost-per-100g and converted as needed.
  */
 public class Ingredient {
 
@@ -26,8 +26,8 @@ public class Ingredient {
 	// ========================
 
 	/**
-	 * Creates an ingredient. If {@code id} equals {@link #NEW_ID_SENTINEL},
-	 * a new unique ID is assigned via {@link RecipeHandler#nextAvailableID}.
+	 * Creates an ingredient. If {@code id} equals {@link #NEW_ID_SENTINEL}, a new
+	 * unique ID is assigned via {@link RecipeHandler#nextAvailableID}.
 	 *
 	 * @param cost  total cost for the given weight (not per-gram)
 	 * @param grams weight of one purchased unit
@@ -146,8 +146,8 @@ public class Ingredient {
 	}
 
 	public void setVatSelection(int selection) {
-		if(selection >= 1 && selection <= 4) {
-			this.vatSelection  = selection;
+		if (selection >= 1 && selection <= 4) {
+			this.vatSelection = selection;
 			updateCostAfterVat();
 		}
 	}
@@ -166,8 +166,8 @@ public class Ingredient {
 	// ========================
 
 	/**
-	 * Checks if this ingredient matches another by ID or by name+supplier.
-	 * Used to prevent duplicate ingredients.
+	 * Checks if this ingredient matches another by ID or by name+supplier. Used to
+	 * prevent duplicate ingredients.
 	 */
 	public boolean compareToIngredient(Ingredient i) {
 		boolean toReturn = false;
@@ -190,16 +190,12 @@ public class Ingredient {
 
 	@Override
 	public String toString() {
-	    java.text.DecimalFormat df = new java.text.DecimalFormat("0.0000");
+		java.text.DecimalFormat df = new java.text.DecimalFormat("0.0000");
 
-	    return "NAME: " + getName()
-	        + " | SUPPLIER: " + getSupplierName()
-	        + " | GRAMS PER UNIT: " + getGrams()
-	        + " | COST PER UNIT: €" + df.format(getCost())
-	        + " | COST PER 1G/100G/1000G: €"
-	        + df.format(getCostPer1g()) + " / €"
-	        + df.format(getCostPer100g()) + " / €"
-	        + df.format(getCostPer1kg());
+		return "NAME: " + getName() + " | SUPPLIER: " + getSupplierName() + " | GRAMS PER UNIT: " + getGrams()
+				+ " | COST PER UNIT: €" + df.format(getCost()) + " | COST PER 1G/100G/1000G: €"
+				+ df.format(getCostPer1g()) + " / €" + df.format(getCostPer100g()) + " / €"
+				+ df.format(getCostPer1kg());
 	}
 
 }

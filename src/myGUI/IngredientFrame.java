@@ -20,9 +20,9 @@ import util.ComboBoxUtil;
 import util.TextChangeListener;
 
 /**
- * Editor window for creating, editing, and deleting ingredients.
- * Left side: ingredient fields, VAT buttons, save/delete buttons.
- * Right side: sort dropdown, keyword search, supplier search.
+ * Editor window for creating, editing, and deleting ingredients. Left side:
+ * ingredient fields, VAT buttons, save/delete buttons. Right side: sort
+ * dropdown, keyword search, supplier search.
  */
 public class IngredientFrame extends JFrame {
 
@@ -97,7 +97,9 @@ public class IngredientFrame extends JFrame {
 	// ComboBox Setup
 	// ========================
 
-	/** Creates the ingredient selector combo box and places it in the left panel. */
+	/**
+	 * Creates the ingredient selector combo box and places it in the left panel.
+	 */
 	private void setUpComboBox() {
 		ingredientSelect = new JComboBox<>();
 		ingredientSelect.setPreferredSize(new Dimension(300, 35));
@@ -135,7 +137,9 @@ public class IngredientFrame extends JFrame {
 		isUpdating = false;
 	}
 
-	/** Repopulates the combo box filtered by current name and supplier search text. */
+	/**
+	 * Repopulates the combo box filtered by current name and supplier search text.
+	 */
 	public void reloadComboBoxFiltered() {
 		isUpdating = true;
 		ingredientSelect.removeAllItems();
@@ -168,7 +172,10 @@ public class IngredientFrame extends JFrame {
 	// Input Fields & VAT Buttons
 	// ========================
 
-	/** Creates all input fields (name, supplier, cost, grams) and VAT selection buttons. */
+	/**
+	 * Creates all input fields (name, supplier, cost, grams) and VAT selection
+	 * buttons.
+	 */
 	private void setUpFields() {
 		JLabel nameLabel = new JLabel("Name");
 		JLabel supplierLabel = new JLabel("Supplier");
@@ -210,64 +217,105 @@ public class IngredientFrame extends JFrame {
 		gbc.insets = new Insets(6, 10, 2, 10);
 
 		// Row 1: Name
-		gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
 		leftPanel.add(nameLabel, gbc);
 
-		gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 10, 6, 10);
 		leftPanel.add(nameField, gbc);
 
 		// Row 2: Supplier
 		gbc.insets = new Insets(6, 10, 2, 10);
-		gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
+		gbc.gridx = 0;
+		gbc.gridy = 3;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
 		leftPanel.add(supplierLabel, gbc);
 
-		gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 4;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 10, 6, 10);
 		leftPanel.add(supplierField, gbc);
 
 		// Row 3: Cost Before VAT
 		gbc.insets = new Insets(6, 10, 2, 10);
-		gbc.gridx = 0; gbc.gridy = 5; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
+		gbc.gridx = 0;
+		gbc.gridy = 5;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
 		leftPanel.add(costLabel, gbc);
 
-		gbc.gridx = 0; gbc.gridy = 6; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 6;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 10, 6, 10);
 		leftPanel.add(costField, gbc);
 
 		// Row 4: Grams Bought
 		gbc.insets = new Insets(6, 10, 2, 10);
-		gbc.gridx = 0; gbc.gridy = 7; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
+		gbc.gridx = 0;
+		gbc.gridy = 7;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
 		leftPanel.add(gramsLabel, gbc);
 
-		gbc.gridx = 0; gbc.gridy = 8; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 8;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 10, 6, 10);
 		leftPanel.add(gramsField, gbc);
 
 		// Row 5: VAT Selection buttons
 		gbc.insets = new Insets(6, 10, 2, 10);
-		gbc.gridx = 0; gbc.gridy = 9; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
+		gbc.gridx = 0;
+		gbc.gridy = 9;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
 		leftPanel.add(vatLabel, gbc);
 
 		JPanel vatRow = new JPanel(new GridBagLayout());
 		GridBagConstraints v = new GridBagConstraints();
 		v.gridy = 0;
 		v.insets = new Insets(0, 0, 0, 4);
-		v.gridx = 0; vatRow.add(vat1, v);
-		v.gridx = 1; vatRow.add(vat2, v);
-		v.gridx = 2; vatRow.add(vat3, v);
-		v.gridx = 3; v.insets = new Insets(0, 0, 0, 0); vatRow.add(vat4, v);
+		v.gridx = 0;
+		vatRow.add(vat1, v);
+		v.gridx = 1;
+		vatRow.add(vat2, v);
+		v.gridx = 2;
+		vatRow.add(vat3, v);
+		v.gridx = 3;
+		v.insets = new Insets(0, 0, 0, 0);
+		vatRow.add(vat4, v);
 
-		gbc.gridx = 0; gbc.gridy = 10; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 10;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 10, 6, 10);
 		leftPanel.add(vatRow, gbc);
 
 		// Row 6: Cost After VAT (read-only)
 		gbc.insets = new Insets(6, 10, 2, 10);
-		gbc.gridx = 0; gbc.gridy = 11; gbc.weightx = 0.0; gbc.fill = GridBagConstraints.NONE;
+		gbc.gridx = 0;
+		gbc.gridy = 11;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
 		leftPanel.add(costAfterVatLabel, gbc);
 
-		gbc.gridx = 0; gbc.gridy = 12; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 12;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 10, 10, 10);
 		leftPanel.add(costAfterVatField, gbc);
 	}
@@ -290,7 +338,10 @@ public class IngredientFrame extends JFrame {
 		vat4.setBackground(selection == 4 ? Color.green : null);
 	}
 
-	/** Recalculates and displays the cost-after-VAT based on current cost field and VAT selection. */
+	/**
+	 * Recalculates and displays the cost-after-VAT based on current cost field and
+	 * VAT selection.
+	 */
 	private void updateCostAfterVatField() {
 		try {
 			float cost = Float.parseFloat(costField.getText());
@@ -437,7 +488,10 @@ public class IngredientFrame extends JFrame {
 	// Data Loading & Retrieval
 	// ========================
 
-	/** Returns the currently selected ingredient from the combo box, or null if "New Ingredient". */
+	/**
+	 * Returns the currently selected ingredient from the combo box, or null if "New
+	 * Ingredient".
+	 */
 	public Ingredient grabIngredient() {
 		String select = (String) ingredientSelect.getSelectedItem();
 		if (select == null || select.equals("New Ingredient")) {
@@ -447,7 +501,10 @@ public class IngredientFrame extends JFrame {
 		return RecipeHandler.ingredientByName.get(selection);
 	}
 
-	/** Populates input fields from the currently selected ingredient (or clears them if none). */
+	/**
+	 * Populates input fields from the currently selected ingredient (or clears them
+	 * if none).
+	 */
 	private void loadIngredient() {
 		Ingredient i = grabIngredient();
 
@@ -474,7 +531,10 @@ public class IngredientFrame extends JFrame {
 	// CRUD Actions
 	// ========================
 
-	/** Saves the current fields as a new ingredient or updates the selected existing one. */
+	/**
+	 * Saves the current fields as a new ingredient or updates the selected existing
+	 * one.
+	 */
 	private void saveIngredient() {
 		try {
 			Ingredient selected = grabIngredient();
@@ -551,7 +611,10 @@ public class IngredientFrame extends JFrame {
 		}
 	}
 
-	/** Refreshes all recipe calculations and the parent panel's table after an ingredient change. */
+	/**
+	 * Refreshes all recipe calculations and the parent panel's table after an
+	 * ingredient change.
+	 */
 	private void updateParent() {
 		RecipeHandler.updateRecipes();
 		parent.fillDataModel();

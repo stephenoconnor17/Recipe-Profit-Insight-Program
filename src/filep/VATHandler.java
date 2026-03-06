@@ -7,7 +7,10 @@ package filep;
 public class VATHandler {
 	public static float[] vats = new float[4];
 
-	/** Returns the VAT rate for a 1-based selection (1-4). Defaults to vats[0] if out of range. */
+	/**
+	 * Returns the VAT rate for a 1-based selection (1-4). Defaults to vats[0] if
+	 * out of range.
+	 */
 	public static float getVatFromSelection(int selection) {
 		if (selection >= 1 && selection <= 4) {
 			return vats[selection - 1];

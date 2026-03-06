@@ -2,7 +2,10 @@ package myGUI;
 
 import javax.swing.*;
 
-/** Main application window. Hosts MyPanel which contains the recipe table and controls. */
+/**
+ * Main application window. Hosts MyPanel which contains the recipe table and
+ * controls.
+ */
 public class MyFrame extends JFrame {
 
 	MyPanel mp;

@@ -6,8 +6,8 @@ import java.util.Map;
 import util.SortUtil;
 
 /**
- * Central data store for all ingredients and recipes.
- * Provides static collections and methods for adding, verifying, sorting, and updating data.
+ * Central data store for all ingredients and recipes. Provides static
+ * collections and methods for adding, verifying, sorting, and updating data.
  */
 public class RecipeHandler {
 
@@ -46,11 +46,16 @@ public class RecipeHandler {
 	// Duplicate Verification
 	// ========================
 
-	/** Returns true if no existing ingredient matches the given one (by ID or name+supplier). */
+	/**
+	 * Returns true if no existing ingredient matches the given one (by ID or
+	 * name+supplier).
+	 */
 	public static boolean verifyNoIngredientCopy(Ingredient check) {
-		if (ingredientIDMap.containsKey(check.getID())) return false;
+		if (ingredientIDMap.containsKey(check.getID()))
+			return false;
 		Ingredient existing = ingredientByName.get(check.getName());
-		if (existing != null && existing.getSupplierName().equalsIgnoreCase(check.getSupplierName())) return false;
+		if (existing != null && existing.getSupplierName().equalsIgnoreCase(check.getSupplierName()))
+			return false;
 		return true;
 	}
 
@@ -64,25 +69,30 @@ public class RecipeHandler {
 	// ========================
 
 	public static void sortRecipes(RecipeSortType sortType) {
-        SortUtil.sortRecipes(recipes, sortType);
-    }
+		SortUtil.sortRecipes(recipes, sortType);
+	}
 
 	public static void sortIngredients(IngredientSortType sortType) {
-       SortUtil.sortIngredients(ingredients, sortType);
-    }
+		SortUtil.sortIngredients(ingredients, sortType);
+	}
 
 	// ========================
 	// Batch Update
 	// ========================
 
-	/** Recalculates all ingredient costs after VAT (e.g. after a VAT rate change). */
+	/**
+	 * Recalculates all ingredient costs after VAT (e.g. after a VAT rate change).
+	 */
 	public static void updateIngredients() {
 		for (int i = 0; i < ingredients.size(); i++) {
 			ingredients.get(i).updateCostAfterVat();
 		}
 	}
 
-	/** Recalculates all recipe costs/prices (e.g. after an ingredient or VAT change). */
+	/**
+	 * Recalculates all recipe costs/prices (e.g. after an ingredient or VAT
+	 * change).
+	 */
 	public static void updateRecipes() {
 		for (int i = 0; i < recipes.size(); i++) {
 			recipes.get(i).update();

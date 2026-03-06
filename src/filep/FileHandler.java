@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Handles reading and writing of all persistent data files:
- * VAT rates, ingredient ID counter, ingredients, and recipes.
- * All files use a pipe (|) delimiter.
+ * Handles reading and writing of all persistent data files: VAT rates,
+ * ingredient ID counter, ingredients, and recipes. All files use a pipe (|)
+ * delimiter.
  */
 public class FileHandler {
 
@@ -29,7 +29,10 @@ public class FileHandler {
 	// VAT File
 	// ========================
 
-	/** Loads 4 VAT rates from file into VATHandler.vats. Values must be between 0 and 1. */
+	/**
+	 * Loads 4 VAT rates from file into VATHandler.vats. Values must be between 0
+	 * and 1.
+	 */
 	public void loadVATFile() {
 		File myFile = new File(vatFileName);
 		try (Scanner scanner = new Scanner(myFile)) {
@@ -38,13 +41,13 @@ public class FileHandler {
 				String line = scanner.nextLine();
 				try {
 					Float nextVat = Float.valueOf(line);
-					if(nextVat >= 0 && nextVat <= 1) {
+					if (nextVat >= 0 && nextVat <= 1) {
 						VATHandler.vats[i] = nextVat;
-					}else {
+					} else {
 						VATHandler.vats[i] = 0f;
 					}
 
-				}catch(Exception e) {
+				} catch (Exception e) {
 
 				}
 
@@ -81,12 +84,12 @@ public class FileHandler {
 				String line = scanner.nextLine();
 				try {
 					Integer nextID = Integer.valueOf(line);
-					if(nextID != null && nextID > 0) {
+					if (nextID != null && nextID > 0) {
 						RecipeHandler.nextAvailableID = nextID;
-					}else {
+					} else {
 						RecipeHandler.nextAvailableID = RecipeHandler.ingredients.size() + 1;
 					}
-				}catch(Exception e) {
+				} catch (Exception e) {
 
 				}
 			}
@@ -118,7 +121,8 @@ public class FileHandler {
 				String line = scanner.nextLine();
 				try {
 					String[] parts = line.split(splitDelimiter);
-					if (parts.length < 6) continue;
+					if (parts.length < 6)
+						continue;
 
 					String name = parts[0];
 					String supplier = parts[1];
@@ -148,8 +152,8 @@ public class FileHandler {
 				Ingredient current = RecipeHandler.ingredients.get(i);
 
 				myfw.write(current.getName() + delimiter + current.getSupplierName() + delimiter
-						+ (current.getCostPer1g() * current.getGrams()) + delimiter + current.getGrams() + delimiter + current.getID()
-						+ delimiter + current.getVatSelection() + "\n");
+						+ (current.getCostPer1g() * current.getGrams()) + delimiter + current.getGrams() + delimiter
+						+ current.getID() + delimiter + current.getVatSelection() + "\n");
 			}
 		}
 
@@ -172,7 +176,8 @@ public class FileHandler {
 				String line = scanner.nextLine();
 				try {
 					String[] parts = line.split(splitDelimiter);
-					if (parts.length < 6) continue;
+					if (parts.length < 6)
+						continue;
 
 					String name = parts[0];
 					float markUp = Float.parseFloat(parts[1]);
@@ -185,7 +190,8 @@ public class FileHandler {
 					// Each remaining part is an ingredient reference: id/gramsUsed
 					for (int i = 6; i < parts.length; i++) {
 						String[] ingredientParts = parts[i].split("/");
-						if (ingredientParts.length < 2) continue;
+						if (ingredientParts.length < 2)
+							continue;
 
 						int ingredientId = Integer.parseInt(ingredientParts[0]);
 						float grams = Float.parseFloat(ingredientParts[1]);
@@ -221,7 +227,9 @@ public class FileHandler {
 			for (int i = 0; i < RecipeHandler.recipes.size(); i++) {
 				Recipe current = RecipeHandler.recipes.get(i);
 
-				myfw.write(current.getName() + delimiter + current.getMarkUp() + delimiter + current.getVatSelection() + delimiter + current.getPackagingCost() + delimiter + current.getManPowerCost() + delimiter + current.getElectricityCost());
+				myfw.write(current.getName() + delimiter + current.getMarkUp() + delimiter + current.getVatSelection()
+						+ delimiter + current.getPackagingCost() + delimiter + current.getManPowerCost() + delimiter
+						+ current.getElectricityCost());
 				for (int j = 0; j < current.returnIngredientListSize(); j++) {
 					Ingredient myI = current.getIngredientFromList(j);
 					myfw.write(delimiter + myI.getID() + "/" + current.getGramsUsedOfIngredient(myI));
