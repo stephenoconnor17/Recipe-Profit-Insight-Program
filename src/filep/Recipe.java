@@ -274,14 +274,8 @@ public class Recipe {
 	// Comparison
 	// ========================
 
-	/** Checks if this recipe matches another by name and sell point. Used to prevent duplicates. */
+	/** Checks if this recipe matches another by name. Used to prevent duplicates. */
 	public boolean compareToRecipe(Recipe i) {
-		boolean toReturn = false;
-
-		if (i.getName().equals(this.getName()) && this.getSellPoint() == i.getSellPoint()) {
-			toReturn = true;
-		}
-
-		return toReturn;
+		return i.getName().equals(this.getName());
 	}
 }

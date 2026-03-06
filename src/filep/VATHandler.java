@@ -9,21 +9,9 @@ public class VATHandler {
 
 	/** Returns the VAT rate for a 1-based selection (1-4). Defaults to vats[0] if out of range. */
 	public static float getVatFromSelection(int selection) {
-		if (selection > 4 || selection < 1) {
-			return vats[0];
+		if (selection >= 1 && selection <= 4) {
+			return vats[selection - 1];
 		}
-
-		switch (selection) {
-		case 1:
-			return vats[0];
-		case 2:
-			return vats[1];
-		case 3:
-			return vats[2];
-		case 4:
-			return vats[3];
-		default:
-			return vats[0];
-		}
+		return vats[0];
 	}
 }

@@ -116,19 +116,24 @@ public class FileHandler {
 		try (Scanner scanner = new Scanner(myFile)) {
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
-				String[] parts = line.split(splitDelimiter);
+				try {
+					String[] parts = line.split(splitDelimiter);
+					if (parts.length < 6) continue;
 
-				String name = parts[0];
-				String supplier = parts[1];
-				float cost = Float.parseFloat(parts[2]);
-				float grams = Float.parseFloat(parts[3]);
-				int id = Integer.parseInt(parts[4]);
-				int vatSelection = Integer.parseInt(parts[5]);
+					String name = parts[0];
+					String supplier = parts[1];
+					float cost = Float.parseFloat(parts[2]);
+					float grams = Float.parseFloat(parts[3]);
+					int id = Integer.parseInt(parts[4]);
+					int vatSelection = Integer.parseInt(parts[5]);
 
-				Ingredient temp = new Ingredient(name, supplier, cost, grams, id, vatSelection);
-				RecipeHandler.ingredients.add(temp);
-				RecipeHandler.ingredientIDMap.put(id, temp);
-				RecipeHandler.ingredientByName.put(temp.getName(), temp);
+					Ingredient temp = new Ingredient(name, supplier, cost, grams, id, vatSelection);
+					RecipeHandler.ingredients.add(temp);
+					RecipeHandler.ingredientIDMap.put(id, temp);
+					RecipeHandler.ingredientByName.put(temp.getName(), temp);
+				} catch (Exception e) {
+					System.err.println("Skipping malformed ingredient line: " + line);
+				}
 			}
 
 		} catch (FileNotFoundException e) {
@@ -136,7 +141,7 @@ public class FileHandler {
 		}
 	}
 
-	/** Writes all ingredients to file and increments the ID counter. */
+	/** Writes all ingredients to file and persists the current ID counter. */
 	public void writeIngredients() throws IOException {
 		try (FileWriter myfw = new FileWriter(ingredientFileName)) {
 			for (int i = 0; i < RecipeHandler.ingredients.size(); i++) {
@@ -148,7 +153,6 @@ public class FileHandler {
 			}
 		}
 
-		RecipeHandler.nextAvailableID++;
 		writeIdFile();
 	}
 
@@ -166,38 +170,44 @@ public class FileHandler {
 		try (Scanner scanner = new Scanner(myFile)) {
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
-				String[] parts = line.split(splitDelimiter);
+				try {
+					String[] parts = line.split(splitDelimiter);
+					if (parts.length < 6) continue;
 
-				String name = parts[0];
-				float markUp = Float.parseFloat(parts[1]);
-				int vatSelection = Integer.parseInt(parts[2]);
-				float packaging = Float.parseFloat(parts[3]);
-				float manpower = Float.parseFloat(parts[4]);
-				float electricity = Float.parseFloat(parts[5]);
-				Recipe temp = new Recipe(name);
+					String name = parts[0];
+					float markUp = Float.parseFloat(parts[1]);
+					int vatSelection = Integer.parseInt(parts[2]);
+					float packaging = Float.parseFloat(parts[3]);
+					float manpower = Float.parseFloat(parts[4]);
+					float electricity = Float.parseFloat(parts[5]);
+					Recipe temp = new Recipe(name);
 
-				// Each remaining part is an ingredient reference: id/gramsUsed
-				for (int i = 6; i < parts.length; i++) {
-					String[] ingredientParts = parts[i].split("/");
+					// Each remaining part is an ingredient reference: id/gramsUsed
+					for (int i = 6; i < parts.length; i++) {
+						String[] ingredientParts = parts[i].split("/");
+						if (ingredientParts.length < 2) continue;
 
-					int ingredientId = Integer.parseInt(ingredientParts[0]);
-					float grams = Float.parseFloat(ingredientParts[1]);
+						int ingredientId = Integer.parseInt(ingredientParts[0]);
+						float grams = Float.parseFloat(ingredientParts[1]);
 
-					Ingredient ing = RecipeHandler.ingredientIDMap.get(ingredientId);
+						Ingredient ing = RecipeHandler.ingredientIDMap.get(ingredientId);
 
-					if (ing != null) {
-						temp.addIngredient(ing, grams);
+						if (ing != null) {
+							temp.addIngredient(ing, grams);
+						}
 					}
+
+					temp.setMarkUp(markUp);
+					temp.setVatSelection(vatSelection);
+					temp.setElectricityCost(electricity);
+					temp.setManPowerCost(manpower);
+					temp.setPackagingCost(packaging);
+
+					RecipeHandler.recipes.add(temp);
+					RecipeHandler.recipeByName.put(temp.getName(), temp);
+				} catch (Exception e) {
+					System.err.println("Skipping malformed recipe line: " + line);
 				}
-
-				temp.setMarkUp(markUp);
-				temp.setVatSelection(vatSelection);
-				temp.setElectricityCost(electricity);
-				temp.setManPowerCost(manpower);
-				temp.setPackagingCost(packaging);
-
-				RecipeHandler.recipes.add(temp);
-				RecipeHandler.recipeByName.put(temp.getName(), temp);
 			}
 
 		} catch (FileNotFoundException e) {

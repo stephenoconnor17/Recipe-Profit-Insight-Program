@@ -318,7 +318,7 @@ public class IngredientFrame extends JFrame {
 			try {
 				deleteIngredient();
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				JOptionPane.showMessageDialog(IngredientFrame.this, "Failed to delete ingredient: " + e1.getMessage());
 			}
 		});
 

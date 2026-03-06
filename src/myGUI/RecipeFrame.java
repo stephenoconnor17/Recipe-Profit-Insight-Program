@@ -123,26 +123,26 @@ public class RecipeFrame extends JFrame {
 		selectPassed();          // last, since it triggers grabRecipeAndFill which needs all fields ready
 
 		// Place top-bar components
-		addToTop(recipeSelect, 0, 0, 2, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(4, 6, 4, 4));
-		addToTop(saveButton, 2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(4, 2, 4, 2));
-		addToTop(removeButton, 3, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(4, 2, 4, 6));
+		addTo(topPanel,recipeSelect, 0, 0, 2, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(4, 6, 4, 4));
+		addTo(topPanel,saveButton, 2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(4, 2, 4, 2));
+		addTo(topPanel,removeButton, 3, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.CENTER, new Insets(4, 2, 4, 6));
 
 		saveStatusLabel = new JLabel(" ");
 		saveStatusLabel.setPreferredSize(new Dimension(140, 20));
-		addToTop(saveStatusLabel, 0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(topPanel,saveStatusLabel, 0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
 		// Place centre components (recipe fields + ingredient table)
-		addToCenter(nameLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(4, 6, 1, 6));
-		addToCenter(nameField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(centerPanel,nameLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(4, 6, 1, 6));
+		addTo(centerPanel,nameField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
-		addToCenter(costToMakeLabel, 0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-		addToCenter(costToMakeField, 0, 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(centerPanel,costToMakeLabel, 0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
+		addTo(centerPanel,costToMakeField, 0, 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
-		addToCenter(sellPointLabel, 0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-		addToCenter(sellPointField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(centerPanel,sellPointLabel, 0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
+		addTo(centerPanel,sellPointField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
-		addToCenter(ingredientLabel, 0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-		addToCenter(ingredientScroll, 0, 7, 2, 1, 1.0, 1.0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, new Insets(0, 6, 6, 6));
+		addTo(centerPanel,ingredientLabel, 0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
+		addTo(centerPanel,ingredientScroll, 0, 7, 2, 1, 1.0, 1.0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, new Insets(0, 6, 6, 6));
 
 		// Add/remove ingredient buttons beside the ingredient list
 		JPanel ingBtns = new JPanel(new GridBagLayout());
@@ -156,7 +156,7 @@ public class RecipeFrame extends JFrame {
 		b.insets = new Insets(0, 0, 0, 0);
 		ingBtns.add(removeIngredientButton, b);
 
-		addToCenter(ingBtns, 2, 7, 1, 1,
+		addTo(centerPanel,ingBtns, 2, 7, 1, 1,
 		        0.0, 1.0,
 		        GridBagConstraints.VERTICAL, GridBagConstraints.NORTH,
 		        new Insets(0, 4, 6, 6));
@@ -181,8 +181,6 @@ public class RecipeFrame extends JFrame {
 		mp.add(topPanel, BorderLayout.NORTH);
 		mp.add(centerPanel, BorderLayout.CENTER);
 		mp.add(rightPanel, BorderLayout.EAST);
-
-		this.setVisible(true);
 	}
 
 	// ========================
@@ -225,14 +223,14 @@ public class RecipeFrame extends JFrame {
 	    manpowerField.setPreferredSize(util);
 	    packagingField.setPreferredSize(util);
 
-	    addToRight(electricityLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(4, 6, 1, 6));
-	    addToRight(electricityField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+	    addTo(rightPanel,electricityLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(4, 6, 1, 6));
+	    addTo(rightPanel,electricityField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
-	    addToRight(manpowerLabel, 0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-	    addToRight(manpowerField, 0, 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+	    addTo(rightPanel,manpowerLabel, 0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
+	    addTo(rightPanel,manpowerField, 0, 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
-	    addToRight(packagingLabel, 0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-	    addToRight(packagingField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 6, 6));
+	    addTo(rightPanel,packagingLabel, 0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
+	    addTo(rightPanel,packagingField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 6, 6));
 	}
 
 	// ========================
@@ -303,11 +301,11 @@ public class RecipeFrame extends JFrame {
 
 		int baseRow = 6;
 
-		addToRight(markupLabel, 0, baseRow, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-		addToRight(markupField, 0, baseRow+1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(rightPanel,markupLabel, 0, baseRow, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
+		addTo(rightPanel,markupField, 0, baseRow+1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
-		addToRight(priceAfterMarkupAndVatLabel, 0, baseRow+2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-		addToRight(priceAfterMarkupAndVat, 0, baseRow+3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		addTo(rightPanel,priceAfterMarkupAndVatLabel, 0, baseRow+2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
+		addTo(rightPanel,priceAfterMarkupAndVat, 0, baseRow+3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
 		// Arrange VAT buttons in a horizontal row
 		JPanel vatRow = new JPanel(new GridBagLayout());
@@ -322,7 +320,7 @@ public class RecipeFrame extends JFrame {
 		rightPanel.remove(vat1);
 		rightPanel.remove(vat2);
 		rightPanel.remove(vat3);
-		addToRight(vatRow, 0, baseRow+4, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 6, 6));
+		addTo(rightPanel,vatRow, 0, baseRow+4, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 6, 6));
 	}
 
 	/**
@@ -378,7 +376,7 @@ public class RecipeFrame extends JFrame {
 	                priceAfterMarkupAndVat.setText(String.format("€ %.2f", r.getSellPoint()));
 	            }
 	        } catch (NumberFormatException e) {
-
+	            priceAfterMarkupAndVat.setText("Invalid markup");
 	        }
 	    }
 	}
@@ -460,8 +458,8 @@ public class RecipeFrame extends JFrame {
 
 		JLabel searchLabel = new JLabel("Keyword Search");
 
-		addToTop(searchLabel, 5, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(4, 6, 0, 6));
-		addToTop(searchBar, 5, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 6, 4, 6));
+		addTo(topPanel,searchLabel, 5, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(4, 6, 0, 6));
+		addTo(topPanel,searchBar, 5, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 6, 4, 6));
 	}
 
 	public void setUpSortSelect() {
@@ -488,8 +486,8 @@ public class RecipeFrame extends JFrame {
 
 		JLabel sortLabel = new JLabel("Sort By");
 
-		addToTop(sortLabel, 6, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(4, 6, 0, 6));
-		addToTop(sortSelect, 6, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 6, 4, 6));
+		addTo(topPanel,sortLabel, 6, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.EAST, new Insets(4, 6, 0, 6));
+		addTo(topPanel,sortSelect, 6, 1, 1, 1, 0.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST, new Insets(0, 6, 4, 6));
 	}
 
 	// ========================
@@ -512,7 +510,7 @@ public class RecipeFrame extends JFrame {
 			try {
 				removeRecipeAction();
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				JOptionPane.showMessageDialog(RecipeFrame.this, "Failed to delete recipe: " + e1.getMessage());
 			}
 		});
 
@@ -523,7 +521,7 @@ public class RecipeFrame extends JFrame {
 			try {
 				saveRecipesAction();
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				JOptionPane.showMessageDialog(RecipeFrame.this, "Failed to save recipe: " + e1.getMessage());
 			}
 		});
 	}
@@ -729,7 +727,7 @@ public class RecipeFrame extends JFrame {
 	// GridBag Layout Helpers
 	// ========================
 
-	private void addToTop(JComponent c, int x, int y, int w, int h,
+	private void addTo(JPanel panel, JComponent c, int x, int y, int w, int h,
 			double wx, double wy, int fill, int anchor, Insets insets) {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = x;
@@ -741,36 +739,6 @@ public class RecipeFrame extends JFrame {
 		gbc.fill = fill;
 		gbc.anchor = anchor;
 		gbc.insets = insets;
-		topPanel.add(c, gbc);
-	}
-
-	private void addToCenter(JComponent c, int x, int y, int w, int h,
-			double wx, double wy, int fill, int anchor, Insets insets) {
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = x;
-		gbc.gridy = y;
-		gbc.gridwidth = w;
-		gbc.gridheight = h;
-		gbc.weightx = wx;
-		gbc.weighty = wy;
-		gbc.fill = fill;
-		gbc.anchor = anchor;
-		gbc.insets = insets;
-		centerPanel.add(c, gbc);
-	}
-
-	private void addToRight(JComponent c, int x, int y, int w, int h,
-			double wx, double wy, int fill, int anchor, Insets insets) {
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = x;
-		gbc.gridy = y;
-		gbc.gridwidth = w;
-		gbc.gridheight = h;
-		gbc.weightx = wx;
-		gbc.weighty = wy;
-		gbc.fill = fill;
-		gbc.anchor = anchor;
-		gbc.insets = insets;
-		rightPanel.add(c, gbc);
+		panel.add(c, gbc);
 	}
 }

@@ -48,28 +48,15 @@ public class RecipeHandler {
 
 	/** Returns true if no existing ingredient matches the given one (by ID or name+supplier). */
 	public static boolean verifyNoIngredientCopy(Ingredient check) {
-		boolean toReturn = true;
-
-		for (Ingredient i : RecipeHandler.ingredients) {
-			if (check.compareToIngredient(i)) {
-				toReturn = false;
-			}
-		}
-
-		return toReturn;
+		if (ingredientIDMap.containsKey(check.getID())) return false;
+		Ingredient existing = ingredientByName.get(check.getName());
+		if (existing != null && existing.getSupplierName().equalsIgnoreCase(check.getSupplierName())) return false;
+		return true;
 	}
 
-	/** Returns true if no existing recipe matches the given one (by name+sell point). */
+	/** Returns true if no existing recipe matches the given one (by name). */
 	public static boolean verifyNoRecipeCopy(Recipe check) {
-		boolean toReturn = true;
-
-		for (Recipe i : RecipeHandler.recipes) {
-			if (check.compareToRecipe(i)) {
-				toReturn = false;
-			}
-		}
-
-		return toReturn;
+		return !recipeByName.containsKey(check.getName());
 	}
 
 	// ========================
