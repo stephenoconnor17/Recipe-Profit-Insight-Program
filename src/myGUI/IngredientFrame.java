@@ -11,8 +11,11 @@ import java.awt.Insets;
 
 import java.io.IOException;
 
+import java.util.ArrayList;
+
 import filep.Ingredient;
 import filep.IngredientSortType;
+import filep.Recipe;
 import filep.RecipeHandler;
 import filep.VATHandler;
 import filep.FileHandler;
@@ -596,10 +599,34 @@ public class IngredientFrame extends JFrame {
 			return;
 		}
 
-		int result = JOptionPane.showConfirmDialog(this, "Delete this ingredient?", "Confirm",
+		// Find recipes that use this ingredient
+		ArrayList<Recipe> affectedRecipes = new ArrayList<>();
+		for (Recipe recipe : RecipeHandler.recipes) {
+			if (recipe.getIngredients().contains(selected)) {
+				affectedRecipes.add(recipe);
+			}
+		}
+
+		// Build confirmation message
+		String message = "Delete this ingredient?";
+		if (!affectedRecipes.isEmpty()) {
+			StringBuilder sb = new StringBuilder("This ingredient is used in " + affectedRecipes.size() + " recipe(s):\n");
+			for (Recipe r : affectedRecipes) {
+				sb.append("  - ").append(r.getName()).append("\n");
+			}
+			sb.append("\nIt will be removed from these recipes. Continue?");
+			message = sb.toString();
+		}
+
+		int result = JOptionPane.showConfirmDialog(this, message, "Confirm",
 				JOptionPane.YES_NO_OPTION);
 
 		if (result == JOptionPane.YES_OPTION) {
+			// Remove ingredient from all recipes that use it
+			for (Recipe recipe : affectedRecipes) {
+				recipe.removeIngredient(selected);
+			}
+
 			RecipeHandler.ingredients.remove(selected);
 			RecipeHandler.ingredientIDMap.remove(selected.getID());
 			RecipeHandler.ingredientByName.remove(selected.getName());
@@ -607,6 +634,7 @@ public class IngredientFrame extends JFrame {
 			reloadComboBox();
 			ingredientSelect.setSelectedIndex(0);
 			fh.writeIngredients();
+			fh.writeRecipes();
 			updateParent();
 		}
 	}
