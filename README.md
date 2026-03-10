@@ -1,43 +1,68 @@
-# Recipe & Ingredient Manager
+# RecipeProfitizer
 
-A Java-based desktop application designed to manage a database of food ingredients and recipes. It calculates total production costs, recommended selling prices, and profit margins while handling overheads and tax configurations.
+A Java Swing desktop application for managing food ingredients and recipes. It calculates production costs, recommended selling prices, and profit margins while handling overheads and VAT.
 
-## Core Features
+## Features
 
-* **Ingredient Management**: Add, edit, or delete ingredients with details such as name, supplier, cost per unit, and weight.
-* **Recipe Composition**: Build recipes by adding specific amounts of ingredients from your database.
-* **Automated Costing**:
-    * **Cost to Make**: Calculates base costs including raw materials and overheads like manpower, electricity, and packaging.
-    * **Selling Point**: Automatically generates suggested selling prices based on user-defined markup percentages and VAT selection.
-* **VAT Editor**: A centralized tool to configure up to four different tax rates used throughout the application.
-* **Financial Analytics**: Track key performance indicators including profit margin, food cost percentage, and net profit.
-* **Data Persistence**: Automatically saves and loads all data from local text files (`recipes.txt`, `ingredients.txt`, `vatFile.txt`, and `idfile.txt`).
+- **Ingredient Management** — Add, edit, and delete ingredients with supplier info, unit cost, and weight. Assign one of four configurable VAT rates to each ingredient.
+- **Recipe Builder** — Compose recipes from your ingredient database, with adjustable overhead costs (manpower, electricity, packaging) and markup percentages.
+- **Automated Costing** — Calculates cost-to-make (including overheads and VAT), suggested selling price (based on markup and VAT), and net profit per recipe.
+- **Financial Analytics** — View profit margin, food cost percentage, and net profit at a glance.
+- **VAT Editor** — Configure up to four global tax rates. Changing a rate automatically recalculates every ingredient and recipe that uses it.
+- **Search & Filter** — Quickly find ingredients by name or supplier.
+- **Data Persistence** — All data is saved and loaded from local text files (`recipes.txt`, `ingredients.txt`, `vatFile.txt`, `idfile.txt`).
 
-## Key Components
+## Screenshots
 
-### Primary Dashboard
-The main interface (`MyFrame`) serves as the central hub for the application. From here, users can access:
-* **Recipe Management**: View and sort the complete list of recipes.
-* **Ingredient Editor**: Open a dedicated window to manage raw material data.
-* **VAT Editor**: Access and modify global tax settings that affect all ingredient and recipe calculations.
+![Main Dashboard](screenshots/main-dashboard.png)
 
-### VAT Editor
-Accessible from the primary dashboard, the VAT Editor allows for the configuration of four distinct tax rates.
-* **Rate Configuration**: Users can input tax values as decimals (e.g., `0.23` for 23%).
-* **Global Impact**: Changing a rate in the VAT Editor automatically triggers a cost update for every ingredient and recipe that uses that specific tax selection.
-* **Safe Range**: The system enforces a valid range between 0 and 1 (0% to 100%) for all tax inputs.
+![Recipe Editor](screenshots/recipe-editor.png)
 
-### Ingredient Editor
-A dedicated window (`IngredientFrame`) for managing the inventory database.
-* **Search & Filter**: Quickly find ingredients by name or supplier.
-* **Tax Assignment**: Assign one of the four pre-configured VAT rates to each ingredient.
+![Ingredient Editor](screenshots/ingredient-editor.png)
 
-## Requirements
-* **Java Runtime**: Built using standard Java libraries (`javax.swing` and `java.awt`).
-* **File System**: The application requires read/write access to its root directory to maintain data files.
+![VAT Editor](screenshots/vat-editor.png)
 
-## How to Use
-1. **Launch**: Run the `Main` class to open the primary dashboard.
-2. **Configure Taxes**: Open the **VAT Editor** from the dashboard to set your local tax rates.
-3. **Add Ingredients**: Use the **Ingredient Editor** to populate your database, ensuring you select the correct VAT rate for each item.
-4. **Create Recipes**: Use the **Recipe Frame** to build recipes, adjust overhead costs (manpower, etc.), and set your desired markup percentage.
+![Add Ingredient Dialog](screenshots/add-ingredient-dialog.png)
+
+## Getting Started
+
+### Prerequisites
+
+- **Java 8+** (built with standard `javax.swing` and `java.awt` libraries — no external dependencies)
+- Read/write access to the application's root directory for data files
+
+### Running the Application
+
+1. Compile and run the `Main` class.
+2. **Configure VAT** — Open the VAT Editor from the dashboard to set your local tax rates.
+3. **Add Ingredients** — Use the Ingredient Editor to populate your database, selecting the correct VAT rate for each item.
+4. **Create Recipes** — Use the Recipe Frame to build recipes, set overhead costs, and choose your desired markup percentage.
+
+## Project Structure
+
+```
+src/myGUI/
+├── Main.java                 # Entry point
+├── MyFrame.java              # Primary dashboard
+├── MyPanel.java              # Main panel with recipe list
+├── RecipeFrame.java          # Recipe editor
+├── IngredientFrame.java      # Ingredient editor
+├── AddIngredientDialog.java  # Dialog for adding ingredients
+└── VATFrame.java             # VAT rate editor
+```
+
+## AI Acknowledgement
+
+From commit [`c4e8e0b`](../../commit/c4e8e0b) onwards, AI (Claude by Anthropic) has assisted in the development of this project. Specifically, AI was used for:
+
+- **Layout refactor** — Migrating from absolute positioning to `BorderLayout` and `GridBagLayout`
+- **VAT integration** — Integrating VAT handling, calculation, and UI throughout the application
+- **Boilerplate refactoring** — Consolidating repetitive code into shared methods
+- **Code review** — Identifying bugs, improving error handling, and replacing silent exceptions with user-visible dialogs
+- **General tidiness** — Code formatting, section headers, and overall readability improvements
+
+All AI-assisted changes were reviewed and directed by the project author.
+
+## License
+
+This project is not currently under a formal licence.
