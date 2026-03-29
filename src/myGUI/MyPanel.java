@@ -7,6 +7,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -91,6 +94,19 @@ public class MyPanel extends JPanel {
 		jt.getColumnModel().getColumn(6).setCellRenderer(new CellRenderer("€"));
 		jt.getColumnModel().getColumn(7).setCellRenderer(new CellRenderer("%"));
 		jt.getColumnModel().getColumn(8).setCellRenderer(new CellRenderer("%"));
+
+		// Double-click a recipe row to open the recipe editor
+		jt.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					Recipe r = grabToPass();
+					if (r != null) {
+						new RecipeFrame(fh, MyPanel.this, r);
+					}
+				}
+			}
+		});
 	}
 
 	/** Reloads all recipes into the table model. */

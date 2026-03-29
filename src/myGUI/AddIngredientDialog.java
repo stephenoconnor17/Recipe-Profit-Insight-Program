@@ -80,7 +80,7 @@ public class AddIngredientDialog extends JDialog {
 
 	/** Creates the ingredient table with a non-editable model and populates it. */
 	public void setUpList() {
-		String[] cols = { "ID", "Name", "Supplier", "Grams/Unit", "Cost/Unit", "Cost/100g", "Cost/1g" };
+		String[] cols = { "ID", "Name", "Supplier", "Amount/Unit", "Unit Type", "Cost/Unit", "Cost/100", "Cost/1" };
 		model = new DefaultTableModel(cols, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -105,7 +105,7 @@ public class AddIngredientDialog extends JDialog {
 		DecimalFormat df = new DecimalFormat("0.0000");
 		for (Ingredient i : RecipeHandler.ingredients) {
 			model.addRow(new Object[] { i.getID(), i.getName(), i.getSupplierName(), i.getGrams(),
-					"€" + df.format(i.getCost()), "€" + df.format(i.getCostPer100g()),
+					i.getUnitType(), "€" + df.format(i.getCost()), "€" + df.format(i.getCostPer100g()),
 					"€" + df.format(i.getCostPer1g()) });
 		}
 	}
@@ -126,7 +126,7 @@ public class AddIngredientDialog extends JDialog {
 
 			if (matchesName && matchesSupplier) {
 				model.addRow(new Object[] { i.getID(), i.getName(), i.getSupplierName(), i.getGrams(),
-						"€" + df.format(i.getCost()), "€" + df.format(i.getCostPer100g()),
+						i.getUnitType(), "€" + df.format(i.getCost()), "€" + df.format(i.getCostPer100g()),
 						"€" + df.format(i.getCostPer1g()) });
 			}
 		}
@@ -141,7 +141,7 @@ public class AddIngredientDialog extends JDialog {
 			controlsPanel = new JPanel(new GridBagLayout());
 		}
 
-		JLabel gramsLabel = new JLabel("Grams used: ");
+		JLabel gramsLabel = new JLabel("Amount used: ");
 		gramsField = new JTextField();
 
 		GridBagConstraints gbc = new GridBagConstraints();

@@ -25,9 +25,15 @@ public class Recipe {
 
 	private int vatSelection;
 
-	private float manPowerCost;
-	private float electricityCost;
-	private float packagingCost;
+	private float electricityRate;
+	private float electricityMinutes;
+	private float manpowerRate;
+	private float manpowerMinutes;
+	private float packagingCostPerUnit;
+	private float unitsPerRecipe;
+
+	private String allergens;
+	private String personalNote;
 
 	private ArrayList<Ingredient> recipeIngredients;
 	private Map<Ingredient, Float> ingredientUnitCost;
@@ -50,9 +56,15 @@ public class Recipe {
 
 		this.vatSelection = 1;
 
-		this.packagingCost = 0;
-		this.electricityCost = 0;
-		this.manPowerCost = 0;
+		this.electricityRate = 0;
+		this.electricityMinutes = 0;
+		this.manpowerRate = 0;
+		this.manpowerMinutes = 0;
+		this.packagingCostPerUnit = 0;
+		this.unitsPerRecipe = 1;
+
+		this.allergens = "";
+		this.personalNote = "";
 
 		updateSaleDiff();
 		updateDisplayArr();
@@ -128,34 +140,108 @@ public class Recipe {
 	}
 
 	// ========================
-	// Overhead Costs
+	// Overhead Costs (rate-based)
 	// ========================
 
+	public float getElectricityRate() {
+		return this.electricityRate;
+	}
+
+	public void setElectricityRate(float electricityRate) {
+		this.electricityRate = electricityRate;
+		update();
+	}
+
+	public float getElectricityMinutes() {
+		return this.electricityMinutes;
+	}
+
+	public void setElectricityMinutes(float electricityMinutes) {
+		this.electricityMinutes = electricityMinutes;
+		update();
+	}
+
+	/** Computed: electricityRate * electricityMinutes */
 	public float getElectricityCost() {
-		return this.electricityCost;
+		return this.electricityRate * this.electricityMinutes;
 	}
 
-	public void setElectricityCost(float electricityCost) {
-		this.electricityCost = electricityCost;
+	public float getManpowerRate() {
+		return this.manpowerRate;
+	}
+
+	public void setManpowerRate(float manpowerRate) {
+		this.manpowerRate = manpowerRate;
 		update();
 	}
 
+	public float getManpowerMinutes() {
+		return this.manpowerMinutes;
+	}
+
+	public void setManpowerMinutes(float manpowerMinutes) {
+		this.manpowerMinutes = manpowerMinutes;
+		update();
+	}
+
+	/** Computed: manpowerRate * manpowerMinutes */
 	public float getManPowerCost() {
-		return this.manPowerCost;
+		return this.manpowerRate * this.manpowerMinutes;
 	}
 
-	public void setManPowerCost(float manPowerCost) {
-		this.manPowerCost = manPowerCost;
+	public float getPackagingCostPerUnit() {
+		return this.packagingCostPerUnit;
+	}
+
+	public void setPackagingCostPerUnit(float packagingCostPerUnit) {
+		this.packagingCostPerUnit = packagingCostPerUnit;
 		update();
 	}
 
+	/** Computed: packagingCostPerUnit * unitsPerRecipe */
 	public float getPackagingCost() {
-		return this.packagingCost;
+		return this.packagingCostPerUnit * this.unitsPerRecipe;
 	}
 
-	public void setPackagingCost(float packagingCost) {
-		this.packagingCost = packagingCost;
+	public float getUnitsPerRecipe() {
+		return this.unitsPerRecipe;
+	}
+
+	public void setUnitsPerRecipe(float unitsPerRecipe) {
+		this.unitsPerRecipe = unitsPerRecipe;
 		update();
+	}
+
+	// ========================
+	// Per-Unit Pricing
+	// ========================
+
+	public float getCostPerUnit() {
+		return unitsPerRecipe > 0 ? costToMake / unitsPerRecipe : 0;
+	}
+
+	public float getSellPointPerUnit() {
+		return unitsPerRecipe > 0 ? sellPoint / unitsPerRecipe : 0;
+	}
+
+	// ========================
+	// Notes
+	// ========================
+
+	public String getAllergens() {
+		return this.allergens;
+	}
+
+	public void setAllergens(String allergens) {
+		this.allergens = allergens;
+	}
+
+	public String getPersonalNote() {
+		return this.personalNote;
+	}
+
+	public void setPersonalNote(String personalNote) {
+		this.personalNote = personalNote;
 	}
 
 	// ========================
@@ -232,13 +318,12 @@ public class Recipe {
 	/** Sums overhead costs + ingredient costs to derive total costToMake. */
 	public void updateCostToMake() {
 		this.costToMake = 0;
-		costToMake += electricityCost;
-		costToMake += manPowerCost;
-		costToMake += packagingCost;
+		costToMake += getElectricityCost();
+		costToMake += getManPowerCost();
+		costToMake += getPackagingCost();
 		for (Ingredient i : recipeIngredients) {
 			float gramsUsed = ingredientGramsUsed.get(i);
 			this.costToMake += gramsUsed * (i.getCostAfterVat() / i.getGrams());
-
 		}
 	}
 

@@ -17,6 +17,7 @@ public class Ingredient {
 	private int vatSelection;
 	private float grams;
 	private int id;
+	private String unitType;
 
 	/** Sentinel value passed as ID when creating a brand-new ingredient. */
 	public static final int NEW_ID_SENTINEL = 0;
@@ -33,9 +34,15 @@ public class Ingredient {
 	 * @param grams weight of one purchased unit
 	 */
 	public Ingredient(String name, String supplier, float cost, float grams, int id, int newVatSelection) {
+		this(name, supplier, cost, grams, id, newVatSelection, "grams");
+	}
+
+	public Ingredient(String name, String supplier, float cost, float grams, int id, int newVatSelection,
+			String unitType) {
 		this.name = name;
 		this.supplier = supplier.toLowerCase();
 		this.grams = grams;
+		this.unitType = unitType;
 		if (grams > 0) {
 			this.costPer100g = (cost / grams) * 100;
 		} else {
@@ -97,6 +104,18 @@ public class Ingredient {
 
 	public void setGrams(float grams) {
 		this.grams = grams;
+	}
+
+	// ========================
+	// Unit Type
+	// ========================
+
+	public String getUnitType() {
+		return this.unitType;
+	}
+
+	public void setUnitType(String unitType) {
+		this.unitType = unitType;
 	}
 
 	// ========================
@@ -192,10 +211,10 @@ public class Ingredient {
 	public String toString() {
 		java.text.DecimalFormat df = new java.text.DecimalFormat("0.0000");
 
-		return "NAME: " + getName() + " | SUPPLIER: " + getSupplierName() + " | GRAMS PER UNIT: " + getGrams()
-				+ " | COST PER UNIT: €" + df.format(getCost()) + " | COST PER 1G/100G/1000G: €"
-				+ df.format(getCostPer1g()) + " / €" + df.format(getCostPer100g()) + " / €"
-				+ df.format(getCostPer1kg());
+		return "NAME: " + getName() + " | SUPPLIER: " + getSupplierName() + " | " + getUnitType().toUpperCase()
+				+ " PER UNIT: " + getGrams() + " | COST PER UNIT: €" + df.format(getCost())
+				+ " | COST PER 1/100/1000: €" + df.format(getCostPer1g()) + " / €" + df.format(getCostPer100g())
+				+ " / €" + df.format(getCostPer1kg());
 	}
 
 }

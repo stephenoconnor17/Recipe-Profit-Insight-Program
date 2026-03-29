@@ -43,6 +43,7 @@ public class IngredientFrame extends JFrame {
 	JTextField costAfterVatField;
 	JTextField searchBar;
 	JTextField supplierSearchBar;
+	JComboBox<String> unitTypeSelect;
 
 	JButton saveButton;
 	JButton deleteButton;
@@ -72,11 +73,11 @@ public class IngredientFrame extends JFrame {
 		this.parent = mf;
 
 		setTitle("Ingredient Editor");
-		setSize(650, 420);
+		setSize(750, 470);
 		setLayout(new BorderLayout());
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		util.MinSizeEnforcer.apply(this, 650, 420);
+		util.MinSizeEnforcer.apply(this, 750, 470);
 
 		mainPanel = new JPanel(new BorderLayout());
 		leftPanel = new JPanel(new GridBagLayout());
@@ -183,7 +184,7 @@ public class IngredientFrame extends JFrame {
 		JLabel nameLabel = new JLabel("Name");
 		JLabel supplierLabel = new JLabel("Supplier");
 		JLabel costLabel = new JLabel("Cost Before VAT");
-		JLabel gramsLabel = new JLabel("Grams Bought");
+		JLabel gramsLabel = new JLabel("Amount Bought");
 		JLabel vatLabel = new JLabel("VAT Selection");
 		JLabel costAfterVatLabel = new JLabel("Cost After VAT");
 
@@ -278,10 +279,28 @@ public class IngredientFrame extends JFrame {
 		gbc.insets = new Insets(0, 10, 6, 10);
 		leftPanel.add(gramsField, gbc);
 
-		// Row 5: VAT Selection buttons
+		// Row 5: Unit Type
+		JLabel unitTypeLabel = new JLabel("Unit Type");
+		unitTypeSelect = new JComboBox<>(new String[] { "grams", "ml", "units" });
+
 		gbc.insets = new Insets(6, 10, 2, 10);
 		gbc.gridx = 0;
 		gbc.gridy = 9;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
+		leftPanel.add(unitTypeLabel, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 10;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 10, 6, 10);
+		leftPanel.add(unitTypeSelect, gbc);
+
+		// Row 6: VAT Selection buttons
+		gbc.insets = new Insets(6, 10, 2, 10);
+		gbc.gridx = 0;
+		gbc.gridy = 11;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
 		leftPanel.add(vatLabel, gbc);
@@ -301,22 +320,22 @@ public class IngredientFrame extends JFrame {
 		vatRow.add(vat4, v);
 
 		gbc.gridx = 0;
-		gbc.gridy = 10;
+		gbc.gridy = 12;
 		gbc.weightx = 1.0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 10, 6, 10);
 		leftPanel.add(vatRow, gbc);
 
-		// Row 6: Cost After VAT (read-only)
+		// Row 7: Cost After VAT (read-only)
 		gbc.insets = new Insets(6, 10, 2, 10);
 		gbc.gridx = 0;
-		gbc.gridy = 11;
+		gbc.gridy = 13;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
 		leftPanel.add(costAfterVatLabel, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 12;
+		gbc.gridy = 14;
 		gbc.weightx = 1.0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 10, 10, 10);
@@ -517,6 +536,7 @@ public class IngredientFrame extends JFrame {
 			costField.setText("");
 			gramsField.setText("");
 			costAfterVatField.setText("");
+			unitTypeSelect.setSelectedItem("grams");
 			vatSelect = 1;
 			highlightVatButton(vatSelect);
 		} else {
@@ -524,6 +544,7 @@ public class IngredientFrame extends JFrame {
 			supplierField.setText(i.getSupplierName());
 			costField.setText(String.format("%.4f", i.getCostPer1g() * i.getGrams()));
 			gramsField.setText(String.valueOf(i.getGrams()));
+			unitTypeSelect.setSelectedItem(i.getUnitType());
 			vatSelect = i.getVatSelection();
 			highlightVatButton(vatSelect);
 			costAfterVatField.setText(String.format("%.4f", i.getCostAfterVat()));
@@ -547,9 +568,12 @@ public class IngredientFrame extends JFrame {
 			float cost = Float.parseFloat(costField.getText());
 			float grams = Float.parseFloat(gramsField.getText());
 
+			String unitType = (String) unitTypeSelect.getSelectedItem();
+
 			if (selected == null) {
 				// Creating a new ingredient
-				Ingredient i = new Ingredient(name, supplier, cost, grams, Ingredient.NEW_ID_SENTINEL, vatSelect);
+				Ingredient i = new Ingredient(name, supplier, cost, grams, Ingredient.NEW_ID_SENTINEL, vatSelect,
+						unitType);
 				if (RecipeHandler.verifyNoIngredientCopy(i)) {
 					RecipeHandler.addIngredient(i);
 
@@ -573,6 +597,7 @@ public class IngredientFrame extends JFrame {
 				selected.setSupplierName(supplier);
 				selected.setCost(cost);
 				selected.setGrams(grams);
+				selected.setUnitType(unitType);
 				selected.setVatSelection(vatSelect);
 				RecipeHandler.ingredientByName.put(selected.getName(), selected);
 				fh.writeIngredients();

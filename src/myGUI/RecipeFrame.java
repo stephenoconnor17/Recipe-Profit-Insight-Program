@@ -21,9 +21,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 
 import filep.Ingredient;
 import filep.Recipe;
@@ -61,10 +65,15 @@ public class RecipeFrame extends JFrame {
 	JTextField nameField;
 	JTextField costToMakeField;
 	JTextField sellPointField;
+	JTextField costPerUnitField;
+	JTextField sellPointPerUnitField;
 	JTextField searchBar;
-	JTextField electricityField;
-	JTextField manpowerField;
-	JTextField packagingField;
+	JTextField electricityRateField;
+	JTextField electricityMinutesField;
+	JTextField manpowerRateField;
+	JTextField manpowerMinutesField;
+	JTextField packagingCostPerUnitField;
+	JTextField unitsPerRecipeField;
 	JTextField priceAfterMarkupAndVat;
 	JTextField markupField;
 
@@ -72,6 +81,9 @@ public class RecipeFrame extends JFrame {
 	JButton vat2;
 	JButton vat3;
 	JButton vat4;
+
+	JTextArea allergensArea;
+	JTextArea personalNoteArea;
 
 	JButton saveButton;
 	JButton getIngredientsButton;
@@ -151,9 +163,19 @@ public class RecipeFrame extends JFrame {
 		addTo(centerPanel, sellPointField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST,
 				new Insets(0, 6, 4, 6));
 
-		addTo(centerPanel, ingredientLabel, 0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
+		addTo(centerPanel, new JLabel("Cost Per Unit"), 0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.NONE,
+				GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
+		addTo(centerPanel, costPerUnitField, 0, 7, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
+				GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+
+		addTo(centerPanel, new JLabel("Selling Point Per Unit"), 0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.NONE,
+				GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
+		addTo(centerPanel, sellPointPerUnitField, 0, 9, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
+				GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+
+		addTo(centerPanel, ingredientLabel, 0, 10, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
 				new Insets(0, 6, 1, 6));
-		addTo(centerPanel, ingredientScroll, 0, 7, 2, 1, 1.0, 1.0, GridBagConstraints.BOTH, GridBagConstraints.CENTER,
+		addTo(centerPanel, ingredientScroll, 0, 11, 2, 1, 1.0, 1.0, GridBagConstraints.BOTH, GridBagConstraints.CENTER,
 				new Insets(0, 6, 6, 6));
 
 		// Add/remove ingredient buttons beside the ingredient list
@@ -169,7 +191,7 @@ public class RecipeFrame extends JFrame {
 		b.insets = new Insets(0, 0, 0, 0);
 		ingBtns.add(removeIngredientButton, b);
 
-		addTo(centerPanel, ingBtns, 2, 7, 1, 1, 0.0, 1.0, GridBagConstraints.VERTICAL, GridBagConstraints.NORTH,
+		addTo(centerPanel, ingBtns, 2, 11, 1, 1, 0.0, 1.0, GridBagConstraints.VERTICAL, GridBagConstraints.NORTH,
 				new Insets(0, 4, 6, 6));
 
 		this.add(mp);
@@ -198,7 +220,7 @@ public class RecipeFrame extends JFrame {
 	// Recipe Fields
 	// ========================
 
-	/** Initialises the recipe name, cost, and sell point fields and labels. */
+	/** Initialises the recipe name, cost, sell point, and per-unit fields and labels. */
 	public void setUpField() {
 
 		nameLabel = new JLabel("Recipe Name");
@@ -209,48 +231,71 @@ public class RecipeFrame extends JFrame {
 		nameField = new JTextField();
 		costToMakeField = new JTextField();
 		sellPointField = new JTextField();
+		costPerUnitField = new JTextField();
+		sellPointPerUnitField = new JTextField();
 		costToMakeField.setEditable(false);
 		sellPointField.setEditable(false);
+		costPerUnitField.setEditable(false);
+		sellPointPerUnitField.setEditable(false);
 
 		Dimension fieldSize = new Dimension(300, 35);
 		nameField.setPreferredSize(fieldSize);
 		costToMakeField.setPreferredSize(fieldSize);
 		sellPointField.setPreferredSize(fieldSize);
+		costPerUnitField.setPreferredSize(fieldSize);
+		sellPointPerUnitField.setPreferredSize(fieldSize);
 
 	}
 
 	/**
-	 * Creates overhead cost fields (electricity, manpower, packaging) on the right
-	 * panel.
+	 * Creates overhead cost fields (electricity rate/mins, manpower rate/mins,
+	 * packaging per unit, units per recipe) on the right panel.
 	 */
 	public void setUpUtilFields() {
-		electricityField = new JTextField();
-		manpowerField = new JTextField();
-		packagingField = new JTextField();
+		electricityRateField = new JTextField();
+		electricityMinutesField = new JTextField();
+		manpowerRateField = new JTextField();
+		manpowerMinutesField = new JTextField();
+		packagingCostPerUnitField = new JTextField();
+		unitsPerRecipeField = new JTextField();
 
-		JLabel electricityLabel = new JLabel("Electricity Cost");
-		JLabel manpowerLabel = new JLabel("Manpower Cost");
-		JLabel packagingLabel = new JLabel("Packaging Cost");
+		Dimension util = new Dimension(100, 25);
+		electricityRateField.setPreferredSize(util);
+		electricityMinutesField.setPreferredSize(util);
+		manpowerRateField.setPreferredSize(util);
+		manpowerMinutesField.setPreferredSize(util);
+		packagingCostPerUnitField.setPreferredSize(util);
+		unitsPerRecipeField.setPreferredSize(util);
 
-		Dimension util = new Dimension(150, 25);
-		electricityField.setPreferredSize(util);
-		manpowerField.setPreferredSize(util);
-		packagingField.setPreferredSize(util);
+		// Row 0-1: Electricity Rate + Minutes side by side
+		addTo(rightPanel, new JLabel("Electricity Rate (€/min)"), 0, 0, 1, 1, 0.0, 0.0,
+				GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(4, 6, 1, 4));
+		addTo(rightPanel, new JLabel("Electricity Minutes"), 1, 0, 1, 1, 0.0, 0.0,
+				GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(4, 4, 1, 6));
+		addTo(rightPanel, electricityRateField, 0, 1, 1, 1, 0.5, 0.0,
+				GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 4));
+		addTo(rightPanel, electricityMinutesField, 1, 1, 1, 1, 0.5, 0.0,
+				GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 4, 4, 6));
 
-		addTo(rightPanel, electricityLabel, 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
-				new Insets(4, 6, 1, 6));
-		addTo(rightPanel, electricityField, 0, 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+		// Row 2-3: Manpower Rate + Minutes side by side
+		addTo(rightPanel, new JLabel("Manpower Rate (€/min)"), 0, 2, 1, 1, 0.0, 0.0,
+				GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 4));
+		addTo(rightPanel, new JLabel("Manpower Minutes"), 1, 2, 1, 1, 0.0, 0.0,
+				GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 4, 1, 6));
+		addTo(rightPanel, manpowerRateField, 0, 3, 1, 1, 0.5, 0.0,
+				GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 4, 4));
+		addTo(rightPanel, manpowerMinutesField, 1, 3, 1, 1, 0.5, 0.0,
+				GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 4, 4, 6));
 
-		addTo(rightPanel, manpowerLabel, 0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
-				new Insets(0, 6, 1, 6));
-		addTo(rightPanel, manpowerField, 0, 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST,
-				new Insets(0, 6, 4, 6));
-
-		addTo(rightPanel, packagingLabel, 0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
-				new Insets(0, 6, 1, 6));
-		addTo(rightPanel, packagingField, 0, 5, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST,
-				new Insets(0, 6, 6, 6));
+		// Row 4-5: Packaging Cost Per Unit + Units Per Recipe side by side
+		addTo(rightPanel, new JLabel("Packaging Cost Per Unit"), 0, 4, 1, 1, 0.0, 0.0,
+				GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 6, 1, 4));
+		addTo(rightPanel, new JLabel("Units Per Recipe"), 1, 4, 1, 1, 0.0, 0.0,
+				GridBagConstraints.NONE, GridBagConstraints.WEST, new Insets(0, 4, 1, 6));
+		addTo(rightPanel, packagingCostPerUnitField, 0, 5, 1, 1, 0.5, 0.0,
+				GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 6, 6, 4));
+		addTo(rightPanel, unitsPerRecipeField, 1, 5, 1, 1, 0.5, 0.0,
+				GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, new Insets(0, 4, 6, 6));
 	}
 
 	// ========================
@@ -262,7 +307,7 @@ public class RecipeFrame extends JFrame {
 	 * pane.
 	 */
 	public void setUpIngredientList() {
-		String[] cols = { "ID", "Name", "Supplier", "Grams Used", "Cost in Recipe" };
+		String[] cols = { "ID", "Name", "Supplier", "Amount Used", "Cost in Recipe" };
 		ingredientModel = new DefaultTableModel(cols, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -282,8 +327,9 @@ public class RecipeFrame extends JFrame {
 
 		DecimalFormat df = new DecimalFormat("0.0000");
 		for (Ingredient t : r.getIngredients()) {
+			String amountUsed = r.getGramsUsedOfIngredient(t) + " " + t.getUnitType();
 			ingredientModel.addRow(new Object[] { t.getID(), t.getName(), t.getSupplierName(),
-					r.getGramsUsedOfIngredient(t), "€" + df.format(r.getCostOfIngredientInRecipe(t)) });
+					amountUsed, "€" + df.format(r.getCostOfIngredientInRecipe(t)) });
 		}
 	}
 
@@ -322,14 +368,14 @@ public class RecipeFrame extends JFrame {
 
 		int baseRow = 6;
 
-		addTo(rightPanel, markupLabel, 0, baseRow, 1, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
+		addTo(rightPanel, markupLabel, 0, baseRow, 2, 1, 0.0, 0.0, GridBagConstraints.NONE, GridBagConstraints.WEST,
 				new Insets(0, 6, 1, 6));
-		addTo(rightPanel, markupField, 0, baseRow + 1, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
+		addTo(rightPanel, markupField, 0, baseRow + 1, 2, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
 				GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
-		addTo(rightPanel, priceAfterMarkupAndVatLabel, 0, baseRow + 2, 1, 1, 0.0, 0.0, GridBagConstraints.NONE,
+		addTo(rightPanel, priceAfterMarkupAndVatLabel, 0, baseRow + 2, 2, 1, 0.0, 0.0, GridBagConstraints.NONE,
 				GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
-		addTo(rightPanel, priceAfterMarkupAndVat, 0, baseRow + 3, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
+		addTo(rightPanel, priceAfterMarkupAndVat, 0, baseRow + 3, 2, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
 				GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
 
 		// Arrange VAT buttons in a horizontal row
@@ -350,7 +396,52 @@ public class RecipeFrame extends JFrame {
 		rightPanel.remove(vat1);
 		rightPanel.remove(vat2);
 		rightPanel.remove(vat3);
-		addTo(rightPanel, vatRow, 0, baseRow + 4, 1, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
+		addTo(rightPanel, vatRow, 0, baseRow + 4, 2, 1, 1.0, 0.0, GridBagConstraints.HORIZONTAL,
+				GridBagConstraints.WEST, new Insets(0, 6, 6, 6));
+
+		// --- Note sections ---
+
+		int noteLimit = 512;
+		PlainDocument allergensDoc = new PlainDocument() {
+			@Override
+			public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+				if (str == null) return;
+				if ((getLength() + str.length()) <= noteLimit) {
+					super.insertString(offs, str, a);
+				}
+			}
+		};
+		PlainDocument personalDoc = new PlainDocument() {
+			@Override
+			public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+				if (str == null) return;
+				if ((getLength() + str.length()) <= noteLimit) {
+					super.insertString(offs, str, a);
+				}
+			}
+		};
+
+		JLabel allergensLabel = new JLabel("Allergens");
+		allergensArea = new JTextArea(allergensDoc, "", 4, 20);
+		allergensArea.setLineWrap(true);
+		allergensArea.setWrapStyleWord(true);
+		JScrollPane allergensScroll = new JScrollPane(allergensArea);
+
+		JLabel personalNoteLabel = new JLabel("Personal Note");
+		personalNoteArea = new JTextArea(personalDoc, "", 4, 20);
+		personalNoteArea.setLineWrap(true);
+		personalNoteArea.setWrapStyleWord(true);
+		JScrollPane personalNoteScroll = new JScrollPane(personalNoteArea);
+
+		int noteRow = baseRow + 5;
+		addTo(rightPanel, allergensLabel, 0, noteRow, 2, 1, 0.0, 0.0, GridBagConstraints.NONE,
+				GridBagConstraints.WEST, new Insets(4, 6, 1, 6));
+		addTo(rightPanel, allergensScroll, 0, noteRow + 1, 2, 1, 1.0, 1.0, GridBagConstraints.BOTH,
+				GridBagConstraints.WEST, new Insets(0, 6, 4, 6));
+
+		addTo(rightPanel, personalNoteLabel, 0, noteRow + 2, 2, 1, 0.0, 0.0, GridBagConstraints.NONE,
+				GridBagConstraints.WEST, new Insets(0, 6, 1, 6));
+		addTo(rightPanel, personalNoteScroll, 0, noteRow + 3, 2, 1, 1.0, 1.0, GridBagConstraints.BOTH,
 				GridBagConstraints.WEST, new Insets(0, 6, 6, 6));
 	}
 
@@ -565,18 +656,32 @@ public class RecipeFrame extends JFrame {
 			nameField.setText("");
 			costToMakeField.setText("");
 			sellPointField.setText("");
-			electricityField.setText("");
-			manpowerField.setText("");
-			packagingField.setText("");
+			costPerUnitField.setText("");
+			sellPointPerUnitField.setText("");
+			electricityRateField.setText("");
+			electricityMinutesField.setText("");
+			manpowerRateField.setText("");
+			manpowerMinutesField.setText("");
+			packagingCostPerUnitField.setText("");
+			unitsPerRecipeField.setText("");
+			allergensArea.setText("");
+			personalNoteArea.setText("");
 			ingredientModel.setRowCount(0);
 		} else {
 			nameField.setText(tempR.getName());
 			costToMakeField.setText(String.format("%.4f", tempR.getCostToMake()));
 			markupField.setText(String.format("%.4f", tempR.getMarkUp()));
 			sellPointField.setText(String.format("%.4f", tempR.getSellPoint()));
-			electricityField.setText(String.format("%.4f", tempR.getElectricityCost()));
-			manpowerField.setText(String.format("%.4f", tempR.getManPowerCost()));
-			packagingField.setText(String.format("%.4f", tempR.getPackagingCost()));
+			costPerUnitField.setText(String.format("%.4f", tempR.getCostPerUnit()));
+			sellPointPerUnitField.setText(String.format("%.4f", tempR.getSellPointPerUnit()));
+			electricityRateField.setText(String.format("%.4f", tempR.getElectricityRate()));
+			electricityMinutesField.setText(String.format("%.4f", tempR.getElectricityMinutes()));
+			manpowerRateField.setText(String.format("%.4f", tempR.getManpowerRate()));
+			manpowerMinutesField.setText(String.format("%.4f", tempR.getManpowerMinutes()));
+			packagingCostPerUnitField.setText(String.format("%.4f", tempR.getPackagingCostPerUnit()));
+			unitsPerRecipeField.setText(String.format("%.4f", tempR.getUnitsPerRecipe()));
+			allergensArea.setText(tempR.getAllergens());
+			personalNoteArea.setText(tempR.getPersonalNote());
 
 			showPriceAfterMarkupAndVat(tempR.getVatSelection());
 			loadIngredientsIntoModel(tempR);
@@ -599,35 +704,27 @@ public class RecipeFrame extends JFrame {
 			Recipe saveName = grabRecipe();
 
 			String name = nameField.getText();
-			String markUpText = markupField.getText().trim();
-			String electricityText = electricityField.getText().trim();
-			String manpowerText = manpowerField.getText().trim();
-			String packagingText = packagingField.getText().trim();
-
-			float markUp = 0;
-			float electricity = 0;
-			float manpower = 0;
-			float packaging = 0;
-			if (!markUpText.isEmpty()) {
-				markUp = getFloatFromString(markUpText);
-			}
-			if (!electricityText.isEmpty()) {
-				electricity = getFloatFromString(electricityText);
-			}
-			if (!manpowerText.isEmpty()) {
-				manpower = getFloatFromString(manpowerText);
-			}
-			if (!packagingText.isEmpty()) {
-				packaging = getFloatFromString(packagingText);
-			}
+			float markUp = getFloatFromString(markupField.getText().trim());
+			float elecRate = getFloatFromString(electricityRateField.getText().trim());
+			float elecMins = getFloatFromString(electricityMinutesField.getText().trim());
+			float manRate = getFloatFromString(manpowerRateField.getText().trim());
+			float manMins = getFloatFromString(manpowerMinutesField.getText().trim());
+			float pkgPerUnit = getFloatFromString(packagingCostPerUnitField.getText().trim());
+			float units = getFloatFromString(unitsPerRecipeField.getText().trim());
+			if (units <= 0) units = 1;
 
 			if (saveName != null) {
 				// Updating an existing recipe
 				saveName.setName(name);
 				saveName.setMarkUp(markUp);
-				saveName.setElectricityCost(electricity);
-				saveName.setManPowerCost(manpower);
-				saveName.setPackagingCost(packaging);
+				saveName.setElectricityRate(elecRate);
+				saveName.setElectricityMinutes(elecMins);
+				saveName.setManpowerRate(manRate);
+				saveName.setManpowerMinutes(manMins);
+				saveName.setPackagingCostPerUnit(pkgPerUnit);
+				saveName.setUnitsPerRecipe(units);
+				saveName.setAllergens(allergensArea.getText());
+				saveName.setPersonalNote(personalNoteArea.getText());
 			} else {
 				// Creating a new recipe
 				if (name.trim().isEmpty()) {
@@ -637,16 +734,22 @@ public class RecipeFrame extends JFrame {
 
 				saveName = new Recipe(name);
 
-				saveName.setElectricityCost(electricity);
-				saveName.setManPowerCost(manpower);
-				saveName.setPackagingCost(packaging);
+				saveName.setElectricityRate(elecRate);
+				saveName.setElectricityMinutes(elecMins);
+				saveName.setManpowerRate(manRate);
+				saveName.setManpowerMinutes(manMins);
+				saveName.setPackagingCostPerUnit(pkgPerUnit);
+				saveName.setUnitsPerRecipe(units);
+				saveName.setAllergens(allergensArea.getText());
+				saveName.setPersonalNote(personalNoteArea.getText());
 
 				// Transfer ingredients from the table model to the new recipe
 				for (int i = 0; i < ingredientModel.getRowCount(); i++) {
 					int ingId = (int) ingredientModel.getValueAt(i, 0);
 					Ingredient ing = RecipeHandler.ingredientIDMap.get(ingId);
-					float gramsUsed = (float) ingredientModel.getValueAt(i, 3);
-					saveName.addIngredient(ing, gramsUsed);
+					String amountStr = ingredientModel.getValueAt(i, 3).toString();
+					float amountUsed = Float.parseFloat(amountStr.split(" ")[0]);
+					saveName.addIngredient(ing, amountUsed);
 				}
 
 				if (RecipeHandler.verifyNoRecipeCopy(saveName)) {
