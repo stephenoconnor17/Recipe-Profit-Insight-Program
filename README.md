@@ -4,26 +4,41 @@ A Java Swing desktop application for managing food ingredients and recipes. It c
 
 ## Features
 
-- **Ingredient Management** — Add, edit, and delete ingredients with supplier info, unit cost, and amount bought. Choose a unit type (grams, ml, or units) and assign one of four configurable VAT rates to each ingredient.
-- **Recipe Builder** — Compose recipes from your ingredient database. Set rate-based overhead costs (electricity rate/minutes, manpower rate/minutes, packaging cost per unit) and markup percentages. Track allergens and personal notes per recipe.
-- **Automated Costing** — Calculates cost-to-make (including overheads and VAT), suggested selling price (based on markup and VAT), and net profit per recipe. Displays per-unit cost and selling point when producing multiple units from one recipe batch.
-- **Financial Analytics** — View profit margin, food cost percentage, food cost difference, and net profit at a glance in a colour-coded dashboard table.
-- **Sorting** — Sort recipes and ingredients by name, cost, selling price, profit, margin, or ingredient count (ascending/descending).
-- **VAT Editor** — Configure up to four global tax rates. Changing a rate automatically recalculates every ingredient and recipe that uses it.
-- **Search & Filter** — Quickly find recipes by name, and ingredients by name or supplier, with real-time filtering.
-- **Double-Click Navigation** — Double-click any recipe row in the dashboard to jump straight into the recipe editor.
-- **Data Persistence** — All data is saved and loaded from local text files (`recipes.txt`, `ingredients.txt`, `vatFile.txt`, `idfile.txt`). Supports automatic migration from legacy (v1) to current (v2) recipe format.
-- **Single Instance Protection** — Prevents multiple instances from running simultaneously to avoid data corruption.
+- **Recipe Dashboard** — Central window listing every recipe with a colour-coded financial table (Overall Cost, Markup, VAT Type, VAT Paid, Sale, Difference, Profit Margin, Food Cost Diff). Double-click any row to open it in the recipe editor.
+- **Per-Unit Pricing** — Recipes that produce multiple units (e.g. a tray of cookies) expose cost-per-unit and selling-point-per-unit alongside the batch totals, so a recipe yielding 12 cookies shows what each cookie costs to make and what each should sell for.
+- **Recipe Editor** — Build recipes from your saved ingredients. Configure rate-based overheads (electricity rate × minutes, manpower rate × minutes), per-unit packaging cost, and units-per-recipe yield. Set markup percentage, assign one of four VAT rates, preview the post-markup-and-VAT price, and record allergens and personal notes.
+- **Ingredient Editor** — Add, edit, and delete ingredients with supplier, unit cost, amount bought, unit type (grams, ml, or units), and a per-ingredient VAT selection. Recipes that use an ingredient are recalculated automatically when the ingredient changes (or is deleted).
+- **VAT Editor** — Configure up to four global VAT rates. Editing a rate automatically recalculates every ingredient and recipe that uses it.
+- **Sorting** — Sort recipes by cost, selling point, name, profit, food margin, or ingredient count (ascending/descending). Sort ingredients by cost, name, or ID.
+- **Search & Filter** — Real-time keyword search for recipes (by name) and ingredients (by name or supplier).
+- **Input Validation** — Numeric fields enforce their unit type — 'units' fields require whole numbers, weight/volume fields accept decimals — and surface clear popup errors instead of silently coercing bad input.
+- **Data Persistence** — All data is saved to and loaded from local text files (`recipes.txt`, `ingredients.txt`, `vatFile.txt`, `idfile.txt`), with automatic migration from the legacy v1 to current v2 recipe format.
+- **Single Instance Protection** — Prevents multiple application instances from running simultaneously to avoid data corruption.
 
 ## Screenshots
 
+### Main Dashboard
+The primary window, showing every recipe alongside its cost, selling price, profit margin, and food cost percentage in a colour-coded table. Double-click a row to jump into the recipe editor.
+
 ![Main Dashboard](screenshots/main-dashboard.png)
+
+### Recipe Editor
+Build and edit recipes by composing them from saved ingredients. Set markup, electricity and manpower rates/minutes, packaging cost, units per recipe, and record allergens and personal notes.
 
 ![Recipe Editor](screenshots/recipe-editor.png)
 
+### Ingredient Editor
+Manage your ingredient database with supplier, cost, amount bought, unit type (grams, ml, or units), and per-ingredient VAT rate.
+
 ![Ingredient Editor](screenshots/ingredient-editor.png)
 
+### VAT Editor
+Configure up to four global VAT rates. Editing a rate automatically recalculates every ingredient and recipe that uses it.
+
 ![VAT Editor](screenshots/vat-editor.png)
+
+### Add Ingredient Dialog
+Search the ingredient database and add a chosen ingredient to the current recipe, with input validation that adapts to the ingredient's unit type.
 
 ![Add Ingredient Dialog](screenshots/add-ingredient-dialog.png)
 
@@ -55,9 +70,9 @@ Alternatively, open the project in any Java IDE (Eclipse, IntelliJ, etc.) and ru
 ### Usage
 
 1. **Configure VAT** — Open the VAT Editor from the dashboard to set your local tax rates.
-2. **Add Ingredients** — Use the Ingredient Editor to populate your database, selecting the correct VAT rate and unit type for each item.
-3. **Create Recipes** — Use the Recipe Editor to build recipes, set overhead costs (electricity, manpower, packaging), choose your markup percentage, and record allergen/note information.
-4. **Review Profitability** — The main dashboard table shows cost, selling price, profit margin, and food cost metrics for every recipe at a glance. Double-click any row to edit.
+2. **Add Ingredients** — Use the Ingredient Editor to populate your database, selecting the correct VAT rate and unit type (grams, ml, or units) for each item.
+3. **Create Recipes** — Use the Recipe Editor to build recipes from your ingredients, set overheads (electricity rate/minutes, manpower rate/minutes, packaging cost per unit), specify the recipe yield (units per recipe), choose markup and VAT, and record allergens and personal notes.
+4. **Review Profitability** — The dashboard table shows cost, selling price, profit margin, and food cost metrics for every recipe. Double-click any row to open it in the editor, where both the recipe-batch totals and the per-unit cost and selling point are displayed.
 
 ## Project Structure
 
