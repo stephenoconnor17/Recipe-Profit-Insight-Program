@@ -246,23 +246,49 @@ public class AddIngredientDialog extends JDialog {
 	 */
 	public void addIngredient() {
 		int selectedRow = ingredientTable.getSelectedRow();
-		if (selectedRow < 0)
+		if (selectedRow < 0) {
+			JOptionPane.showMessageDialog(this, "Please select an ingredient from the list.");
 			return;
+		}
 
 		int id = (int) model.getValueAt(selectedRow, 0);
 		Ingredient selected = RecipeHandler.ingredientIDMap.get(id);
 		if (selected == null)
 			return;
 
-		try {
-			float grams = Float.parseFloat(gramsField.getText());
-			if (grams <= 0) {
-				throw new NumberFormatException();
+		String input = gramsField.getText().trim();
+		if (input.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Amount used cannot be empty.");
+			return;
+		}
+
+		boolean isUnits = "units".equals(selected.getUnitType());
+
+		if (isUnits) {
+			try {
+				int amount = Integer.parseInt(input);
+				if (amount <= 0) {
+					JOptionPane.showMessageDialog(this, "Amount used must be a whole number greater than 0.");
+					return;
+				}
+				recipe.addIngredient(selected, amount);
+				dispose();
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this,
+						"This ingredient uses 'units'. Amount must be a whole number (no decimals).");
 			}
-			recipe.addIngredient(selected, grams);
-			dispose();
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "Enter a valid number");
+		} else {
+			try {
+				float grams = Float.parseFloat(input);
+				if (grams <= 0) {
+					JOptionPane.showMessageDialog(this, "Amount used must be a number greater than 0.");
+					return;
+				}
+				recipe.addIngredient(selected, grams);
+				dispose();
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this, "Amount used must be a valid number.");
+			}
 		}
 	}
 }

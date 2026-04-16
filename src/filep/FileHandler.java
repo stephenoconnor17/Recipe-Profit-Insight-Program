@@ -208,7 +208,7 @@ public class FileHandler {
 						temp.setManpowerRate(Float.parseFloat(parts[6]));
 						temp.setManpowerMinutes(Float.parseFloat(parts[7]));
 						temp.setPackagingCostPerUnit(Float.parseFloat(parts[8]));
-						temp.setUnitsPerRecipe(Float.parseFloat(parts[9]));
+						temp.setUnitsPerRecipe(Integer.parseInt(parts[9]));
 						temp.setAllergens(unescapeNote(parts[10]));
 						temp.setPersonalNote(unescapeNote(parts[11]));
 						ingredientStart = 12;

@@ -679,7 +679,7 @@ public class RecipeFrame extends JFrame {
 			manpowerRateField.setText(String.format("%.4f", tempR.getManpowerRate()));
 			manpowerMinutesField.setText(String.format("%.4f", tempR.getManpowerMinutes()));
 			packagingCostPerUnitField.setText(String.format("%.4f", tempR.getPackagingCostPerUnit()));
-			unitsPerRecipeField.setText(String.format("%.4f", tempR.getUnitsPerRecipe()));
+			unitsPerRecipeField.setText(String.valueOf((int) tempR.getUnitsPerRecipe()));
 			allergensArea.setText(tempR.getAllergens());
 			personalNoteArea.setText(tempR.getPersonalNote());
 
@@ -704,14 +704,31 @@ public class RecipeFrame extends JFrame {
 			Recipe saveName = grabRecipe();
 
 			String name = nameField.getText();
-			float markUp = getFloatFromString(markupField.getText().trim());
-			float elecRate = getFloatFromString(electricityRateField.getText().trim());
-			float elecMins = getFloatFromString(electricityMinutesField.getText().trim());
-			float manRate = getFloatFromString(manpowerRateField.getText().trim());
-			float manMins = getFloatFromString(manpowerMinutesField.getText().trim());
-			float pkgPerUnit = getFloatFromString(packagingCostPerUnitField.getText().trim());
-			float units = getFloatFromString(unitsPerRecipeField.getText().trim());
-			if (units <= 0) units = 1;
+
+			float markUp = validateFloat(markupField.getText().trim(), "Markup %");
+			if (Float.isNaN(markUp)) return;
+
+			float elecRate = validateFloat(electricityRateField.getText().trim(), "Electricity Rate");
+			if (Float.isNaN(elecRate)) return;
+
+			float elecMins = validateFloat(electricityMinutesField.getText().trim(), "Electricity Minutes");
+			if (Float.isNaN(elecMins)) return;
+
+			float manRate = validateFloat(manpowerRateField.getText().trim(), "Manpower Rate");
+			if (Float.isNaN(manRate)) return;
+
+			float manMins = validateFloat(manpowerMinutesField.getText().trim(), "Manpower Minutes");
+			if (Float.isNaN(manMins)) return;
+
+			float pkgPerUnit = validateFloat(packagingCostPerUnitField.getText().trim(), "Packaging Cost Per Unit");
+			if (Float.isNaN(pkgPerUnit)) return;
+
+			int units = validateInt(unitsPerRecipeField.getText().trim(), "Units Per Recipe");
+			if (units == Integer.MIN_VALUE) return;
+			if (units <= 0) {
+				JOptionPane.showMessageDialog(this, "Units Per Recipe must be a whole number greater than 0.");
+				return;
+			}
 
 			if (saveName != null) {
 				// Updating an existing recipe
@@ -842,6 +859,40 @@ public class RecipeFrame extends JFrame {
 		}
 
 		return toReturn;
+	}
+
+	/**
+	 * Parses a float from a string, showing a popup on failure. Returns the parsed
+	 * value, or Float.NaN if the input is invalid. Empty/blank input returns 0.
+	 */
+	private float validateFloat(String input, String fieldName) {
+		if (input.isEmpty()) return 0;
+		try {
+			float val = Float.parseFloat(input);
+			if (val < 0) {
+				JOptionPane.showMessageDialog(this, fieldName + " must be a valid number (0 or greater).");
+				return Float.NaN;
+			}
+			return val;
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, fieldName + " must be a valid number.");
+			return Float.NaN;
+		}
+	}
+
+	/**
+	 * Parses an integer from a string, showing a popup on failure. Returns the
+	 * parsed value, or Integer.MIN_VALUE if the input is invalid. Empty/blank input
+	 * returns 1.
+	 */
+	private int validateInt(String input, String fieldName) {
+		if (input.isEmpty()) return 1;
+		try {
+			return Integer.parseInt(input);
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, fieldName + " must be a whole number (no decimals).");
+			return Integer.MIN_VALUE;
+		}
 	}
 
 	// ========================

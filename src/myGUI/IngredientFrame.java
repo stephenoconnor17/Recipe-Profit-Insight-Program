@@ -563,12 +563,54 @@ public class IngredientFrame extends JFrame {
 		try {
 			Ingredient selected = grabIngredient();
 
-			String name = nameField.getText();
+			String name = nameField.getText().trim();
+			if (name.isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Ingredient must have a name.");
+				return;
+			}
+
 			String supplier = supplierField.getText();
-			float cost = Float.parseFloat(costField.getText());
-			float grams = Float.parseFloat(gramsField.getText());
+
+			float cost;
+			try {
+				cost = Float.parseFloat(costField.getText().trim());
+				if (cost < 0) {
+					JOptionPane.showMessageDialog(this, "Cost Before VAT must be 0 or greater.");
+					return;
+				}
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this, "Cost Before VAT must be a valid number.");
+				return;
+			}
 
 			String unitType = (String) unitTypeSelect.getSelectedItem();
+			boolean isUnits = "units".equals(unitType);
+
+			float grams;
+			if (isUnits) {
+				try {
+					int intGrams = Integer.parseInt(gramsField.getText().trim());
+					if (intGrams <= 0) {
+						JOptionPane.showMessageDialog(this, "Amount Bought must be a whole number greater than 0 for 'units'.");
+						return;
+					}
+					grams = intGrams;
+				} catch (NumberFormatException e) {
+					JOptionPane.showMessageDialog(this, "Amount Bought must be a whole number (no decimals) for 'units'.");
+					return;
+				}
+			} else {
+				try {
+					grams = Float.parseFloat(gramsField.getText().trim());
+					if (grams <= 0) {
+						JOptionPane.showMessageDialog(this, "Amount Bought must be a number greater than 0.");
+						return;
+					}
+				} catch (NumberFormatException e) {
+					JOptionPane.showMessageDialog(this, "Amount Bought must be a valid number.");
+					return;
+				}
+			}
 
 			if (selected == null) {
 				// Creating a new ingredient

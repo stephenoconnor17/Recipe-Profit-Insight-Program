@@ -30,7 +30,7 @@ public class Recipe {
 	private float manpowerRate;
 	private float manpowerMinutes;
 	private float packagingCostPerUnit;
-	private float unitsPerRecipe;
+	private int unitsPerRecipe;
 
 	private String allergens;
 	private String personalNote;
@@ -203,11 +203,11 @@ public class Recipe {
 		return this.packagingCostPerUnit * this.unitsPerRecipe;
 	}
 
-	public float getUnitsPerRecipe() {
+	public int getUnitsPerRecipe() {
 		return this.unitsPerRecipe;
 	}
 
-	public void setUnitsPerRecipe(float unitsPerRecipe) {
+	public void setUnitsPerRecipe(int unitsPerRecipe) {
 		this.unitsPerRecipe = unitsPerRecipe;
 		update();
 	}
